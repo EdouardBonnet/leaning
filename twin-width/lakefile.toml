@@ -1,0 +1,10 @@
+name = "twinWidth"
+version = "0.1.0"
+defaultTargets = ["TwinWidth"]
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+
+[[lean_lib]]
+name = "TwinWidth"
