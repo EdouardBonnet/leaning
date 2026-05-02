@@ -38,4 +38,24 @@ theorem twinWidth_functionallyEquivalent_mixedMinorNumber_of_orderedAdjacencyBou
     (twinWidthBoundedByMixedMinorNumber_of_orderedAdjacencyExplicitBound h₁)
     (mixedMinorNumberBoundedByTwinWidth_of_orderedAdjacencyLinearBound h₂)
 
+/-- Contract theorem for
+`MainContract.twin_width_functionally_equivalent_mixed_minor_number_of_explicit_bounds`.
+
+The two explicit directional inequalities imply functional equivalence. -/
+theorem twin_width_functionally_equivalent_mixed_minor_number_of_explicit_bounds
+    (h₁ :
+      ∀ {V : Type} [Fintype V] [DecidableEq V] (G : _root_.SimpleGraph V),
+        twinWidth G ≤ 2 ^ (2 ^ (mixedMinorNumber G + 1)))
+    (h₂ :
+      ∀ {V : Type} [Fintype V] [DecidableEq V] (G : _root_.SimpleGraph V),
+        mixedMinorNumber G ≤ 2 * twinWidth G + 2) :
+    FunctionallyEquivalent twinWidth mixedMinorNumber := by
+  constructor
+  · refine ⟨fun k => 2 ^ (2 ^ (k + 1)), ?_⟩
+    intro V _ _ G
+    exact h₁ G
+  · refine ⟨fun d => 2 * d + 2, ?_⟩
+    intro V _ _ G
+    exact h₂ G
+
 end TwinWidth

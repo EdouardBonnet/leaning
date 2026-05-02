@@ -12,25 +12,6 @@ row division, and dually a row set measured against a column division.
 namespace TwinWidth
 namespace Matrix
 
-/-- A rectangular zone is vertical if each column is constant across the row
-set. -/
-def ZoneVertical {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool)
-    (R : Finset (Fin n)) (C : Finset (Fin m)) : Prop :=
-  ∀ ⦃r₁ r₂ : Fin n⦄, r₁ ∈ R → r₂ ∈ R →
-    ∀ ⦃c : Fin m⦄, c ∈ C → M r₁ c = M r₂ c
-
-/-- A rectangular zone is horizontal if each row is constant across the column
-set. -/
-def ZoneHorizontal {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool)
-    (R : Finset (Fin n)) (C : Finset (Fin m)) : Prop :=
-  ∀ ⦃r : Fin n⦄, r ∈ R →
-    ∀ ⦃c₁ c₂ : Fin m⦄, c₁ ∈ C → c₂ ∈ C → M r c₁ = M r c₂
-
-/-- A rectangular zone is mixed if it is neither vertical nor horizontal. -/
-def ZoneMixed {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool)
-    (R : Finset (Fin n)) (C : Finset (Fin m)) : Prop :=
-  ¬ ZoneVertical M R C ∧ ¬ ZoneHorizontal M R C
-
 /-- The mixed zones of a column set on a row division. -/
 noncomputable def rowMixedZones {n m k : ℕ}
     (M : _root_.Matrix (Fin n) (Fin m) Bool)

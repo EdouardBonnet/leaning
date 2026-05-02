@@ -68,5 +68,22 @@ theorem mixedMinorNumberBoundedByTwinWidth_of_orderedAdjacencyLinearBound
     MixedMinorNumberBoundedByTwinWidth :=
   mixedMinorNumberBoundedByTwinWidth_of_orderedAdjacencyBound h
 
+/-- Contract theorem for
+`TwinWidthToMixedContract.mixed_minor_number_le_twice_twin_width_add_two_of_ordered_adjacency_bound`.
+
+An ordered-adjacency linear bound immediately gives the same graph-level bound,
+because `mixedMinorNumber` is the minimum over vertex orders. -/
+theorem mixed_minor_number_le_twice_twin_width_add_two_of_ordered_adjacency_bound
+    (h :
+      ∀ {V : Type} [Fintype V] [DecidableEq V] (G : _root_.SimpleGraph V),
+        ∃ σ : VertexOrder V (Fintype.card V),
+          Matrix.orderedAdjacencyMixedNumber G σ ≤ 2 * twinWidth G + 2) :
+    ∀ {V : Type} [Fintype V] [DecidableEq V] (G : _root_.SimpleGraph V),
+      mixedMinorNumber G ≤ 2 * twinWidth G + 2 := by
+  intro V _ _ G
+  rcases h G with ⟨σ, hσ⟩
+  exact mixedMinorNumber_le_of_orderedAdjacencyMixedNumber_le
+    (G := G) (f := fun d => 2 * d + 2) hσ
+
 end SimpleGraph
 end TwinWidth

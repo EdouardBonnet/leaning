@@ -19,13 +19,31 @@ The development should build the definitions and intermediate lemmas needed to m
 - Use Lean 4 and mathlib idioms.
 - Use `SimpleGraph V` as the base graph model.
 - Do not create a competing simple graph hierarchy.
-- Do not add `axiom`, `unsafe`, `admit`, or completed-file `sorry`.
+- Do not add `unsafe`, `admit`, or completed-file `sorry`.
+- Do not add `axiom` outside files whose names end in `Contract.lean`.
 - Do not encode asymptotic notation such as `2^(2^O(k))` as a final theorem.
 - Use either explicit bounding functions or existential bounding functions.
 - Keep imports narrow.
 - Prefer stable, reusable definitions over tactic-heavy one-off proofs.
 - Run the relevant Lean command before claiming a file compiles.
 - If a mathematical convention changes a constant, document the convention and update theorem names/comments accordingly.
+- Distinguish definition-only files from files that prove lemmas.
+- For every major lemma/theorem family, make a `Contract.lean` file with axioms
+  for the targeted statements and only the definitions/imports needed to state
+  them. The statements should read as closely as possible to the natural
+  language theorem.
+- Give contract axioms meaningful theorem-style names and state the claim
+  directly with quantifiers, hypotheses, and conclusions. Avoid axioms whose
+  entire statement is just a proposition-wrapper alias such as
+  `SomeBoundedByOther someBoundFunction`; those wrappers may still exist as
+  helper definitions, but the contract itself should be human-readable.
+- Each contract file should expose only the main final lemma for the proof
+  module. Do not include intermediate variants such as ordered-matrix forms,
+  greedy-step forms, counting sublemmas, or conversion steps in contract files
+  unless that file's sole purpose is proving that final statement.
+- Each contract axiom should have a corresponding fully formalized theorem in
+  the full proof file once that item is proved. Contract modules should not be
+  imported to discharge completed proofs.
 
 ## Target mathematical statement
 
@@ -372,10 +390,14 @@ Before handoff:
 
 ```bash
 lake build
-grep -R --line-number --include='*.lean' -E '\bsorry\b|\badmit\b|axiom ' TwinWidth
+grep -R --line-number --include='*.lean' -E '\bsorry\b|\badmit\b|axiom ' TwinWidth \
+  | grep -v 'Contract\.lean'
 ```
 
-If the grep command reports placeholders in completed files, remove them. If placeholders remain in explicitly draft files, report them clearly.
+If the grep command reports placeholders or non-contract axioms in completed
+files, remove them. Contract-file axioms are allowed only as explicit
+interfaces for work that is not yet fully proved, and any remaining contract
+axioms must be reported clearly.
 
 ## Completion criteria
 

@@ -8,6 +8,7 @@ import Mathlib.Data.Finset.Max
 import Mathlib.Data.Finset.Union
 import Mathlib.Data.Fin.SuccPred
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Fintype.Card
 
 /-!
 # Divisions of finite intervals
@@ -68,6 +69,28 @@ theorem part_ordered' ⦃i j : Fin k⦄ (hij : i < j)
     ⦃a b : Fin n⦄ (ha : a ∈ D.part i) (hb : b ∈ D.part j) :
     a < b :=
   D.part_ordered hij ha hb
+
+/-- Distinct indices of a division have distinct parts. -/
+theorem part_injective : Function.Injective D.part := by
+  intro i j hij_parts
+  by_contra hij
+  rcases D.part_nonempty i with ⟨x, hx⟩
+  have hxj : x ∈ D.part j := by simpa [hij_parts] using hx
+  exact Finset.disjoint_left.mp (D.part_disjoint hij) hx hxj
+
+/-- A division of `Fin n` into `k` nonempty parts has at most `n` parts. -/
+theorem card_parts_le (D : Division n k) : k ≤ n := by
+  classical
+  let f : Fin k → Fin n := fun i => Classical.choose (D.part_nonempty i)
+  have hf : Function.Injective f := by
+    intro i j hij
+    by_contra hne
+    have hi : f i ∈ D.part i := Classical.choose_spec (D.part_nonempty i)
+    have hj : f i ∈ D.part j := by
+      have hj' : f j ∈ D.part j := Classical.choose_spec (D.part_nonempty j)
+      simpa [hij] using hj'
+    exact Finset.disjoint_left.mp (D.part_disjoint hne) hi hj
+  simpa using Fintype.card_le_of_injective f hf
 
 /-- Build a division as the fibers of an order-preserving surjection.
 
@@ -159,6 +182,25 @@ noncomputable def castIndex {l : ℕ} (h : k = l) (D : Division n k) :
       apply Fin.mk_lt_mk.mpr
       exact Fin.mk_lt_mk.mp hij
     exact D.part_ordered hij' ha hb
+
+/-- Reindexing a division does not change its finite set of parts. -/
+@[simp] theorem parts_castIndex {n k l : ℕ} (h : k = l) (D : Division n k) :
+    ((Finset.univ : Finset (Fin l)).map ⟨(Division.castIndex h D).part,
+      (Division.castIndex h D).part_injective⟩) =
+    ((Finset.univ : Finset (Fin k)).map ⟨D.part, D.part_injective⟩) := by
+  classical
+  ext R
+  constructor
+  · intro hR
+    rcases Finset.mem_map.mp hR with ⟨a, _ha, haR⟩
+    change (Division.castIndex h D).part a = R at haR
+    refine Finset.mem_map.mpr ⟨(finCongr h).symm a, Finset.mem_univ _, ?_⟩
+    simpa [Division.castIndex] using haR
+  · intro hR
+    rcases Finset.mem_map.mp hR with ⟨a, _ha, haR⟩
+    change D.part a = R at haR
+    refine Finset.mem_map.mpr ⟨finCongr h a, Finset.mem_univ _, ?_⟩
+    simpa [Division.castIndex] using haR
 
 /-- The singleton division of `Fin n` into `n` consecutive singleton parts. -/
 def singleton (n : ℕ) : Division n n where
@@ -1149,6 +1191,119 @@ theorem last_fuse_self {k : ℕ} (D : Division n (k + 2))
     rcases Finset.mem_union.mp hx with hx | hx
     · exact le_of_lt (D.part_ordered (by simp) hx (D.last_mem i.succ))
     · exact Finset.le_max' _ _ hx
+
+/-- The set of parts of a fused division is obtained by replacing the two
+fused source parts by their union. -/
+theorem parts_eq_insert_erase_of_isFusionAt {n k : ℕ}
+    {D : Division n (k + 2)} {E : Division n (k + 1)} {i : Fin (k + 1)}
+    (h : IsFusionAt D E i) :
+    ((Finset.univ : Finset (Fin (k + 1))).map ⟨E.part, E.part_injective⟩) =
+      insert (D.part i.castSucc ∪ D.part i.succ)
+        ((((Finset.univ : Finset (Fin (k + 2))).map ⟨D.part, D.part_injective⟩).erase
+          (D.part i.castSucc)).erase (D.part i.succ)) := by
+  classical
+  ext R
+  constructor
+  · intro hR
+    rcases Finset.mem_map.mp hR with ⟨j, _hj, hjR⟩
+    change E.part j = R at hjR
+    rw [← hjR]
+    by_cases hji : j = i
+    · subst j
+      exact Finset.mem_insert.mpr (Or.inl (by simp [h i, fusePart]))
+    · rcases lt_or_gt_of_ne hji with hlt | hgt
+      · have hpart : E.part j = D.part j.castSucc := by
+          rw [h j]
+          simp [fusePart, hji, hlt]
+        rw [hpart]
+        refine Finset.mem_insert.mpr (Or.inr ?_)
+        refine Finset.mem_erase.mpr ⟨?_, ?_⟩
+        · intro heq
+          have hidx := D.part_injective heq
+          have hv := congrArg Fin.val hidx
+          simp at hv
+          omega
+        · refine Finset.mem_erase.mpr ⟨?_, ?_⟩
+          · intro heq
+            have hidx := D.part_injective heq
+            have hv := congrArg Fin.val hidx
+            simp at hv
+            omega
+          · exact Finset.mem_map.mpr ⟨j.castSucc, Finset.mem_univ _, rfl⟩
+      · have hpart : E.part j = D.part j.succ := by
+          rw [h j]
+          have hnlt : ¬ j < i := not_lt_of_ge (le_of_lt hgt)
+          simp [fusePart, hji, hnlt]
+        rw [hpart]
+        refine Finset.mem_insert.mpr (Or.inr ?_)
+        refine Finset.mem_erase.mpr ⟨?_, ?_⟩
+        · intro heq
+          have hidx := D.part_injective heq
+          have hv := congrArg Fin.val hidx
+          simp at hv
+          omega
+        · refine Finset.mem_erase.mpr ⟨?_, ?_⟩
+          · intro heq
+            have hidx := D.part_injective heq
+            have hv := congrArg Fin.val hidx
+            simp at hv
+            omega
+          · exact Finset.mem_map.mpr ⟨j.succ, Finset.mem_univ _, rfl⟩
+  · intro hR
+    rcases Finset.mem_insert.mp hR with hR | hR
+    · refine Finset.mem_map.mpr ⟨i, Finset.mem_univ _, ?_⟩
+      change E.part i = R
+      rw [h i]
+      rw [hR]
+      simp [fusePart]
+    · rcases Finset.mem_erase.mp hR with ⟨hR_ne_succ, hR_old_erase⟩
+      rcases Finset.mem_erase.mp hR_old_erase with ⟨hR_ne_cast, hR_old⟩
+      rcases Finset.mem_map.mp hR_old with ⟨a, _ha, haR⟩
+      change D.part a = R at haR
+      by_cases hai : a.1 ≤ i.1
+      · have hlt_ai : a.1 < i.1 := by
+          have hne : a ≠ i.castSucc := by
+            intro hae
+            exact hR_ne_cast (by rw [← haR, hae])
+          by_contra hnot
+          have hge : i.1 ≤ a.1 := le_of_not_gt hnot
+          have hval : a.1 = i.1 := le_antisymm hai hge
+          apply hne
+          ext
+          simpa using hval
+        let j : Fin (k + 1) := ⟨a.1, by omega⟩
+        refine Finset.mem_map.mpr ⟨j, Finset.mem_univ _, ?_⟩
+        change E.part j = R
+        rw [h j]
+        have hji : j < i := Fin.mk_lt_mk.mpr hlt_ai
+        have hneji : j ≠ i := ne_of_lt hji
+        simp [fusePart, hneji, hji]
+        rw [← haR]
+        congr
+      · have hgt_i_a : i.1 + 1 < a.1 := by
+          have hgt : i.1 < a.1 := lt_of_not_ge hai
+          have hne : a ≠ i.succ := by
+            intro hae
+            exact hR_ne_succ (by rw [← haR, hae])
+          by_contra hnot
+          have hle : a.1 ≤ i.1 + 1 := le_of_not_gt hnot
+          have hval : a.1 = i.1 + 1 := le_antisymm hle hgt
+          apply hne
+          ext
+          simpa using hval
+        let j : Fin (k + 1) := ⟨a.1 - 1, by omega⟩
+        refine Finset.mem_map.mpr ⟨j, Finset.mem_univ _, ?_⟩
+        change E.part j = R
+        rw [h j]
+        have hij : i < j := Fin.mk_lt_mk.mpr (by omega)
+        have hneji : j ≠ i := ne_of_gt hij
+        have hnlt : ¬ j < i := not_lt_of_ge (le_of_lt hij)
+        simp [fusePart, hneji, hnlt]
+        rw [← haR]
+        congr
+        ext
+        dsimp [j]
+        omega
 
 end Division
 

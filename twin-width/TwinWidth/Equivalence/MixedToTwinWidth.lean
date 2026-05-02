@@ -59,5 +59,23 @@ theorem twinWidthBoundedByMixedMinorNumber_of_orderedAdjacencyExplicitBound
     TwinWidthBoundedByMixedMinorNumber :=
   twinWidthBoundedByMixedMinorNumber_of_orderedAdjacencyBound h
 
+/-- Contract theorem for
+`MixedToTwinWidthContract.twin_width_le_double_exponential_mixed_minor_number_of_ordered_adjacency_bound`.
+
+An ordered-adjacency double-exponential bound gives the same graph-level bound
+by choosing an order that realizes `mixedMinorNumber`. -/
+theorem twin_width_le_double_exponential_mixed_minor_number_of_ordered_adjacency_bound
+    (h :
+      ∀ {V : Type} [Fintype V] [DecidableEq V] (G : _root_.SimpleGraph V)
+        (σ : VertexOrder V (Fintype.card V)),
+          twinWidth G ≤ 2 ^ (2 ^ (Matrix.orderedAdjacencyMixedNumber G σ + 1))) :
+    ∀ {V : Type} [Fintype V] [DecidableEq V] (G : _root_.SimpleGraph V),
+      twinWidth G ≤ 2 ^ (2 ^ (mixedMinorNumber G + 1)) := by
+  intro V _ _ G
+  obtain ⟨σ, hσ⟩ := exists_order_mixedNumber_eq_mixedMinorNumber G
+  calc
+    twinWidth G ≤ 2 ^ (2 ^ (Matrix.orderedAdjacencyMixedNumber G σ + 1)) := h G σ
+    _ = 2 ^ (2 ^ (mixedMinorNumber G + 1)) := by rw [hσ]
+
 end SimpleGraph
 end TwinWidth

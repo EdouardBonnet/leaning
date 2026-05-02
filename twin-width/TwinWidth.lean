@@ -8,5 +8,6 @@ import TwinWidth.Matrix.Fusion
 import TwinWidth.Matrix.TwinWidth
 import TwinWidth.Matrix.MarcusTardos
 import TwinWidth.Matrix.DivisionSequence
+import TwinWidth.Matrix.Theorem10
 import TwinWidth.Equivalence.Main
 import TwinWidth.Examples

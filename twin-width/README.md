@@ -284,6 +284,53 @@ twinWidth G ≤ twinWidthBoundOfMixedMinorNumber (mixedMinorNumber G)
 - Combine the two directional theorems.
 - Add documentation and examples.
 
+## Contracts and Full Proofs
+
+For large theorem families, the repository separates three kinds of files:
+
+- `*Defs.lean`: definition-only modules containing predicates, structures, and
+  explicit numerical bounds.
+- `*Contract.lean`: contract modules containing axioms for the intended
+  natural-language statements.  These axioms are staging interfaces only.
+- full proof files, such as `Theorem10.lean`, where each completed contract is
+  proved as a theorem without using the contract axiom.
+
+Contract axioms must stay confined to `Contract.lean` files.  Completed proof
+files should not import a contract module to prove the corresponding theorem.
+Contract axiom names should be theorem-style names, and their types should
+state the mathematical claim directly.  Avoid contracts of the form
+`axiom short_name : SomePredicateAlias someBound`; prefer explicit quantified
+Lean statements such as `∀ M, MatrixTwinWidthAtMost M d →
+matrixMixedNumber M ≤ 2 * d + 2`.
+Each contract file should expose only the main final lemma for that proof
+module.  Intermediate counting, greedy-step, ordered-matrix, or conversion
+variants belong in proof files, not in the contract interface.
+
+Current contract modules:
+
+- `TwinWidth.Matrix.MarcusTardosContract` states the grid-minor density theorem.
+- `TwinWidth.Matrix.DivisionSequenceContract` states Lemma 13 in full
+  bounded-division-sequence form.
+- `TwinWidth.Matrix.Theorem10Contract` states the final two-direction matrix
+  Theorem 10 interface.
+- `TwinWidth.Equivalence.TwinWidthToMixedContract` states the reduction from an
+  ordered-adjacency linear bound to the graph linear bound.
+- `TwinWidth.Equivalence.MixedToTwinWidthContract` states the reduction from an
+  ordered-adjacency double-exponential bound to the graph mixed-minor bound.
+- `TwinWidth.Equivalence.MainContract` states the combiner from the two
+  explicit directional bounds to functional equivalence.
+
+Current matrix Theorem 10 status:
+
+- `TwinWidth.Matrix.Theorem10Defs` contains the statement-level definitions and
+  explicit bounds.
+- `TwinWidth.Matrix.Theorem10Contract` states the full two-direction matrix
+  Theorem 10 interface as a contract axiom.
+- `TwinWidth.Matrix.Theorem10` proves the ordered first item and the second
+  item, then packages them as the full two-direction matrix Theorem 10
+  interface.  The first item uses `MatrixTwinOrderedAtMost`, matching the
+  ordered-matrix hypothesis in the paper.
+
 ## Lean and mathlib conventions
 
 Use mathlib definitions whenever possible. Do not define a parallel simple graph library.
@@ -349,10 +396,12 @@ Before handing off completed Lean code:
 
 ```bash
 lake build
-grep -R --line-number --include='*.lean' -E '\bsorry\b|\badmit\b|axiom ' TwinWidth
+grep -R --line-number --include='*.lean' -E '\bsorry\b|\badmit\b|axiom ' TwinWidth \
+  | grep -v 'Contract\.lean'
 ```
 
-The grep command should produce no matches in completed files.
+The grep command should produce no matches in completed files.  Contract-file
+axioms should be listed separately in handoff notes whenever they remain.
 
 ## Non-goals
 

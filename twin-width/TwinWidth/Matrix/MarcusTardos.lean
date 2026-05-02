@@ -1616,6 +1616,16 @@ theorem hasGridMinor_one_of_density_one {n m : ℕ}
     HasGridMinor M 1 := by
   exact hasGridMinor_one_of_oneEntries_nonempty M (Finset.card_pos.mp h)
 
+/-- Density `1 * max n m` already forces a `1`-grid minor. -/
+theorem isMarcusTardosConstant_one : IsMarcusTardosConstant 1 1 := by
+  intro n m M hpos hden
+  have hmax : 1 ≤ max n m := Nat.succ_le_of_lt hpos
+  have hone : 1 ≤ (oneEntries M).card := by
+    calc
+      1 ≤ 1 * max n m := by simpa using hmax
+      _ ≤ (oneEntries M).card := hden
+  exact hasGridMinor_one_of_density_one M hone
+
 /-- The full Marcus-Tardos theorem can be used through this eliminator once its
 proof is supplied. -/
 theorem marcus_tardos_of_theorem
@@ -1637,6 +1647,351 @@ def gridPermutation (t : ℕ) : Equiv.Perm (Fin (t * t)) :=
 theorem isPermutationMatrix_gridPermutation (t : ℕ) :
     IsPermutationMatrix (permutationMatrix (gridPermutation t)) :=
   isPermutationMatrix_permutationMatrix (gridPermutation t)
+
+/-! ### Extending selected grid rows and columns to divisions -/
+
+/-- The row/column index in `Fin (t*t)` corresponding to the grid coordinate
+`(i,j)`.  The equivalence `finProdFinEquiv` orders these coordinates by
+consecutive row blocks. -/
+def gridIndex (t : ℕ) (i j : Fin t) : Fin (t * t) :=
+  (finProdFinEquiv : Fin t × Fin t ≃ Fin (t * t)) (i, j)
+
+@[simp] theorem gridIndex_val (t : ℕ) (i j : Fin t) :
+    (gridIndex t i j : ℕ) = j.1 + t * i.1 := by
+  rfl
+
+@[simp] theorem gridPermutation_gridIndex (t : ℕ) (i j : Fin t) :
+    gridPermutation t (gridIndex t i j) = gridIndex t j i := by
+  simp [gridPermutation, gridIndex]
+
+theorem gridIndex_le_iff {t : ℕ} {i j a b : Fin t} :
+    gridIndex t i j ≤ gridIndex t a b ↔ i < a ∨ i = a ∧ j ≤ b := by
+  rw [Fin.le_iff_val_le_val]
+  simp [gridIndex]
+  have htpos : 0 < t := lt_of_le_of_lt (Nat.zero_le j.1) j.2
+  have hdiv_left (x y : Fin t) : (y.1 + t * x.1) / t = x.1 := by
+    calc
+      (y.1 + t * x.1) / t = y.1 / t + x.1 :=
+        Nat.add_mul_div_left y.1 x.1 htpos
+      _ = 0 + x.1 := by rw [Nat.div_eq_of_lt y.2]
+      _ = x.1 := by simp
+  constructor
+  · intro h
+    have hia_le : i ≤ a := by
+      rw [Fin.le_iff_val_le_val]
+      have hdiv := Nat.div_le_div_right (c := t) h
+      simpa [hdiv_left] using hdiv
+    by_cases hia : i = a
+    · right
+      refine ⟨hia, ?_⟩
+      subst a
+      rw [Fin.le_iff_val_le_val]
+      omega
+    · left
+      exact lt_of_le_of_ne hia_le hia
+  · rintro (hia | ⟨rfl, hjb⟩)
+    · rw [Fin.lt_def] at hia
+      have hj_lt : j.1 < t := j.2
+      exact le_of_lt <| calc
+        j.1 + t * i.1 < t + t * i.1 := Nat.add_lt_add_right hj_lt _
+        _ = t * (i.1 + 1) := by ring
+        _ ≤ t * a.1 := Nat.mul_le_mul_left t (Nat.succ_le_of_lt hia)
+        _ ≤ b.1 + t * a.1 := Nat.le_add_left _ _
+    · rw [Fin.le_iff_val_le_val] at hjb
+      omega
+
+theorem gridIndex_lt_iff {t : ℕ} {i j a b : Fin t} :
+    gridIndex t i j < gridIndex t a b ↔ i < a ∨ i = a ∧ j < b := by
+  rw [lt_iff_le_not_ge, gridIndex_le_iff, gridIndex_le_iff]
+  constructor
+  · rintro ⟨hleft, hnot⟩
+    rcases hleft with hia | ⟨rfl, hjb⟩
+    · exact Or.inl hia
+    · right
+      refine ⟨rfl, lt_of_le_of_ne hjb ?_⟩
+      intro hbj
+      exact hnot (Or.inr ⟨rfl, le_of_eq hbj.symm⟩)
+  · rintro (hia | ⟨rfl, hjb⟩)
+    · refine ⟨Or.inl hia, ?_⟩
+      rintro (hai | ⟨heq, _⟩)
+      · exact not_lt_of_ge hia.le hai
+      · exact (ne_of_lt hia) heq.symm
+    · refine ⟨Or.inr ⟨rfl, hjb.le⟩, ?_⟩
+      rintro (hji | ⟨_, hbj⟩)
+      · exact (not_lt_of_ge le_rfl) hji
+      · exact not_lt_of_ge hbj hjb
+
+/-- Count the number of selected starts not exceeding a row or column.  The
+associated division index is this count minus one, with the initial segment
+before the first start assigned to block `0`. -/
+noncomputable def startDivisionIndex {n t : ℕ} (ht : 0 < t)
+    (start : Fin t → Fin n) (x : Fin n) : Fin t :=
+  ⟨((Finset.univ.filter fun i : Fin t => start i ≤ x).card - 1), by
+    have hcard :
+        (Finset.univ.filter fun i : Fin t => start i ≤ x).card ≤ t := by
+      calc
+        (Finset.univ.filter fun i : Fin t => start i ≤ x).card ≤
+            (Finset.univ : Finset (Fin t)).card :=
+          Finset.card_le_card (Finset.filter_subset _ _)
+        _ = t := by simp
+    omega⟩
+
+theorem startDivisionIndex_mono {n t : ℕ} (ht : 0 < t)
+    (start : Fin t → Fin n) :
+    ∀ ⦃a b : Fin n⦄, a ≤ b →
+      startDivisionIndex ht start a ≤ startDivisionIndex ht start b := by
+  intro a b hab
+  rw [Fin.le_iff_val_le_val]
+  have hsubset :
+      (Finset.univ.filter fun i : Fin t => start i ≤ a) ⊆
+        (Finset.univ.filter fun i : Fin t => start i ≤ b) := by
+    intro i hi
+    have hia : start i ≤ a := by simpa using hi
+    exact by
+      simp [le_trans hia hab]
+  exact Nat.sub_le_sub_right (Finset.card_le_card hsubset) 1
+
+theorem starts_filter_eq_Iic {n t : ℕ} {start : Fin t → Fin n}
+    (hstart : StrictMono start) (j : Fin t) :
+    (Finset.univ.filter fun i : Fin t => start i ≤ start j) = Finset.Iic j := by
+  ext i
+  constructor
+  · intro hi
+    have hle : start i ≤ start j := by simpa using hi
+    have hij : i ≤ j := by
+      by_contra hnot
+      have hji : j < i := lt_of_not_ge hnot
+      exact (not_lt_of_ge hle) (hstart hji)
+    simpa using hij
+  · intro hi
+    have hij : i ≤ j := by simpa using hi
+    simp [hstart.monotone hij]
+
+@[simp] theorem startDivisionIndex_start {n t : ℕ} (ht : 0 < t)
+    {start : Fin t → Fin n} (hstart : StrictMono start) (j : Fin t) :
+    startDivisionIndex ht start (start j) = j := by
+  apply Fin.ext
+  change ((Finset.univ.filter fun i : Fin t => start i ≤ start j).card - 1) = j.1
+  rw [starts_filter_eq_Iic hstart j]
+  simp
+
+/-- A division generated by a strictly increasing sequence of starts.  The
+first block also absorbs rows/columns before the first selected start. -/
+noncomputable def divisionOfStarts {n t : ℕ} (ht : 0 < t)
+    (start : Fin t → Fin n) (hstart : StrictMono start) : Division n t :=
+  Division.ofMonotoneSurjective (startDivisionIndex ht start)
+    (fun _ _ hab => startDivisionIndex_mono ht start hab)
+    (fun j => ⟨start j, startDivisionIndex_start ht hstart j⟩)
+
+@[simp] theorem mem_divisionOfStarts_part {n t : ℕ} (ht : 0 < t)
+    {start : Fin t → Fin n} (hstart : StrictMono start)
+    (j : Fin t) (x : Fin n) :
+    x ∈ (divisionOfStarts ht start hstart).part j ↔
+      startDivisionIndex ht start x = j := by
+  simp [divisionOfStarts]
+
+theorem start_mem_divisionOfStarts_part {n t : ℕ} (ht : 0 < t)
+    {start : Fin t → Fin n} (hstart : StrictMono start) (j : Fin t) :
+    start j ∈ (divisionOfStarts ht start hstart).part j := by
+  rw [mem_divisionOfStarts_part]
+  exact startDivisionIndex_start ht hstart j
+
+theorem grid_row_starts_strictMono {t n : ℕ} (ht : 0 < t)
+    (row : Fin (t * t) ↪o Fin n) :
+    StrictMono (fun i : Fin t => row (gridIndex t i ⟨0, ht⟩)) := by
+  intro i j hij
+  exact row.strictMono ((gridIndex_lt_iff).mpr (Or.inl hij))
+
+theorem grid_col_starts_strictMono {t n : ℕ} (ht : 0 < t)
+    (col : Fin (t * t) ↪o Fin n) :
+    StrictMono (fun j : Fin t => col (gridIndex t j ⟨0, ht⟩)) := by
+  intro i j hij
+  exact col.strictMono ((gridIndex_lt_iff).mpr (Or.inl hij))
+
+theorem grid_row_selected_mem_part {t n : ℕ} (ht : 0 < t)
+    (row : Fin (t * t) ↪o Fin n) (i j : Fin t) :
+    row (gridIndex t i j) ∈
+      (divisionOfStarts ht
+        (fun a : Fin t => row (gridIndex t a ⟨0, ht⟩))
+        (grid_row_starts_strictMono ht row)).part i := by
+  have hfilter :
+      (Finset.univ.filter fun a : Fin t =>
+          row (gridIndex t a ⟨0, ht⟩) ≤ row (gridIndex t i j)) =
+        Finset.Iic i := by
+    ext a
+    constructor
+    · intro ha
+      have hle : gridIndex t a ⟨0, ht⟩ ≤ gridIndex t i j :=
+        row.le_iff_le.mp (by simpa using ha)
+      rcases (gridIndex_le_iff.mp hle) with hai | ⟨hai, _⟩
+      · simpa using hai.le
+      · simp [hai]
+    · intro ha
+      have hai : a ≤ i := by simpa using ha
+      have hle : gridIndex t a ⟨0, ht⟩ ≤ gridIndex t i j := by
+        rcases lt_or_eq_of_le hai with hai' | rfl
+        · exact (gridIndex_le_iff).mpr (Or.inl hai')
+        · exact (gridIndex_le_iff).mpr
+            (Or.inr ⟨rfl, Fin.le_iff_val_le_val.mpr (Nat.zero_le _)⟩)
+      simpa using row.monotone hle
+  rw [mem_divisionOfStarts_part]
+  apply Fin.ext
+  change ((Finset.univ.filter fun a : Fin t =>
+    row (gridIndex t a ⟨0, ht⟩) ≤ row (gridIndex t i j)).card - 1) = i.1
+  rw [hfilter]
+  simp
+
+theorem grid_col_selected_mem_part {t n : ℕ} (ht : 0 < t)
+    (col : Fin (t * t) ↪o Fin n) (i j : Fin t) :
+    col (gridIndex t j i) ∈
+      (divisionOfStarts ht
+        (fun b : Fin t => col (gridIndex t b ⟨0, ht⟩))
+        (grid_col_starts_strictMono ht col)).part j := by
+  simpa using grid_row_selected_mem_part (n := n) ht col j i
+
+/-- Containment of the grid permutation pattern produces the division-based
+grid minor used elsewhere in this development. -/
+theorem hasGridMinor_of_contains_gridPermutation {t n m : ℕ}
+    (ht : 0 < t)
+    (A : _root_.Matrix (Fin n) (Fin m) Bool)
+    (h : ContainsPattern A (permutationMatrix (gridPermutation t))) :
+    HasGridMinor A t := by
+  classical
+  rcases h with ⟨row, col, hcontains⟩
+  refine Or.inr ?_
+  let R : Division n t :=
+    divisionOfStarts ht
+      (fun i : Fin t => row (gridIndex t i ⟨0, ht⟩))
+      (grid_row_starts_strictMono ht row)
+  let C : Division m t :=
+    divisionOfStarts ht
+      (fun j : Fin t => col (gridIndex t j ⟨0, ht⟩))
+      (grid_col_starts_strictMono ht col)
+  refine ⟨R, C, ?_⟩
+  intro i j
+  refine ⟨row (gridIndex t i j), ?_, col (gridIndex t j i), ?_, ?_⟩
+  · exact grid_row_selected_mem_part ht row i j
+  · exact grid_col_selected_mem_part ht col i j
+  · have hpat :
+        permutationMatrix (gridPermutation t) (gridIndex t i j) (gridIndex t j i) = true := by
+      simp [permutationMatrix]
+    simpa [gridPermutation_gridIndex] using hcontains (gridIndex t i j) (gridIndex t j i) hpat
+
+/-- Pad a rectangular matrix to a square matrix of side `max n m`, filling the
+new rows and columns with `false`. -/
+def padToSquare {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool) :
+    _root_.Matrix (Fin (max n m)) (Fin (max n m)) Bool :=
+  fun r c =>
+    if hr : r.1 < n then
+      if hc : c.1 < m then
+        M ⟨r.1, hr⟩ ⟨c.1, hc⟩
+      else
+        false
+    else
+      false
+
+theorem padToSquare_eq_true_iff {n m : ℕ}
+    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (r c : Fin (max n m)) :
+    padToSquare M r c = true ↔
+      ∃ (hr : r.1 < n) (hc : c.1 < m),
+        M ⟨r.1, hr⟩ ⟨c.1, hc⟩ = true := by
+  unfold padToSquare
+  by_cases hr : r.1 < n
+  · by_cases hc : c.1 < m
+    · simp [hr, hc]
+    · simp [hr, hc]
+  · simp [hr]
+
+@[simp] theorem padToSquare_castLE {n m : ℕ}
+    (M : _root_.Matrix (Fin n) (Fin m) Bool) (r : Fin n) (c : Fin m) :
+    padToSquare M (Fin.castLE (le_max_left n m) r)
+      (Fin.castLE (le_max_right n m) c) = M r c := by
+  simp [padToSquare]
+
+theorem oneEntries_padToSquare {n m : ℕ}
+    (M : _root_.Matrix (Fin n) (Fin m) Bool) :
+    oneEntries (padToSquare M) =
+      (oneEntries M).map
+        ⟨fun p : Fin n × Fin m =>
+          (Fin.castLE (le_max_left n m) p.1, Fin.castLE (le_max_right n m) p.2),
+          by
+            intro p q hpq
+            apply Prod.ext
+            · apply Fin.ext
+              exact congrArg (fun x : Fin (max n m) × Fin (max n m) => (x.1 : Fin (max n m)).1) hpq
+            · apply Fin.ext
+              exact congrArg (fun x : Fin (max n m) × Fin (max n m) => (x.2 : Fin (max n m)).1) hpq⟩ := by
+  classical
+  let e : (Fin n × Fin m) ↪ (Fin (max n m) × Fin (max n m)) :=
+    ⟨fun p => (Fin.castLE (le_max_left n m) p.1, Fin.castLE (le_max_right n m) p.2),
+      by
+        intro p q hpq
+        apply Prod.ext
+        · apply Fin.ext
+          exact congrArg (fun x : Fin (max n m) × Fin (max n m) => (x.1 : Fin (max n m)).1) hpq
+        · apply Fin.ext
+          exact congrArg (fun x : Fin (max n m) × Fin (max n m) => (x.2 : Fin (max n m)).1) hpq⟩
+  change oneEntries (padToSquare M) = (oneEntries M).map e
+  ext p
+  constructor
+  · intro hp
+    have hptrue : padToSquare M p.1 p.2 = true := (mem_oneEntries_iff (padToSquare M) p).mp hp
+    rcases (padToSquare_eq_true_iff M p.1 p.2).mp hptrue with ⟨hr, hc, hM⟩
+    refine Finset.mem_map.mpr ⟨(⟨p.1.1, hr⟩, ⟨p.2.1, hc⟩), ?_, ?_⟩
+    · exact (mem_oneEntries_iff M _).mpr hM
+    · apply Prod.ext <;> apply Fin.ext <;> rfl
+  · intro hp
+    rcases Finset.mem_map.mp hp with ⟨q, hq, rfl⟩
+    exact (mem_oneEntries_iff (padToSquare M) _).mpr (by
+      change padToSquare M (Fin.castLE (le_max_left n m) q.1)
+        (Fin.castLE (le_max_right n m) q.2) = true
+      simpa using (mem_oneEntries_iff M q).mp hq)
+
+@[simp] theorem oneEntries_padToSquare_card {n m : ℕ}
+    (M : _root_.Matrix (Fin n) (Fin m) Bool) :
+    (oneEntries (padToSquare M)).card = (oneEntries M).card := by
+  rw [oneEntries_padToSquare]
+  simp
+
+theorem containsPattern_of_padToSquare_contains_gridPermutation {t n m : ℕ}
+    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (h : ContainsPattern (padToSquare M) (permutationMatrix (gridPermutation t))) :
+    ContainsPattern M (permutationMatrix (gridPermutation t)) := by
+  classical
+  rcases h with ⟨row, col, hcontains⟩
+  have hrow_inside : ∀ a : Fin (t * t), (row a).1 < n := by
+    intro a
+    have hpat :
+        permutationMatrix (gridPermutation t) a (gridPermutation t a) = true := by
+      simp [permutationMatrix]
+    have htrue := hcontains a (gridPermutation t a) hpat
+    rcases (padToSquare_eq_true_iff M (row a) (col (gridPermutation t a))).mp htrue
+      with ⟨hr, _hc, _hM⟩
+    exact hr
+  have hcol_inside : ∀ b : Fin (t * t), (col b).1 < m := by
+    intro b
+    let a : Fin (t * t) := (gridPermutation t).symm b
+    have hpat : permutationMatrix (gridPermutation t) a b = true := by
+      simp [permutationMatrix, a]
+    have htrue := hcontains a b hpat
+    rcases (padToSquare_eq_true_iff M (row a) (col b)).mp htrue with ⟨_hr, hc, _hM⟩
+    exact hc
+  let row' : Fin (t * t) ↪o Fin n :=
+    OrderEmbedding.ofStrictMono (fun a => ⟨(row a).1, hrow_inside a⟩) (by
+      intro a b hab
+      rw [Fin.lt_def]
+      exact row.strictMono hab)
+  let col' : Fin (t * t) ↪o Fin m :=
+    OrderEmbedding.ofStrictMono (fun a => ⟨(col a).1, hcol_inside a⟩) (by
+      intro a b hab
+      rw [Fin.lt_def]
+      exact col.strictMono hab)
+  refine ⟨row', col', ?_⟩
+  intro i j hij
+  have htrue := hcontains i j hij
+  rcases (padToSquare_eq_true_iff M (row i) (col j)).mp htrue with ⟨hr, hc, hM⟩
+  simpa [row', col'] using hM
 
 /-- The explicit Füredi--Hajnal constant attached to the grid permutation
 pattern of order `t*t`.  We add one in the density theorem below to turn the
@@ -1699,6 +2054,80 @@ theorem hasGridMinor_of_dense_square
     (hden : (gridPatternFurediHajnalConstant t + 1) * n ≤ (oneEntries A).card) :
     HasGridMinor A t :=
   hgrid A (contains_gridPermutation_of_dense_square ht hn A hden)
+
+/-- Positive-square grid form of Marcus--Tardos with the containment/grid-minor
+bridge proved above. -/
+theorem hasGridMinor_of_dense_square_explicit {t n : ℕ}
+    (ht : 2 ≤ t) (hn : 0 < n)
+    (A : _root_.Matrix (Fin n) (Fin n) Bool)
+    (hden : (gridPatternFurediHajnalConstant t + 1) * n ≤ (oneEntries A).card) :
+    HasGridMinor A t :=
+  hasGridMinor_of_contains_gridPermutation (lt_of_lt_of_le (by decide : 0 < 2) ht) A
+    (contains_gridPermutation_of_dense_square ht hn A hden)
+
+/-- The explicit Marcus--Tardos constant obtained from the formalized
+Füredi--Hajnal bound and the grid-permutation bridge. -/
+theorem isMarcusTardosConstant_gridPattern {t : ℕ} (ht : 2 ≤ t) :
+    IsMarcusTardosConstant t (gridPatternFurediHajnalConstant t + 1) := by
+  intro n m M hpos hden
+  have hpad_den :
+      (gridPatternFurediHajnalConstant t + 1) * max n m ≤
+        (oneEntries (padToSquare M)).card := by
+    simpa using hden
+  have hcontains :
+      ContainsPattern (padToSquare M) (permutationMatrix (gridPermutation t)) :=
+    contains_gridPermutation_of_dense_square ht hpos (padToSquare M) hpad_den
+  exact hasGridMinor_of_contains_gridPermutation
+    (lt_of_lt_of_le (by decide : 0 < 2) ht) M
+    (containsPattern_of_padToSquare_contains_gridPermutation M hcontains)
+
+/-- An explicit Marcus--Tardos constant for the finite rectangular grid-minor
+statement.  The cases `0` and `1` are elementary; for `t ≥ 2` this uses the
+Füredi--Hajnal constant of the `t × t` grid permutation pattern, plus one to
+make the extremal contradiction strict. -/
+def marcusTardosConstant (t : ℕ) : ℕ :=
+  match t with
+  | 0 => 0
+  | Nat.succ 0 => 1
+  | Nat.succ (Nat.succ s) => gridPatternFurediHajnalConstant (s + 2) + 1
+
+/-- The explicit constant `marcusTardosConstant t` satisfies the
+Marcus--Tardos density conclusion for grid size `t`.  This is the most useful
+fully explicit interface for downstream bounds. -/
+theorem isMarcusTardosConstant_marcusTardosConstant :
+    ∀ t : ℕ, IsMarcusTardosConstant t (marcusTardosConstant t) := by
+  intro t
+  cases t with
+  | zero =>
+      exact isMarcusTardosConstant_zero 0
+  | succ t =>
+      cases t with
+      | zero =>
+          exact isMarcusTardosConstant_one
+      | succ s =>
+          exact isMarcusTardosConstant_gridPattern (t := s + 2) (by omega)
+
+/-- Marcus--Tardos in the finite rectangular grid-minor form used by the
+twin-width proof. -/
+theorem marcusTardosTheorem : MarcusTardosTheorem := by
+  intro t
+  exact ⟨marcusTardosConstant t, isMarcusTardosConstant_marcusTardosConstant t⟩
+
+/-- Direct existential interface for the main Marcus--Tardos statement. -/
+theorem marcusTardos (t : ℕ) : ∃ c : ℕ, IsMarcusTardosConstant t c :=
+  marcusTardosTheorem t
+
+/-- Contract theorem for `MarcusTardosContract.marcus_tardos_grid_minor_density`.
+
+For every grid order `t`, some constant `c` makes density `c * max n m` force a
+`t`-grid minor in every positive-size finite Boolean matrix. -/
+theorem marcus_tardos_grid_minor_density :
+    ∀ t : ℕ, ∃ c : ℕ,
+      ∀ {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool),
+        0 < max n m →
+          c * max n m ≤ (oneEntries M).card →
+            HasGridMinor M t := by
+  simpa [MarcusTardosTheorem, IsMarcusTardosConstant] using marcusTardosTheorem
 
 end Matrix
 end TwinWidth

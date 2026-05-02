@@ -2110,8 +2110,8 @@ def boundedMixedValueDivisionSequence_of_tail {n m d : ℕ}
 /-- Lemma 13 reduced to its local greedy-fusion step and a bounded finest
 starting division.  The Marcus--Tardos auxiliary-matrix argument supplies the
 local greedy step; see
-`greedyFusionStep_of_marcusTardos_conservative` for the fully proved explicit
-constant used in this formalization. -/
+`greedyFusionStep_of_marcusTardos` for the fully proved explicit constant used
+in this formalization. -/
 theorem boundedMixedValueDivisionSequence_of_greedyStep {n m d : ℕ}
     {M : _root_.Matrix (Fin n) (Fin m) Bool}
     {D₀ : MatrixDivision n m}
@@ -2122,47 +2122,15 @@ theorem boundedMixedValueDivisionSequence_of_greedyStep {n m d : ℕ}
   rcases exists_boundedMixedValueDivisionTail_of_greedyStep hstep D₀ hD₀ with ⟨S⟩
   exact ⟨boundedMixedValueDivisionSequence_of_tail hfinest S⟩
 
-/-- Lemma 13 as a reusable theorem interface, parameterized by a choice of
-Marcus--Tardos constants. -/
-def BoundedMixedValueDivisionSequenceTheorem (c : ℕ → ℕ) : Prop :=
-  ∀ {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool) (t : ℕ),
-    MixedFree M t → Nonempty (BoundedMixedValueDivisionSequence M (2 * c t))
-
-/-- Exact-constant greedy-step interface matching the paper's `2 * c_t`
-normalization.  The fully proved theorem below uses
-`lemma13MixedValueBound`; this exact interface is kept for clients that choose
-to package the finite-fiber loss into the Marcus--Tardos constants. -/
-def GreedyFusionProducesBoundedMixedValueSequence (c : ℕ → ℕ) : Prop :=
-  ∀ {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool) (t : ℕ)
-    (D₀ : MatrixDivision n m),
-      MixedFree M t →
-        MatrixDivision.IsFinest D₀ →
-          GreedyFusionStep M (2 * c t)
-
-/-- Conservative explicit mixed-value bound obtained from the formal paired
-counting proof below.  The paper states the bound as `2 * c_t`; the
-finite-fiber charging formalized here proves `20 * c_t` for any fixed
-Marcus--Tardos constant `c_t`.  Equivalently, this is still of the paper's
-form after replacing `c_t` by a larger Marcus--Tardos constant. -/
+/-- Explicit mixed-value bound used in the formalized Lemma 13.  The paper
+states a bound of the form `2 * c_t`; the finite-fiber charging formalized here
+uses the harmless constant `20`. -/
 def lemma13MixedValueBound (c : ℕ → ℕ) (t : ℕ) : ℕ :=
   20 * c t
 
-/-- Inflating a Marcus--Tardos constant by `10` rewrites the conservative
-`20 * c_t` bound as the paper-style `2 * C_t` bound. -/
-def lemma13InflatedMarcusTardosConstant (c : ℕ → ℕ) (t : ℕ) : ℕ :=
-  10 * c t
-
-theorem isMarcusTardosConstant_lemma13Inflated
-    {c : ℕ → ℕ} (hMT : ∀ t : ℕ, IsMarcusTardosConstant t (c t)) :
-    ∀ t : ℕ, IsMarcusTardosConstant t (lemma13InflatedMarcusTardosConstant c t) := by
-  intro t
-  exact IsMarcusTardosConstant.mono (hMT t) (by
-    simp [lemma13InflatedMarcusTardosConstant]
-    omega)
-
 /-- Nondegenerate Marcus--Tardos counting step for Lemma 13 with the explicit
 finite-fiber constant used in this formalization. -/
-theorem pairedMarcusTardosCountingStep_conservative
+theorem pairedMarcusTardosCountingStep
     {c : ℕ → ℕ} :
     ∀ {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool) (t : ℕ)
       (_hMT : IsMarcusTardosConstant t (c t)) (_hfree : MixedFree M t)
@@ -2241,9 +2209,8 @@ theorem pairedMarcusTardosCountingStep_conservative
       simpa [q] using hlower
     exact (not_lt_of_ge (le_of_lt hupper')) hlow'
 
-/-- Local greedy-fusion step in the fully proved conservative form of
-Lemma 13. -/
-theorem greedyFusionStep_of_marcusTardos_conservative
+/-- Local greedy-fusion step in the proved form of Lemma 13. -/
+theorem greedyFusionStep_of_marcusTardos
     {c : ℕ → ℕ}
     (hMT : ∀ t : ℕ, IsMarcusTardosConstant t (c t)) :
     ∀ {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool) (t : ℕ),
@@ -2280,7 +2247,7 @@ theorem greedyFusionStep_of_marcusTardos_conservative
                 lemma13MixedValueBound c t
           · exact Or.inr hgoodCol
           · exact False.elim
-              (pairedMarcusTardosCountingStep_conservative
+              (pairedMarcusTardosCountingStep
                 M t (hMT t) hfree D hD hrow hcol hgoodRow hgoodCol)
       · have hcol0 : D.colCuts = 0 := Nat.eq_zero_of_not_pos hcol
         rcases MatrixDivision.exists_goodRowCut_of_colCuts_eq_zero
@@ -2303,7 +2270,7 @@ theorem greedyFusionStep_of_marcusTardos_conservative
 
 /-- Positive-size matrix form of Lemma 13 proved from Marcus--Tardos, with the
 explicit finite-fiber constant used in this formalization. -/
-theorem boundedMixedValueDivisionSequence_positive_of_marcusTardos_conservative
+theorem boundedMixedValueDivisionSequence_positive_of_marcusTardos
     {c : ℕ → ℕ}
     (hMT : ∀ t : ℕ, IsMarcusTardosConstant t (c t)) :
     ∀ {n m : ℕ}, 0 < n → 0 < m →
@@ -2315,135 +2282,50 @@ theorem boundedMixedValueDivisionSequence_positive_of_marcusTardos_conservative
     (MatrixDivision.finest_isFinest hn hm)
     (MatrixDivision.mixedValueAtMost_of_isFinest
       (MatrixDivision.finest_isFinest hn hm))
-    (greedyFusionStep_of_marcusTardos_conservative hMT M t hfree)
+    (greedyFusionStep_of_marcusTardos hMT M t hfree)
 
-/-- Paper-style statement of Lemma 13 using the inflated constants
-`C_t = 10 * c_t`, which are again Marcus--Tardos constants. -/
-theorem boundedMixedValueDivisionSequence_positive_of_marcusTardos_inflated
+/-- The greedy-step form of Lemma 13 with the explicit `20 * c_t` bound. -/
+theorem greedyFusionProducesBoundedMixedValueSequence
+    {c : ℕ → ℕ}
+    (hMT : ∀ t : ℕ, IsMarcusTardosConstant t (c t)) :
+    ∀ {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool) (t : ℕ)
+      (D₀ : MatrixDivision n m),
+        MixedFree M t →
+          MatrixDivision.IsFinest D₀ →
+            GreedyFusionStep M (lemma13MixedValueBound c t) := by
+  intro n m M t _D₀ hfree _hfinest
+  exact greedyFusionStep_of_marcusTardos hMT M t hfree
+
+/-- Reusable positive-size Lemma 13 with the explicit `20 * c_t` bound.
+
+The positive-size hypotheses are necessary because a `Division 0 1` cannot
+have a nonempty part. -/
+theorem boundedMixedValueDivisionSequenceTheorem
     {c : ℕ → ℕ}
     (hMT : ∀ t : ℕ, IsMarcusTardosConstant t (c t)) :
     ∀ {n m : ℕ}, 0 < n → 0 < m →
-      (M : _root_.Matrix (Fin n) (Fin m) Bool) → (t : ℕ) →
+      ∀ (M : _root_.Matrix (Fin n) (Fin m) Bool) (t : ℕ),
         MixedFree M t →
-          Nonempty (BoundedMixedValueDivisionSequence M
-            (2 * lemma13InflatedMarcusTardosConstant c t)) := by
+          Nonempty (BoundedMixedValueDivisionSequence M (lemma13MixedValueBound c t)) := by
   intro n m hn hm M t hfree
-  have h :=
-    boundedMixedValueDivisionSequence_positive_of_marcusTardos_conservative
-      hMT hn hm M t hfree
-  simpa [lemma13MixedValueBound, lemma13InflatedMarcusTardosConstant, Nat.mul_assoc,
-    Nat.mul_comm, Nat.mul_left_comm] using h
-
-/-- Exact-constant nondegenerate counting interface for Lemma 13.
-
-When both sides of a division have at least two parts, this proposition says
-that Marcus--Tardos forbids the situation where every row fusion and every
-column fusion would exceed the mixed-value bound.  The proved conservative
-version is `pairedMarcusTardosCountingStep_conservative`. -/
-def PairedMarcusTardosCountingStep (c : ℕ → ℕ) : Prop :=
-  ∀ {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool) (t : ℕ)
-    (hMT : IsMarcusTardosConstant t (c t)) (hfree : MixedFree M t)
-    (D : MatrixDivision n m),
-      MatrixDivision.MixedValueAtMost M D (2 * c t) →
-        0 < D.rowCuts → 0 < D.colCuts →
-          ¬ (∃ hrow : 0 < D.rowCuts, ∃ i : Fin D.rowCuts,
-            colMixedValue M
-              ((MatrixDivision.rowFuse D hrow i).rowDiv.part
-                ((finCongr
-                  (by simp [MatrixDivision.rowFuse]; omega :
-                    D.rowCuts =
-                      (MatrixDivision.rowFuse D hrow i).rowCuts + 1)) i))
-              (MatrixDivision.rowFuse D hrow i).colDiv ≤ 2 * c t) →
-          ¬ (∃ hcol : 0 < D.colCuts, ∃ j : Fin D.colCuts,
-            rowMixedValue M
-              (MatrixDivision.colFuse D hcol j).rowDiv
-              ((MatrixDivision.colFuse D hcol j).colDiv.part
-                ((finCongr
-                  (by simp [MatrixDivision.colFuse]; omega :
-                    D.colCuts =
-                      (MatrixDivision.colFuse D hcol j).colCuts + 1)) j)) ≤
-              2 * c t) →
-            False
-
-/-- The local greedy step follows from the nondegenerate paired counting step
-plus the one-part side cases proved above. -/
-theorem greedyFusionStep_of_pairedMarcusTardosCounting
-    {c : ℕ → ℕ}
-    (hMT : ∀ t : ℕ, IsMarcusTardosConstant t (c t))
-    (hcount : PairedMarcusTardosCountingStep c) :
-    ∀ {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool) (t : ℕ),
-      MixedFree M t → GreedyFusionStep M (2 * c t) := by
-  intro n m M t hfree
-  by_cases ht : t = 0
-  · subst t
-    exact (False.elim (hfree (hasMixedMinor_zero M)))
-  · have htpos : 0 < t := Nat.pos_of_ne_zero ht
-    apply greedyFusionStep_of_goodCut
-    intro D hD hcoarse
-    by_cases hrow : 0 < D.rowCuts
-    · by_cases hcol : 0 < D.colCuts
-      · by_cases hgoodRow :
-          ∃ hrow' : 0 < D.rowCuts, ∃ i : Fin D.rowCuts,
-            colMixedValue M
-              ((MatrixDivision.rowFuse D hrow' i).rowDiv.part
-                ((finCongr
-                  (by simp [MatrixDivision.rowFuse]; omega :
-                    D.rowCuts =
-                      (MatrixDivision.rowFuse D hrow' i).rowCuts + 1)) i))
-              (MatrixDivision.rowFuse D hrow' i).colDiv ≤ 2 * c t
-        · exact Or.inl hgoodRow
-        · by_cases hgoodCol :
-            ∃ hcol' : 0 < D.colCuts, ∃ j : Fin D.colCuts,
-              rowMixedValue M
-                (MatrixDivision.colFuse D hcol' j).rowDiv
-                ((MatrixDivision.colFuse D hcol' j).colDiv.part
-                  ((finCongr
-                    (by simp [MatrixDivision.colFuse]; omega :
-                      D.colCuts =
-                        (MatrixDivision.colFuse D hcol' j).colCuts + 1)) j)) ≤
-                2 * c t
-          · exact Or.inr hgoodCol
-          · exact False.elim
-              (hcount M t (hMT t) hfree D hD hrow hcol hgoodRow hgoodCol)
-      · have hcol0 : D.colCuts = 0 := Nat.eq_zero_of_not_pos hcol
-        rcases MatrixDivision.exists_goodRowCut_of_colCuts_eq_zero
-          (M := M) (hMT t) htpos D hrow hcol0 with ⟨i, hi⟩
-        exact Or.inl ⟨hrow, i, hi⟩
-    · have hrow0 : D.rowCuts = 0 := Nat.eq_zero_of_not_pos hrow
-      have hcol : 0 < D.colCuts := by
-        by_contra hcolnot
-        have hcol0 : D.colCuts = 0 := Nat.eq_zero_of_not_pos hcolnot
-        exact hcoarse ⟨hrow0, hcol0⟩
-      rcases MatrixDivision.exists_goodColCut_of_rowCuts_eq_zero
-        (M := M) (hMT t) htpos D hcol hrow0 with ⟨j, hj⟩
-      exact Or.inr ⟨hcol, j, hj⟩
-
-/-- Positive-size Lemma 13 reduced to the single nondegenerate paired
-Marcus--Tardos counting step. -/
-theorem boundedMixedValueDivisionSequence_positive_of_pairedMarcusTardosCounting
-    {c : ℕ → ℕ}
-    (hMT : ∀ t : ℕ, IsMarcusTardosConstant t (c t))
-    (hcount : PairedMarcusTardosCountingStep c) :
-    ∀ {n m : ℕ}, 0 < n → 0 < m →
-      (M : _root_.Matrix (Fin n) (Fin m) Bool) → (t : ℕ) →
-        MixedFree M t → Nonempty (BoundedMixedValueDivisionSequence M (2 * c t)) := by
-  intro n m hn hm M t hfree
-  exact boundedMixedValueDivisionSequence_of_greedyStep
-    (MatrixDivision.finest_isFinest hn hm)
-    (MatrixDivision.mixedValueAtMost_of_isFinest
-      (MatrixDivision.finest_isFinest hn hm))
-    (greedyFusionStep_of_pairedMarcusTardosCounting hMT hcount M t hfree)
+  exact boundedMixedValueDivisionSequence_positive_of_marcusTardos
+    hMT hn hm M t hfree
 
 /-- Sequence-level form of Lemma 13, once the greedy-fusion argument has been
 proved from the grid-form Marcus--Tardos theorem. -/
 theorem boundedMixedValueDivisionSequence_of_greedyFusion
     {c : ℕ → ℕ}
-    (hgreedy : GreedyFusionProducesBoundedMixedValueSequence c) :
+    (hgreedy :
+      ∀ {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool) (t : ℕ)
+        (D₀ : MatrixDivision n m),
+          MixedFree M t →
+            MatrixDivision.IsFinest D₀ →
+              GreedyFusionStep M (lemma13MixedValueBound c t)) :
     ∀ {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool) (t : ℕ)
       (D₀ : MatrixDivision n m),
         MixedFree M t →
           MatrixDivision.IsFinest D₀ →
-            Nonempty (BoundedMixedValueDivisionSequence M (2 * c t)) := by
+            Nonempty (BoundedMixedValueDivisionSequence M (lemma13MixedValueBound c t)) := by
   intro n m M t D₀ hfree hfinest
   exact boundedMixedValueDivisionSequence_of_greedyStep hfinest
     (MatrixDivision.mixedValueAtMost_of_isFinest hfinest)
@@ -2453,13 +2335,35 @@ theorem boundedMixedValueDivisionSequence_of_greedyFusion
 finest starting point. -/
 theorem boundedMixedValueDivisionSequence_of_greedyFusion_positive
     {c : ℕ → ℕ}
-    (hgreedy : GreedyFusionProducesBoundedMixedValueSequence c)
+    (hgreedy :
+      ∀ {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool) (t : ℕ)
+        (D₀ : MatrixDivision n m),
+          MixedFree M t →
+            MatrixDivision.IsFinest D₀ →
+              GreedyFusionStep M (lemma13MixedValueBound c t))
     {n m : ℕ} (hn : 0 < n) (hm : 0 < m)
     (M : _root_.Matrix (Fin n) (Fin m) Bool) (t : ℕ)
     (hfree : MixedFree M t) :
-    Nonempty (BoundedMixedValueDivisionSequence M (2 * c t)) :=
+    Nonempty (BoundedMixedValueDivisionSequence M (lemma13MixedValueBound c t)) :=
   boundedMixedValueDivisionSequence_of_greedyFusion hgreedy M t
     (MatrixDivision.finest hn hm) hfree (MatrixDivision.finest_isFinest hn hm)
+
+/-- Contract theorem for
+`DivisionSequenceContract.lemma13_bounded_mixed_value_division_sequence`.
+
+If `M` is positive-size and `t`-mixed-free, then it has a full division sequence
+whose mixed value is bounded by `20 * c t`, for any Marcus--Tardos constant
+family `c`. -/
+theorem lemma13_bounded_mixed_value_division_sequence
+    {c : ℕ → ℕ}
+    (hMT : ∀ t : ℕ, IsMarcusTardosConstant t (c t)) :
+    ∀ {n m : ℕ}, 0 < n → 0 < m →
+      ∀ (M : _root_.Matrix (Fin n) (Fin m) Bool) (t : ℕ),
+        MixedFree M t →
+          Nonempty (BoundedMixedValueDivisionSequence M (20 * c t)) := by
+  intro n m hn hm M t hfree
+  simpa [lemma13MixedValueBound] using
+    boundedMixedValueDivisionSequenceTheorem hMT hn hm M t hfree
 
 end Matrix
 end TwinWidth

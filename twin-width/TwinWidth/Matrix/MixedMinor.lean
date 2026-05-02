@@ -22,5 +22,14 @@ def HasMixedMinor {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool) (k : ℕ)
     (M : _root_.Matrix (Fin n) (Fin m) Bool) : HasMixedMinor M 0 :=
   Or.inl rfl
 
+/-- A mixed minor cannot have order larger than either matrix dimension. -/
+theorem hasMixedMinor_le_min_card {n m k : ℕ}
+    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    (h : HasMixedMinor M k) : k ≤ min n m := by
+  rcases h with rfl | h
+  · exact Nat.zero_le _
+  · rcases h with ⟨R, C, _⟩
+    exact le_min (Division.card_parts_le R) (Division.card_parts_le C)
+
 end Matrix
 end TwinWidth
