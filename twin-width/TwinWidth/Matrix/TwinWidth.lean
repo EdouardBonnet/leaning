@@ -12,6 +12,8 @@ formalized `MatrixPartition` and `ErrorValueAtMost` predicates.
 namespace TwinWidth
 namespace Matrix
 
+variable {α : Type*}
+
 namespace MatrixPartition
 
 /-- A matrix partition is finest if every row and column part is a singleton
@@ -31,7 +33,7 @@ end MatrixPartition
 
 /-- A concrete matrix contraction sequence of error value at most `d`. -/
 structure MatrixContractionSequence {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool) (d : ℕ) where
+    (M : _root_.Matrix (Fin n) (Fin m) α) (d : ℕ) where
   /-- Number of partition contractions. -/
   stepCount : ℕ
   /-- Partition at each time. -/
@@ -46,19 +48,19 @@ structure MatrixContractionSequence {n m : ℕ}
   /-- Every intermediate partition has error value at most `d`. -/
   errorValue_le : ∀ i, i ≤ stepCount → ErrorValueAtMost M (partition i) d
 
-/-- A Boolean matrix has matrix twin-width at most `d` if it has a partition
+/-- A matrix has matrix twin-width at most `d` if it has a partition
 contraction sequence whose error value never exceeds `d`. -/
 def MatrixTwinWidthAtMost {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool) (d : ℕ) : Prop :=
+    (M : _root_.Matrix (Fin n) (Fin m) α) (d : ℕ) : Prop :=
   Nonempty (MatrixContractionSequence M d)
 
 /-- A matrix is `t`-mixed-free if it has no `t`-mixed minor. -/
-def MixedFree {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool) (t : ℕ) : Prop :=
+def MixedFree {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) α) (t : ℕ) : Prop :=
   ¬ HasMixedMinor M t
 
 /-- The matrix-level bound supplied by the second item of Theorem 10. -/
 def MatrixTwinWidthBoundedByMixedNumber (f : ℕ → ℕ) : Prop :=
-  ∀ {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool),
+  ∀ {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) α),
     MatrixTwinWidthAtMost M (f (matrixMixedNumber M))
 
 end Matrix

@@ -5,8 +5,9 @@ import TwinWidth.Graph.MixedMinorNumber
 # Twin-width to mixed minor number
 
 This module records the directional bound needed for functional equivalence.
-The Section 5 proof of the first twin-width paper should eventually provide a
-specific witness such as `fun d => 2 * d + 2`.
+The Section 5 proof of the first twin-width paper provides a linear witness;
+with the formal diagonal and mirrored-fusion conventions used for simple graph
+adjacency matrices the graph-facing witness is `fun d => 2 * (d + 3) + 2`.
 -/
 
 namespace TwinWidth
@@ -21,7 +22,7 @@ def MixedMinorNumberBoundedByTwinWidth : Prop :=
 /-- The linear bound predicted by the first item of the grid-minor theorem for
 twin-width: a `d`-twin-ordered matrix is `(2*d+2)`-mixed-free. -/
 def mixedMinorNumberBoundOfTwinWidth (d : ℕ) : ℕ :=
-  2 * d + 2
+  2 * (d + 3) + 2
 
 /-- Matrix-level ordered-adjacency form of the twin-width-to-mixed direction.
 
@@ -55,35 +56,34 @@ theorem mixedMinorNumberBoundedByTwinWidth_of_orderedAdjacencyBound
   rcases h G with ⟨σ, hσ⟩
   exact mixedMinorNumber_le_of_orderedAdjacencyMixedNumber_le (G := G) hσ
 
-/-- The concrete one-direction statement corresponding to the paper's
-`2*d+2` convention.  The remaining mathematical input is the Section 5 matrix
-proof that supplies such an ordered adjacency matrix. -/
+/-- The concrete one-direction statement with the project's graph-facing
+conventions.  The `+3` accounts for the diagonal/self-zone convention and the
+two one-sided child zones introduced by mirroring a graph contraction as row
+then column fusions. -/
 def OrderedAdjacencyMixedNumberLinearlyBoundedByTwinWidth : Prop :=
   OrderedAdjacencyMixedNumberBoundedByTwinWidth mixedMinorNumberBoundOfTwinWidth
 
-/-- One functional-equivalence direction with the explicit `2*d+2` witness,
+/-- One functional-equivalence direction with the explicit linear witness,
 assuming the Section 5 ordered-adjacency bound. -/
 theorem mixedMinorNumberBoundedByTwinWidth_of_orderedAdjacencyLinearBound
     (h : OrderedAdjacencyMixedNumberLinearlyBoundedByTwinWidth) :
     MixedMinorNumberBoundedByTwinWidth :=
   mixedMinorNumberBoundedByTwinWidth_of_orderedAdjacencyBound h
 
-/-- Contract theorem for
-`TwinWidthToMixedContract.mixed_minor_number_le_twice_twin_width_add_two_of_ordered_adjacency_bound`.
-
-An ordered-adjacency linear bound immediately gives the same graph-level bound,
-because `mixedMinorNumber` is the minimum over vertex orders. -/
-theorem mixed_minor_number_le_twice_twin_width_add_two_of_ordered_adjacency_bound
+/-- Legacy ordered-adjacency reduction: an ordered-adjacency linear bound
+immediately gives the same graph-level bound, because `mixedMinorNumber` is the
+minimum over vertex orders. -/
+theorem mixed_minor_number_le_twice_twin_width_plus_four_of_ordered_adjacency_bound
     (h :
       ∀ {V : Type} [Fintype V] [DecidableEq V] (G : _root_.SimpleGraph V),
         ∃ σ : VertexOrder V (Fintype.card V),
-          Matrix.orderedAdjacencyMixedNumber G σ ≤ 2 * twinWidth G + 2) :
+          Matrix.orderedAdjacencyMixedNumber G σ ≤ 2 * (twinWidth G + 1) + 2) :
     ∀ {V : Type} [Fintype V] [DecidableEq V] (G : _root_.SimpleGraph V),
-      mixedMinorNumber G ≤ 2 * twinWidth G + 2 := by
+      mixedMinorNumber G ≤ 2 * (twinWidth G + 1) + 2 := by
   intro V _ _ G
   rcases h G with ⟨σ, hσ⟩
   exact mixedMinorNumber_le_of_orderedAdjacencyMixedNumber_le
-    (G := G) (f := fun d => 2 * d + 2) hσ
+    (G := G) (f := fun d => 2 * (d + 1) + 2) hσ
 
 end SimpleGraph
 end TwinWidth

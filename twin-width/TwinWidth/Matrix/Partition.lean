@@ -13,6 +13,8 @@ avoiding a premature commitment to a concrete maximum operator.
 namespace TwinWidth
 namespace Matrix
 
+variable {α : Type*}
+
 /-- A finite partition of the rows and columns of an `n × m` matrix. -/
 structure MatrixPartition (n m : ℕ) where
   /-- Row parts. -/
@@ -78,33 +80,33 @@ end MatrixPartition
 
 /-- A rectangular zone is vertical if each column is constant across the row
 set. -/
-def ZoneVertical {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool)
+def ZoneVertical {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) α)
     (R : Finset (Fin n)) (C : Finset (Fin m)) : Prop :=
   ∀ ⦃r₁ r₂ : Fin n⦄, r₁ ∈ R → r₂ ∈ R →
     ∀ ⦃c : Fin m⦄, c ∈ C → M r₁ c = M r₂ c
 
 /-- A rectangular zone is horizontal if each row is constant across the column
 set. -/
-def ZoneHorizontal {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool)
+def ZoneHorizontal {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) α)
     (R : Finset (Fin n)) (C : Finset (Fin m)) : Prop :=
   ∀ ⦃r : Fin n⦄, r ∈ R →
     ∀ ⦃c₁ c₂ : Fin m⦄, c₁ ∈ C → c₂ ∈ C → M r c₁ = M r c₂
 
 /-- A rectangular zone is mixed if it is neither vertical nor horizontal. -/
-def ZoneMixed {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool)
+def ZoneMixed {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) α)
     (R : Finset (Fin n)) (C : Finset (Fin m)) : Prop :=
   ¬ ZoneVertical M R C ∧ ¬ ZoneHorizontal M R C
 
 /-- A zone is constant if all entries in the row part and column part have the
 same matrix value. -/
-def ZoneConstant {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool)
+def ZoneConstant {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) α)
     (R : Finset (Fin n)) (C : Finset (Fin m)) : Prop :=
   ∀ ⦃r₁ r₂ : Fin n⦄, r₁ ∈ R → r₂ ∈ R →
     ∀ ⦃c₁ c₂ : Fin m⦄, c₁ ∈ C → c₂ ∈ C → M r₁ c₁ = M r₂ c₂
 
 /-- Column parts on which a fixed row part forms a nonconstant zone. -/
 noncomputable def rowErrorSet {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (P : MatrixPartition n m) (R : Finset (Fin n)) : Finset (Finset (Fin m)) :=
   by
     classical
@@ -112,7 +114,7 @@ noncomputable def rowErrorSet {n m : ℕ}
 
 /-- Row parts on which a fixed column part forms a nonconstant zone. -/
 noncomputable def colErrorSet {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (P : MatrixPartition n m) (C : Finset (Fin m)) : Finset (Finset (Fin n)) :=
   by
     classical
@@ -121,7 +123,7 @@ noncomputable def colErrorSet {n m : ℕ}
 /-- A matrix partition has error value at most `t` when every row part and
 every column part sees at most `t` nonconstant zones. -/
 def ErrorValueAtMost {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (P : MatrixPartition n m) (t : ℕ) : Prop :=
   (∀ ⦃R⦄, R ∈ P.rowParts → (rowErrorSet M P R).card ≤ t) ∧
     ∀ ⦃C⦄, C ∈ P.colParts → (colErrorSet M P C).card ≤ t

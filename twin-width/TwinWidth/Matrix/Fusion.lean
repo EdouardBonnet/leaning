@@ -4,13 +4,16 @@ import TwinWidth.Matrix.Corner
 # Fusion lemmas for mixed zones
 
 This file proves the core fusion argument used in Lemma 12.  If two zones are
-not mixed and no mixed corner crosses between them, then their union is not
-mixed.  The remaining Section 5 localization step specializes the crossing
-condition to the boundary cut between consecutive interval parts.
+not mixed and no mixed `2 x 2` submatrix witness crosses between them, then
+their union is not mixed.  The paper's corners are adjacent `2 x 2` witnesses;
+the crossing predicates below are intentionally named as submatrix witnesses
+because they do not impose adjacency.
 -/
 
 namespace TwinWidth
 namespace Matrix
+
+variable {α : Type*}
 
 private theorem false_of_or_ne_of_eqs {α : Type*} {a b c d : α}
     (h : (a ≠ b) ∨ (c ≠ d)) (hab : a = b) (hcd : c = d) : False := by
@@ -18,25 +21,27 @@ private theorem false_of_or_ne_of_eqs {α : Type*} {a b c d : α}
   · exact h hab
   · exact h hcd
 
-/-- A mixed crossing corner between two row sets over a column set. -/
-def RowCrossingCorner {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+/-- A mixed crossing `2 x 2` submatrix witness between two row sets over a
+column set.  This is not necessarily a paper corner, since the selected rows
+and columns need not be adjacent. -/
+def RowCrossingTwoByTwoSubmatrix {n m : ℕ}
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (R S : Finset (Fin n)) (C : Finset (Fin m)) : Prop :=
   ∃ r ∈ R, ∃ s ∈ S, ∃ c₁ ∈ C, ∃ c₂ ∈ C,
-    ((M r c₁ ≠ M s c₁) ∨ (M r c₂ ≠ M s c₂)) ∧
-      ((M r c₁ ≠ M r c₂) ∨ (M s c₁ ≠ M s c₂))
+    TwoByTwoMixed M r s c₁ c₂
 
-/-- A mixed crossing corner between two column sets over a row set. -/
-def ColCrossingCorner {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+/-- A mixed crossing `2 x 2` submatrix witness between two column sets over a
+row set.  This is not necessarily a paper corner, since the selected rows and
+columns need not be adjacent. -/
+def ColCrossingTwoByTwoSubmatrix {n m : ℕ}
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (R : Finset (Fin n)) (C D : Finset (Fin m)) : Prop :=
   ∃ r₁ ∈ R, ∃ r₂ ∈ R, ∃ c ∈ C, ∃ d ∈ D,
-    ((M r₁ c ≠ M r₂ c) ∨ (M r₁ d ≠ M r₂ d)) ∧
-      ((M r₁ c ≠ M r₁ d) ∨ (M r₂ c ≠ M r₂ d))
+    TwoByTwoMixed M r₁ r₂ c d
 
 /-- A zone is not mixed exactly when it is vertical or horizontal. -/
 theorem not_zoneMixed_iff_vertical_or_horizontal {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (R : Finset (Fin n)) (C : Finset (Fin m)) :
     ¬ ZoneMixed M R C ↔ ZoneVertical M R C ∨ ZoneHorizontal M R C := by
   classical
@@ -54,7 +59,7 @@ theorem not_zoneMixed_iff_vertical_or_horizontal {n m : ℕ}
 
 /-- A row cut is not mixed exactly when it is vertical or horizontal. -/
 theorem not_rowCutMixed_iff_cutVertical_or_cutHorizontal {n m k : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (R : Division n (k + 1)) (C : Finset (Fin m)) (i : Fin k) :
     ¬ RowCutMixed M R C i ↔
       RowCutVertical M R C i ∨ RowCutHorizontal M R C i := by
@@ -73,7 +78,7 @@ theorem not_rowCutMixed_iff_cutVertical_or_cutHorizontal {n m k : ℕ}
 
 /-- A column cut is not mixed exactly when it is vertical or horizontal. -/
 theorem not_colCutMixed_iff_cutVertical_or_cutHorizontal {n m k : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (R : Finset (Fin n)) (C : Division m (k + 1)) (j : Fin k) :
     ¬ ColCutMixed M R C j ↔
       ColCutVertical M R C j ∨ ColCutHorizontal M R C j := by
@@ -91,18 +96,18 @@ theorem not_colCutMixed_iff_cutVertical_or_cutHorizontal {n m k : ℕ}
     · exact hmix.2 hh
 
 theorem not_zoneMixed_union_rows_of_no_crossing {n m : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {R S : Finset (Fin n)} {C : Finset (Fin m)}
     (hR : ¬ ZoneMixed M R C)
     (hS : ¬ ZoneMixed M S C)
-    (hcross : ¬ RowCrossingCorner M R S C) :
+    (hcross : ¬ RowCrossingTwoByTwoSubmatrix M R S C) :
     ¬ ZoneMixed M (R ∪ S) C := by
   intro hmix
-  rcases (zoneMixed_iff_zoneCorner M (R ∪ S) C).mp hmix with
+  rcases (zoneMixed_iff_zoneTwoByTwoSubmatrix M (R ∪ S) C).mp hmix with
     ⟨r₁, hr₁, r₂, hr₂, c₁, hc₁, c₂, hc₂, hvert, hhoriz⟩
   rcases Finset.mem_union.mp hr₁ with hR₁ | hS₁
   · rcases Finset.mem_union.mp hr₂ with hR₂ | hS₂
-    · exact hR ((zoneMixed_iff_zoneCorner M R C).mpr
+    · exact hR ((zoneMixed_iff_zoneTwoByTwoSubmatrix M R C).mpr
         ⟨r₁, hR₁, r₂, hR₂, c₁, hc₁, c₂, hc₂, hvert, hhoriz⟩)
     · exact hcross ⟨r₁, hR₁, r₂, hS₂, c₁, hc₁, c₂, hc₂, hvert, hhoriz⟩
   · rcases Finset.mem_union.mp hr₂ with hR₂ | hS₂
@@ -115,22 +120,22 @@ theorem not_zoneMixed_union_rows_of_no_crossing {n m : ℕ}
           (M r₂ c₁ ≠ M r₂ c₂) ∨ (M r₁ c₁ ≠ M r₁ c₂) := by
         exact hhoriz.symm
       exact hcross ⟨r₂, hR₂, r₁, hS₁, c₁, hc₁, c₂, hc₂, hvert', hhoriz'⟩
-    · exact hS ((zoneMixed_iff_zoneCorner M S C).mpr
+    · exact hS ((zoneMixed_iff_zoneTwoByTwoSubmatrix M S C).mpr
         ⟨r₁, hS₁, r₂, hS₂, c₁, hc₁, c₂, hc₂, hvert, hhoriz⟩)
 
 theorem not_zoneMixed_union_cols_of_no_crossing {n m : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {R : Finset (Fin n)} {C D : Finset (Fin m)}
     (hC : ¬ ZoneMixed M R C)
     (hD : ¬ ZoneMixed M R D)
-    (hcross : ¬ ColCrossingCorner M R C D) :
+    (hcross : ¬ ColCrossingTwoByTwoSubmatrix M R C D) :
     ¬ ZoneMixed M R (C ∪ D) := by
   intro hmix
-  rcases (zoneMixed_iff_zoneCorner M R (C ∪ D)).mp hmix with
+  rcases (zoneMixed_iff_zoneTwoByTwoSubmatrix M R (C ∪ D)).mp hmix with
     ⟨r₁, hr₁, r₂, hr₂, c₁, hc₁, c₂, hc₂, hvert, hhoriz⟩
   rcases Finset.mem_union.mp hc₁ with hC₁ | hD₁
   · rcases Finset.mem_union.mp hc₂ with hC₂ | hD₂
-    · exact hC ((zoneMixed_iff_zoneCorner M R C).mpr
+    · exact hC ((zoneMixed_iff_zoneTwoByTwoSubmatrix M R C).mpr
         ⟨r₁, hr₁, r₂, hr₂, c₁, hC₁, c₂, hC₂, hvert, hhoriz⟩)
     · exact hcross ⟨r₁, hr₁, r₂, hr₂, c₁, hC₁, c₂, hD₂, hvert, hhoriz⟩
   · rcases Finset.mem_union.mp hc₂ with hC₂ | hD₂
@@ -143,19 +148,19 @@ theorem not_zoneMixed_union_cols_of_no_crossing {n m : ℕ}
           (M r₁ c₂ ≠ M r₂ c₂) ∨ (M r₁ c₁ ≠ M r₂ c₁) := by
         exact hvert.symm
       exact hcross ⟨r₁, hr₁, r₂, hr₂, c₂, hC₂, c₁, hD₁, hvert', hhoriz'⟩
-    · exact hD ((zoneMixed_iff_zoneCorner M R D).mpr
+    · exact hD ((zoneMixed_iff_zoneTwoByTwoSubmatrix M R D).mpr
         ⟨r₁, hr₁, r₂, hr₂, c₁, hD₁, c₂, hD₂, hvert, hhoriz⟩)
 
 /-- Boundary localization for consecutive row parts.  If two adjacent zones
-are not mixed, then a nonmixed boundary cut prevents any mixed corner from
-crossing the boundary. -/
-theorem not_rowCrossingCorner_of_not_mixed_zones_not_mixed_cut {n m k : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+are not mixed, then a nonmixed boundary cut prevents any mixed `2 x 2`
+submatrix witness from crossing the boundary. -/
+theorem not_rowCrossingTwoByTwoSubmatrix_of_not_mixed_zones_not_mixed_cut {n m k : ℕ}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (R : Division n (k + 1)) {C : Finset (Fin m)} (i : Fin k)
     (hLzone : ¬ ZoneMixed M (R.part i.castSucc) C)
     (hRzone : ¬ ZoneMixed M (R.part i.succ) C)
     (hcut : ¬ RowCutMixed M R C i) :
-    ¬ RowCrossingCorner M (R.part i.castSucc) (R.part i.succ) C := by
+    ¬ RowCrossingTwoByTwoSubmatrix M (R.part i.castSucc) (R.part i.succ) C := by
   intro hcross
   rcases hcross with
     ⟨r, hr, s, hs, c₁, hc₁, c₂, hc₂, hvert, hhoriz⟩
@@ -232,14 +237,14 @@ theorem not_rowCrossingCorner_of_not_mixed_zones_not_mixed_cut {n m k : ℕ}
       exact false_of_or_ne_of_eqs hhoriz hrconst hsconst
 
 /-- Boundary localization for consecutive column parts, dual to
-`not_rowCrossingCorner_of_not_mixed_zones_not_mixed_cut`. -/
-theorem not_colCrossingCorner_of_not_mixed_zones_not_mixed_cut {n m k : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+`not_rowCrossingTwoByTwoSubmatrix_of_not_mixed_zones_not_mixed_cut`. -/
+theorem not_colCrossingTwoByTwoSubmatrix_of_not_mixed_zones_not_mixed_cut {n m k : ℕ}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {R : Finset (Fin n)} (C : Division m (k + 1)) (j : Fin k)
     (hLzone : ¬ ZoneMixed M R (C.part j.castSucc))
     (hRzone : ¬ ZoneMixed M R (C.part j.succ))
     (hcut : ¬ ColCutMixed M R C j) :
-    ¬ ColCrossingCorner M R (C.part j.castSucc) (C.part j.succ) := by
+    ¬ ColCrossingTwoByTwoSubmatrix M R (C.part j.castSucc) (C.part j.succ) := by
   intro hcross
   rcases hcross with
     ⟨r₁, hr₁, r₂, hr₂, c, hc, d, hd, hvert, hhoriz⟩
@@ -315,65 +320,67 @@ theorem not_colCrossingCorner_of_not_mixed_zones_not_mixed_cut {n m k : ℕ}
             _ = M r₂ d := hRh hr₂ hFirst hd
         exact false_of_or_ne_of_eqs hhoriz hr₁const hr₂const
 
-/-- If adjacent row zones are not mixed, a crossing mixed corner forces the
-boundary row cut to be mixed. -/
-theorem rowCutMixed_of_crossingCorner_of_not_mixed_zones {n m k : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+/-- If adjacent row zones are not mixed, a crossing mixed `2 x 2` submatrix
+witness forces the boundary row cut to be mixed. -/
+theorem rowCutMixed_of_crossingTwoByTwoSubmatrix_of_not_mixed_zones {n m k : ℕ}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (R : Division n (k + 1)) {C : Finset (Fin m)} (i : Fin k)
     (hLzone : ¬ ZoneMixed M (R.part i.castSucc) C)
     (hRzone : ¬ ZoneMixed M (R.part i.succ) C)
-    (hcross : RowCrossingCorner M (R.part i.castSucc) (R.part i.succ) C) :
+    (hcross :
+      RowCrossingTwoByTwoSubmatrix M (R.part i.castSucc) (R.part i.succ) C) :
     RowCutMixed M R C i := by
   classical
   by_contra hcut
-  exact not_rowCrossingCorner_of_not_mixed_zones_not_mixed_cut
+  exact not_rowCrossingTwoByTwoSubmatrix_of_not_mixed_zones_not_mixed_cut
     (M := M) R i hLzone hRzone hcut hcross
 
-/-- If adjacent column zones are not mixed, a crossing mixed corner forces the
-boundary column cut to be mixed. -/
-theorem colCutMixed_of_crossingCorner_of_not_mixed_zones {n m k : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+/-- If adjacent column zones are not mixed, a crossing mixed `2 x 2` submatrix
+witness forces the boundary column cut to be mixed. -/
+theorem colCutMixed_of_crossingTwoByTwoSubmatrix_of_not_mixed_zones {n m k : ℕ}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {R : Finset (Fin n)} (C : Division m (k + 1)) (j : Fin k)
     (hLzone : ¬ ZoneMixed M R (C.part j.castSucc))
     (hRzone : ¬ ZoneMixed M R (C.part j.succ))
-    (hcross : ColCrossingCorner M R (C.part j.castSucc) (C.part j.succ)) :
+    (hcross :
+      ColCrossingTwoByTwoSubmatrix M R (C.part j.castSucc) (C.part j.succ)) :
     ColCutMixed M R C j := by
   classical
   by_contra hcut
-  exact not_colCrossingCorner_of_not_mixed_zones_not_mixed_cut
+  exact not_colCrossingTwoByTwoSubmatrix_of_not_mixed_zones_not_mixed_cut
     (M := M) C j hLzone hRzone hcut hcross
 
 /-- Row form of the paper's Lemma 12: fusing two consecutive row zones that
 are both nonmixed preserves nonmixedness whenever the boundary cut is also
 nonmixed. -/
 theorem not_zoneMixed_union_consecutive_rows_of_not_mixed_cut {n m k : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (R : Division n (k + 1)) {C : Finset (Fin m)} (i : Fin k)
     (hLzone : ¬ ZoneMixed M (R.part i.castSucc) C)
     (hRzone : ¬ ZoneMixed M (R.part i.succ) C)
     (hcut : ¬ RowCutMixed M R C i) :
     ¬ ZoneMixed M (R.part i.castSucc ∪ R.part i.succ) C :=
   not_zoneMixed_union_rows_of_no_crossing hLzone hRzone
-    (not_rowCrossingCorner_of_not_mixed_zones_not_mixed_cut
+    (not_rowCrossingTwoByTwoSubmatrix_of_not_mixed_zones_not_mixed_cut
       (M := M) R i hLzone hRzone hcut)
 
 /-- Column form of the paper's Lemma 12. -/
 theorem not_zoneMixed_union_consecutive_cols_of_not_mixed_cut {n m k : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {R : Finset (Fin n)} (C : Division m (k + 1)) (j : Fin k)
     (hLzone : ¬ ZoneMixed M R (C.part j.castSucc))
     (hRzone : ¬ ZoneMixed M R (C.part j.succ))
     (hcut : ¬ ColCutMixed M R C j) :
     ¬ ZoneMixed M R (C.part j.castSucc ∪ C.part j.succ) :=
   not_zoneMixed_union_cols_of_no_crossing hLzone hRzone
-    (not_colCrossingCorner_of_not_mixed_zones_not_mixed_cut
+    (not_colCrossingTwoByTwoSubmatrix_of_not_mixed_zones_not_mixed_cut
       (M := M) C j hLzone hRzone hcut)
 
 /-- Lemma 12, local exact row-fusion form: the newly merged row part is
 nonmixed on `C` whenever the two old adjacent row zones and their boundary cut
 are nonmixed. -/
 theorem not_zoneMixed_fused_row_part_of_not_mixed_cut {n m k : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {D : Division n (k + 2)} {E : Division n (k + 1)}
     {C : Finset (Fin m)} {i : Fin (k + 1)}
     (hfuse : Division.IsFusionAt D E i)
@@ -387,7 +394,7 @@ theorem not_zoneMixed_fused_row_part_of_not_mixed_cut {n m k : ℕ}
 
 /-- Contrapositive package of the exact row-fusion form of Lemma 12. -/
 theorem rowFusion_old_zone_or_cut_mixed_of_fused_row_part_mixed {n m k : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {D : Division n (k + 2)} {E : Division n (k + 1)}
     {C : Finset (Fin m)} {i : Fin (k + 1)}
     (hfuse : Division.IsFusionAt D E i)
@@ -407,7 +414,7 @@ theorem rowFusion_old_zone_or_cut_mixed_of_fused_row_part_mixed {n m k : ℕ}
 
 /-- Lemma 12, local exact column-fusion form. -/
 theorem not_zoneMixed_fused_col_part_of_not_mixed_cut {n m k : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {R : Finset (Fin n)} {D : Division m (k + 2)} {E : Division m (k + 1)}
     {j : Fin (k + 1)}
     (hfuse : Division.IsFusionAt D E j)
@@ -421,7 +428,7 @@ theorem not_zoneMixed_fused_col_part_of_not_mixed_cut {n m k : ℕ}
 
 /-- Contrapositive package of the exact column-fusion form of Lemma 12. -/
 theorem colFusion_old_zone_or_cut_mixed_of_fused_col_part_mixed {n m k : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {R : Finset (Fin n)} {D : Division m (k + 2)} {E : Division m (k + 1)}
     {j : Fin (k + 1)}
     (hfuse : Division.IsFusionAt D E j)
@@ -440,7 +447,7 @@ theorem colFusion_old_zone_or_cut_mixed_of_fused_col_part_mixed {n m k : ℕ}
             (M := M) hfuse hL hR hcut hmix)
 
 theorem rowCutMixed_of_fuse_rowCutMixed_of_lt {n m k : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : Division n (k + 2)) {C : Finset (Fin m)}
     {i : Fin (k + 1)} {j : Fin k}
     (hji : j.castSucc < i)
@@ -484,7 +491,7 @@ theorem rowCutMixed_of_fuse_rowCutMixed_of_lt {n m k : ℕ}
         exact hh.2 hc₁ hc₂)
 
 theorem rowCutMixed_of_fuse_rowCutMixed_of_ge {n m k : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : Division n (k + 2)) {C : Finset (Fin m)}
     {i : Fin (k + 1)} {j : Fin k}
     (hij : i ≤ j.castSucc)
@@ -525,7 +532,7 @@ theorem rowCutMixed_of_fuse_rowCutMixed_of_ge {n m k : ℕ}
         exact hh.2 hc₁ hc₂)
 
 theorem colCutMixed_of_fuse_colCutMixed_of_lt {n m k : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {R : Finset (Fin n)} (D : Division m (k + 2))
     {i : Fin (k + 1)} {j : Fin k}
     (hji : j.castSucc < i)
@@ -569,7 +576,7 @@ theorem colCutMixed_of_fuse_colCutMixed_of_lt {n m k : ℕ}
       exact hh hr)
 
 theorem colCutMixed_of_fuse_colCutMixed_of_ge {n m k : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {R : Finset (Fin n)} (D : Division m (k + 2))
     {i : Fin (k + 1)} {j : Fin k}
     (hij : i ≤ j.castSucc)
@@ -614,7 +621,7 @@ from the fused pair keep their old zone index, cuts away from the fused
 boundary keep their old cut index, and the new fused zone is charged to one of
 the two old zones or to the disappearing boundary cut. -/
 noncomputable def rowFuseItemMap {n m k : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (D : Division n (k + 2)) (C : Finset (Fin m)) (i : Fin (k + 1)) :
     Sum (Fin (k + 1)) (Fin k) → Sum (Fin (k + 2)) (Fin (k + 1)) := by
   classical
@@ -661,7 +668,7 @@ def rowFuseItemPreimage {k : ℕ} (i : Fin (k + 1)) :
           omega⟩
 
 theorem rowFuseItemPreimage_map {n m k : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (D : Division n (k + 2)) (C : Finset (Fin m)) (i : Fin (k + 1))
     (x : Sum (Fin (k + 1)) (Fin k)) :
     rowFuseItemPreimage i (rowFuseItemMap M D C i x) = x := by
@@ -698,7 +705,7 @@ theorem rowFuseItemPreimage_map {n m k : ℕ}
         simp [rowFuseItemMap, rowFuseItemPreimage, hji, hnot, hne]
 
 theorem rowFuseItemMap_injective {n m k : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (D : Division n (k + 2)) (C : Finset (Fin m)) (i : Fin (k + 1)) :
     Function.Injective (rowFuseItemMap M D C i) := by
   intro x y hxy
@@ -707,7 +714,7 @@ theorem rowFuseItemMap_injective {n m k : ℕ}
     rowFuseItemPreimage_map M D C i y] using h
 
 theorem rowFuseItemMap_mem {n m k : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : Division n (k + 2)) {C : Finset (Fin m)} (i : Fin (k + 1))
     {x : Sum (Fin (k + 1)) (Fin k)}
     (hx : x ∈ rowMixedItems M (D.fuse i) C) :
@@ -758,7 +765,7 @@ theorem rowFuseItemMap_mem {n m k : ℕ}
 /-- Cardinal form of Lemma 12 for row fusions: fusing two consecutive row
 parts does not increase the mixed value of any fixed column interval. -/
 theorem rowMixedValue_fuse_le {n m k : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : Division n (k + 2)) (C : Finset (Fin m)) (i : Fin (k + 1)) :
     rowMixedValue M (D.fuse i) C ≤ rowMixedValue M D C := by
   classical
@@ -770,7 +777,7 @@ theorem rowMixedValue_fuse_le {n m k : ℕ}
 
 /-- Column-fusion analogue of `rowFuseItemMap`. -/
 noncomputable def colFuseItemMap {n m k : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (R : Finset (Fin n)) (D : Division m (k + 2)) (i : Fin (k + 1)) :
     Sum (Fin (k + 1)) (Fin k) → Sum (Fin (k + 2)) (Fin (k + 1)) := by
   classical
@@ -795,7 +802,7 @@ noncomputable def colFuseItemMap {n m k : ℕ}
         Sum.inr j.succ
 
 theorem colFuseItemPreimage_map {n m k : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (R : Finset (Fin n)) (D : Division m (k + 2)) (i : Fin (k + 1))
     (x : Sum (Fin (k + 1)) (Fin k)) :
     rowFuseItemPreimage i (colFuseItemMap M R D i x) = x := by
@@ -832,7 +839,7 @@ theorem colFuseItemPreimage_map {n m k : ℕ}
         simp [colFuseItemMap, rowFuseItemPreimage, hji, hnot, hne]
 
 theorem colFuseItemMap_injective {n m k : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (R : Finset (Fin n)) (D : Division m (k + 2)) (i : Fin (k + 1)) :
     Function.Injective (colFuseItemMap M R D i) := by
   intro x y hxy
@@ -841,7 +848,7 @@ theorem colFuseItemMap_injective {n m k : ℕ}
     colFuseItemPreimage_map M R D i y] using h
 
 theorem colFuseItemMap_mem {n m k : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {R : Finset (Fin n)} (D : Division m (k + 2)) (i : Fin (k + 1))
     {x : Sum (Fin (k + 1)) (Fin k)}
     (hx : x ∈ colMixedItems M R (D.fuse i)) :
@@ -891,7 +898,7 @@ theorem colFuseItemMap_mem {n m k : ℕ}
 
 /-- Cardinal form of Lemma 12 for column fusions. -/
 theorem colMixedValue_fuse_le {n m k : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (R : Finset (Fin n)) (D : Division m (k + 2)) (i : Fin (k + 1)) :
     colMixedValue M R (D.fuse i) ≤ colMixedValue M R D := by
   classical

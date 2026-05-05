@@ -23,7 +23,7 @@ def IsInitialState {V : Type*} [Fintype V] [DecidableEq V]
     (G : _root_.SimpleGraph V) (T : TrigraphState V) : Prop :=
   T.bags = TrigraphState.singletonBags V ∧
     (∀ ⦃A B⦄, A ∈ T.bags → B ∈ T.bags →
-      T.blackAdj A B ↔ ∃ a ∈ A, ∃ b ∈ B, G.Adj a b) ∧
+      (T.blackAdj A B ↔ ∃ a ∈ A, ∃ b ∈ B, G.Adj a b)) ∧
     (∀ ⦃A B⦄, A ∈ T.bags → B ∈ T.bags → ¬ T.redAdj A B)
 
 /-- A final trigraph state has at most one bag.
@@ -79,9 +79,48 @@ def IsContractionStep {V : Type*} [DecidableEq V]
   ∃ A ∈ T.bags, ∃ B ∈ T.bags, A ≠ B ∧
     U.bags = insert (A ∪ B) ((T.bags.erase A).erase B) ∧
     (∀ ⦃X Y⦄, X ∈ U.bags → Y ∈ U.bags →
-      U.redAdj X Y ↔ contractedRed T A B X Y) ∧
+      (U.redAdj X Y ↔ contractedRed T A B X Y)) ∧
     (∀ ⦃X Y⦄, X ∈ U.bags → Y ∈ U.bags →
-      U.blackAdj X Y ↔ contractedBlack T A B X Y)
+      (U.blackAdj X Y ↔ contractedBlack T A B X Y))
+
+theorem IsContractionStep.bags_card_add_one
+    {V : Type*} [DecidableEq V] {T U : TrigraphState V}
+    (h : IsContractionStep T U) :
+    U.bags.card + 1 = T.bags.card := by
+  classical
+  rcases h with ⟨A, hA, B, hB, hAB, hbags, _hred, _hblack⟩
+  have hB_eraseA : B ∈ T.bags.erase A := Finset.mem_erase.mpr ⟨hAB.symm, hB⟩
+  have hA_not_rest : A ∉ (T.bags.erase A).erase B := by simp
+  have hB_not_rest : B ∉ (T.bags.erase A).erase B := by simp
+  have hUnion_not_rest : A ∪ B ∉ (T.bags.erase A).erase B := by
+    intro hU
+    have hUold : A ∪ B ∈ T.bags :=
+      (Finset.mem_erase.mp (Finset.mem_erase.mp hU).2).2
+    have hneA : A ≠ A ∪ B := by
+      intro h
+      have hBinA : B ⊆ A := by
+        intro x hxB
+        have hxU : x ∈ A ∪ B := Finset.mem_union_right _ hxB
+        simpa [← h] using hxU
+      rcases T.bag_nonempty hB with ⟨b, hb⟩
+      have hbA : b ∈ A := hBinA hb
+      exact (Finset.disjoint_left.mp (T.bag_disjoint hA hB hAB)) hbA hb
+    rcases T.bag_nonempty hA with ⟨a, ha⟩
+    exact (Finset.disjoint_left.mp (T.bag_disjoint hA hUold hneA))
+      ha (Finset.mem_union_left _ ha)
+  calc
+    U.bags.card + 1
+        = (insert (A ∪ B) ((T.bags.erase A).erase B)).card + 1 := by rw [hbags]
+    _ = ((T.bags.erase A).erase B).card + 2 := by
+        rw [Finset.card_insert_of_notMem hUnion_not_rest]
+    _ = (T.bags.erase A).card + 1 := by
+        rw [Finset.card_erase_of_mem hB_eraseA]
+        have hpos : 0 < (T.bags.erase A).card := Finset.card_pos.mpr ⟨B, hB_eraseA⟩
+        omega
+    _ = T.bags.card := by
+        rw [Finset.card_erase_of_mem hA]
+        have hpos : 0 < T.bags.card := Finset.card_pos.mpr ⟨A, hA⟩
+        omega
 
 /-- A concrete contraction sequence of width at most `d`. -/
 structure ContractionSequence {V : Type*} [Fintype V] [DecidableEq V]
@@ -98,6 +137,69 @@ structure ContractionSequence {V : Type*} [Fintype V] [DecidableEq V]
   step_contracts : ∀ i, i < stepCount → IsContractionStep (state i) (state (i + 1))
   /-- Every bag in every state has red degree at most `d`. -/
   redDegree_le : ∀ i, i ≤ stepCount → ∀ ⦃A⦄, A ∈ (state i).bags → redDegree (state i) A ≤ d
+
+namespace ContractionSequence
+
+theorem bags_card_add_one
+    {V : Type*} [Fintype V] [DecidableEq V]
+    {G : _root_.SimpleGraph V} {d : ℕ}
+    (S : ContractionSequence G d) {i : ℕ} (hi : i < S.stepCount) :
+    (S.state (i + 1)).bags.card + 1 = (S.state i).bags.card :=
+  (S.step_contracts i hi).bags_card_add_one
+
+theorem start_bags_card
+    {V : Type*} [Fintype V] [DecidableEq V]
+    {G : _root_.SimpleGraph V} {d : ℕ}
+    (S : ContractionSequence G d) :
+    (S.state 0).bags.card = Fintype.card V := by
+  rw [S.starts.1]
+  exact TrigraphState.card_singletonBags V
+
+/-- After `i` contractions, the current number of bags plus `i` is the
+initial number of vertices. -/
+theorem bags_card_add_index
+    {V : Type*} [Fintype V] [DecidableEq V]
+    {G : _root_.SimpleGraph V} {d : ℕ}
+    (S : ContractionSequence G d) :
+    ∀ ⦃i : ℕ⦄, i ≤ S.stepCount →
+      (S.state i).bags.card + i = Fintype.card V := by
+  intro i hi
+  induction i with
+  | zero =>
+      simpa using S.start_bags_card
+  | succ i ih =>
+      have hlt : i < S.stepCount := by omega
+      have hprev : (S.state i).bags.card + i = Fintype.card V := ih (by omega)
+      have hstep : (S.state (i + 1)).bags.card + 1 = (S.state i).bags.card :=
+        S.bags_card_add_one hlt
+      omega
+
+/-- The final state of a contraction sequence on a nonempty vertex type has
+exactly one bag. -/
+theorem final_bags_card_eq_one
+    {V : Type*} [Fintype V] [DecidableEq V] [Nonempty V]
+    {G : _root_.SimpleGraph V} {d : ℕ}
+    (S : ContractionSequence G d) :
+    (S.state S.stepCount).bags.card = 1 := by
+  rcases ‹Nonempty V› with ⟨v⟩
+  rcases (S.state S.stepCount).bag_cover v with ⟨A, hA, _hvA⟩
+  have hpos : 0 < (S.state S.stepCount).bags.card :=
+    Finset.card_pos.mpr ⟨A, hA⟩
+  have hle : (S.state S.stepCount).bags.card ≤ 1 := S.ends
+  omega
+
+/-- A contraction sequence on a nonempty finite graph performs exactly
+`|V|-1` contractions. -/
+theorem stepCount_add_one_eq_card
+    {V : Type*} [Fintype V] [DecidableEq V] [Nonempty V]
+    {G : _root_.SimpleGraph V} {d : ℕ}
+    (S : ContractionSequence G d) :
+    S.stepCount + 1 = Fintype.card V := by
+  have hcount := S.bags_card_add_index (i := S.stepCount) le_rfl
+  have hfinal := S.final_bags_card_eq_one
+  omega
+
+end ContractionSequence
 
 /-- `G` has twin-width at most `d` if it has a contraction sequence whose red
 degree never exceeds `d`. -/

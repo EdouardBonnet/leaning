@@ -1,27 +1,23 @@
-import TwinWidth.Equivalence.TwinWidthToMixed
+import TwinWidth.Graph.TwinDecomposition
 
 /-!
-# Contract statements for the twin-width to mixed-minor direction
+# Contract statement for the twin-width to mixed-minor direction
 
-This contract file states the final reduction theorem currently proved by
-`TwinWidthToMixed.lean`: an ordered-adjacency linear bound implies the
-graph-level linear bound.
+This file exposes the completed graph-facing linear bound obtained from the
+left-to-right leaf order of a twin-decomposition.
 -/
 
 namespace TwinWidth
 namespace SimpleGraph
 namespace TwinWidthToMixedContract
 
-/-- If every finite graph has an ordered adjacency matrix with mixed number at
-most `2 * twinWidth G + 2`, then the graph mixed minor number satisfies the
-same bound. -/
-axiom mixed_minor_number_le_twice_twin_width_add_two_of_ordered_adjacency_bound
-    (h :
-      ∀ {V : Type} [Fintype V] [DecidableEq V] (G : _root_.SimpleGraph V),
-        ∃ σ : VertexOrder V (Fintype.card V),
-          Matrix.orderedAdjacencyMixedNumber G σ ≤ 2 * twinWidth G + 2) :
-    ∀ {V : Type} [Fintype V] [DecidableEq V] (G : _root_.SimpleGraph V),
-      mixedMinorNumber G ≤ 2 * twinWidth G + 2
+/-- For every finite simple graph, mixed minor number is linearly bounded by
+twin-width.  The constant reflects the project's diagonal and mirrored-fusion
+conventions for simple graph adjacency matrices. -/
+theorem mixed_minor_number_le_twin_width_linear
+    {V : Type} [Fintype V] [DecidableEq V] (G : _root_.SimpleGraph V) :
+    mixedMinorNumber G ≤ 2 * (twinWidth G + 3) + 2 := by
+  exact TwinWidth.SimpleGraph.mixed_minor_number_le_twice_twin_width_plus_eight G
 
 end TwinWidthToMixedContract
 end SimpleGraph

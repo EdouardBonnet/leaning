@@ -1,4 +1,7 @@
 import TwinWidth.Graph.MixedMinorNumber
+import TwinWidth.Graph.Partition
+import TwinWidth.Graph.Theorem14
+import TwinWidth.Graph.TwinDecomposition
 import TwinWidth.Contraction.TwinWidth
 import TwinWidth.Matrix.Partition
 import TwinWidth.Matrix.MixedWitness
@@ -9,5 +12,6 @@ import TwinWidth.Matrix.TwinWidth
 import TwinWidth.Matrix.MarcusTardos
 import TwinWidth.Matrix.DivisionSequence
 import TwinWidth.Matrix.Theorem10
+import TwinWidth.Matrix.Symmetric
 import TwinWidth.Equivalence.Main
 import TwinWidth.Examples

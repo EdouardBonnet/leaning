@@ -157,6 +157,15 @@ theorem first_mem (i : Fin k) : D.first i ∈ D.part i :=
 theorem last_mem (i : Fin k) : D.last i ∈ D.part i :=
   Finset.max'_mem _ _
 
+/-- Equal division parts have the same first element. -/
+theorem first_eq_of_part_eq {D E : Division n k} {i j : Fin k}
+    (hpart : D.part i = E.part j) :
+    D.first i = E.first j := by
+  classical
+  apply le_antisymm
+  · exact Finset.min'_le _ _ (by simpa [hpart] using E.first_mem j)
+  · exact Finset.min'_le _ _ (by simpa [hpart] using D.first_mem i)
+
 /-- Reindex the parts of a division along an equality of the number of parts. -/
 noncomputable def castIndex {l : ℕ} (h : k = l) (D : Division n k) :
     Division n l where

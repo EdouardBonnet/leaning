@@ -31,7 +31,7 @@ The central objects are:
 
 1. **Ordered adjacency matrices** of finite simple graphs.
 2. **Intervals and divisions** of finite linear orders.
-3. **Mixed cells**, **mixed divisions**, and **mixed minors** of Boolean matrices.
+3. **Mixed cells**, **mixed divisions**, and **mixed minors** of finite-alphabet matrices.
 4. The **mixed minor number** of a matrix.
 5. The **mixed minor number** of a graph, defined as the minimum matrix mixed minor number over all vertex orderings.
 6. **Trigraphs** or red-edge graphs used to represent contraction sequences.
@@ -175,19 +175,18 @@ The exact representation may use cut points instead of sets. Cut points are ofte
 
 ### Mixed cells and mixed minors
 
-For a Boolean matrix `M`, row division `R`, and column division `C`, define the cell at `(i,j)` and say it is mixed when it contains both `true` and `false` entries:
+For a finite-alphabet matrix `M`, row division `R`, and column division `C`, define the cell at `(i,j)` and say it is mixed when it is neither vertical nor horizontal. For Boolean graph adjacency matrices, this specializes to the usual mixed-cell behavior.
 
 ```lean
-def CellMixed (M : Matrix (Fin n) (Fin m) Bool)
+def CellMixed (M : Matrix (Fin n) (Fin m) α)
     (R : Division n k) (C : Division m k) (i j : Fin k) : Prop :=
-  (∃ r ∈ R.part i, ∃ c ∈ C.part j, M r c = true) ∧
-  (∃ r ∈ R.part i, ∃ c ∈ C.part j, M r c = false)
+  ¬ CellVertical M R C i j ∧ ¬ CellHorizontal M R C i j
 ```
 
 Then:
 
 ```lean
-def HasMixedMinor (M : Matrix (Fin n) (Fin m) Bool) (k : ℕ) : Prop :=
+def HasMixedMinor (M : Matrix (Fin n) (Fin m) α) (k : ℕ) : Prop :=
   ∃ R : Division n k, ∃ C : Division m k,
     ∀ i j : Fin k, CellMixed M R C i j
 ```
@@ -290,16 +289,16 @@ For large theorem families, the repository separates three kinds of files:
 
 - `*Defs.lean`: definition-only modules containing predicates, structures, and
   explicit numerical bounds.
-- `*Contract.lean`: contract modules containing axioms for the intended
-  natural-language statements.  These axioms are staging interfaces only.
-- full proof files, such as `Theorem10.lean`, where each completed contract is
-  proved as a theorem without using the contract axiom.
+- `*Contract.lean`: front-end theorem modules exposing the intended
+  natural-language statements in a compact form.
+- full proof files, such as `Theorem10.lean`, where the supporting
+  constructions and detailed lemmas are proved.
 
-Contract axioms must stay confined to `Contract.lean` files.  Completed proof
+Contract files should not introduce new definitions or axioms.  Completed proof
 files should not import a contract module to prove the corresponding theorem.
-Contract axiom names should be theorem-style names, and their types should
+Contract theorem names should be theorem-style names, and their types should
 state the mathematical claim directly.  Avoid contracts of the form
-`axiom short_name : SomePredicateAlias someBound`; prefer explicit quantified
+`theorem short_name : SomePredicateAlias someBound`; prefer explicit quantified
 Lean statements such as `∀ M, MatrixTwinWidthAtMost M d →
 matrixMixedNumber M ≤ 2 * d + 2`.
 Each contract file should expose only the main final lemma for that proof
@@ -315,8 +314,10 @@ Current contract modules:
   Theorem 10 interface.
 - `TwinWidth.Equivalence.TwinWidthToMixedContract` states the reduction from an
   ordered-adjacency linear bound to the graph linear bound.
+- `TwinWidth.Graph.Theorem14Contract` states the graph Theorem 14 bridge from
+  the mirrored symmetric matrix construction to the graph twin-width bound.
 - `TwinWidth.Equivalence.MixedToTwinWidthContract` states the reduction from an
-  ordered-adjacency double-exponential bound to the graph mixed-minor bound.
+  ordered-adjacency Theorem 10 bound to the graph mixed-minor bound.
 - `TwinWidth.Equivalence.MainContract` states the combiner from the two
   explicit directional bounds to functional equivalence.
 
@@ -324,12 +325,24 @@ Current matrix Theorem 10 status:
 
 - `TwinWidth.Matrix.Theorem10Defs` contains the statement-level definitions and
   explicit bounds.
-- `TwinWidth.Matrix.Theorem10Contract` states the full two-direction matrix
-  Theorem 10 interface as a contract axiom.
+- `TwinWidth.Matrix.Theorem10Contract` exposes the full two-direction matrix
+  Theorem 10 interface as theorem wrappers.
 - `TwinWidth.Matrix.Theorem10` proves the ordered first item and the second
   item, then packages them as the full two-direction matrix Theorem 10
   interface.  The first item uses `MatrixTwinOrderedAtMost`, matching the
   ordered-matrix hypothesis in the paper.
+
+Current graph equivalence status:
+
+- `TwinWidth.Graph.Theorem14` proves the graph interpretation of symmetric
+  matrix contraction sequences.  The remaining Theorem 14 input is the
+  mirrored symmetric matrix construction for mixed-free square Boolean
+  matrices.
+- `TwinWidth.Graph.TwinDecomposition` records the leaf-order interface for the
+  twin-width-to-mixed-minor direction.  The remaining input is the construction
+  of that leaf order from a width-`twinWidth G` contraction tree.
+- `TwinWidth.Equivalence.Main` combines these two explicit inputs into
+  functional equivalence without using axioms.
 
 ## Lean and mathlib conventions
 
@@ -396,12 +409,10 @@ Before handing off completed Lean code:
 
 ```bash
 lake build
-grep -R --line-number --include='*.lean' -E '\bsorry\b|\badmit\b|axiom ' TwinWidth \
-  | grep -v 'Contract\.lean'
+grep -R --line-number --include='*.lean' -E '\bsorry\b|\badmit\b|\baxiom\b|unsafe' TwinWidth
 ```
 
-The grep command should produce no matches in completed files.  Contract-file
-axioms should be listed separately in handoff notes whenever they remain.
+The grep command should produce no matches.
 
 ## Non-goals
 

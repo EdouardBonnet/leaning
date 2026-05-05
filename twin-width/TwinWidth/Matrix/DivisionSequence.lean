@@ -18,10 +18,12 @@ finite descent argument turning that step into a full division sequence.
 namespace TwinWidth
 namespace Matrix
 
+variable {α : Type*}
+
 /-- The auxiliary matrix whose entries record which zones of a pair of
 divisions are mixed. -/
 noncomputable def mixedZoneMatrix {n m k l : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (R : Division n k) (C : Division m l) :
     _root_.Matrix (Fin k) (Fin l) Bool :=
   by
@@ -29,14 +31,14 @@ noncomputable def mixedZoneMatrix {n m k l : ℕ}
     exact fun i j => decide (ZoneMixed M (R.part i) (C.part j))
 
 theorem mixedZoneMatrix_eq_true_iff {n m k l : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (R : Division n k) (C : Division m l) (i : Fin k) (j : Fin l) :
     mixedZoneMatrix M R C i j = true ↔ ZoneMixed M (R.part i) (C.part j) := by
   classical
   simp [mixedZoneMatrix]
 
 theorem zoneMixed_of_subset {n m : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {R₁ R₂ : Finset (Fin n)} {C₁ C₂ : Finset (Fin m)}
     (hR : R₁ ⊆ R₂) (hC : C₁ ⊆ C₂)
     (hmix : ZoneMixed M R₁ C₁) :
@@ -54,7 +56,7 @@ theorem zoneMixed_of_subset {n m : ℕ}
 /-- A mixed zone remains mixed after coarsening the column division part that
 contains it. -/
 theorem zoneMixed_col_coarsen_of_zoneMixed {n m l q : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {R : Finset (Fin n)} {C : Division m l} {I : Division l q}
     {a : Fin q} {j : Fin l}
     (hj : j ∈ I.part a)
@@ -65,7 +67,7 @@ theorem zoneMixed_col_coarsen_of_zoneMixed {n m l q : ℕ}
 /-- A mixed zone remains mixed after coarsening the row division part that
 contains it. -/
 theorem zoneMixed_row_coarsen_of_zoneMixed {n m k q : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {R : Division n k} {I : Division k q} {C : Finset (Fin m)}
     {a : Fin q} {i : Fin k}
     (hi : i ∈ I.part a)
@@ -76,7 +78,7 @@ theorem zoneMixed_row_coarsen_of_zoneMixed {n m k q : ℕ}
 /-- If the two sides of a mixed column cut are grouped into the same coarsened
 column part, then the corresponding coarsened zone is mixed. -/
 theorem zoneMixed_col_coarsen_of_colCutMixed {n m l q : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {R : Finset (Fin n)} {C : Division m (l + 1)} {I : Division (l + 1) q}
     {a : Fin q} {j : Fin l}
     (hj₀ : j.castSucc ∈ I.part a) (hj₁ : j.succ ∈ I.part a)
@@ -102,7 +104,7 @@ theorem zoneMixed_col_coarsen_of_colCutMixed {n m l q : ℕ}
 
 /-- Row-cut version of `zoneMixed_col_coarsen_of_colCutMixed`. -/
 theorem zoneMixed_row_coarsen_of_rowCutMixed {n m k q : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {R : Division n (k + 1)} {I : Division (k + 1) q} {C : Finset (Fin m)}
     {a : Fin q} {i : Fin k}
     (hi₀ : i.castSucc ∈ I.part a) (hi₁ : i.succ ∈ I.part a)
@@ -132,7 +134,7 @@ theorem zoneMixed_row_coarsen_of_rowCutMixed {n m k q : ℕ}
 /-- A grid minor in the auxiliary mixed-zone matrix induces a mixed minor in
 the original matrix by coarsening the row and column divisions. -/
 theorem hasMixedMinor_of_mixedZoneMatrix_hasGridMinor {n m k l t : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {R : Division n k} {C : Division m l}
     (hgrid : HasGridMinor (mixedZoneMatrix M R C) t) :
     HasMixedMinor M t := by
@@ -156,7 +158,7 @@ theorem hasMixedMinor_of_mixedZoneMatrix_hasGridMinor {n m k l t : ℕ}
 /-- Contradiction form used in Lemma 13: a `t`-grid minor in the auxiliary
 mixed-zone matrix contradicts `t`-mixed-freeness of the original matrix. -/
 theorem mixedFree_not_mixedZoneMatrix_hasGridMinor {n m k l t : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {R : Division n k} {C : Division m l}
     (hfree : MixedFree M t) :
     ¬ HasGridMinor (mixedZoneMatrix M R C) t := by
@@ -167,7 +169,7 @@ theorem mixedFree_not_mixedZoneMatrix_hasGridMinor {n m k l t : ℕ}
 `t`-mixed-free matrix, the auxiliary matrix has fewer than `c * max k l` mixed
 zones whenever `c` is a Marcus--Tardos constant for `t`. -/
 theorem oneEntries_mixedZoneMatrix_lt_of_mixedFree {n m k l t c : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {R : Division n k} {C : Division m l}
     (hMT : IsMarcusTardosConstant t c)
     (hfree : MixedFree M t)
@@ -179,7 +181,7 @@ theorem oneEntries_mixedZoneMatrix_lt_of_mixedFree {n m k l t c : ℕ}
   exact mixedFree_not_mixedZoneMatrix_hasGridMinor (R := R) (C := C) hfree
     (hMT (mixedZoneMatrix M R C) hpos hden)
 
-/-- A row/column division of a finite Boolean matrix.  The fields `rowCuts` and
+/-- A row/column division of a finite matrix.  The fields `rowCuts` and
 `colCuts` are one less than the number of row and column parts; this matches the
 `k + 1` indexing used by mixed cuts. -/
 structure MatrixDivision (n m : ℕ) where
@@ -211,7 +213,7 @@ noncomputable def finest {n m : ℕ} (hn : 0 < n) (hm : 0 < m) :
 mixed value at most `d` on the row division, and every row part has mixed value
 at most `d` on the column division. -/
 def MixedValueAtMost {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (D : MatrixDivision n m) (d : ℕ) : Prop :=
   (∀ j : Fin (D.colCuts + 1),
       rowMixedValue M D.rowDiv (D.colDiv.part j) ≤ d) ∧
@@ -325,7 +327,7 @@ noncomputable def colPairRightDiv {n m : ℕ} (D : MatrixDivision n m)
 /-- A mixed column cut is visible as a mixed zone in one of the two paired
 column coarsenings. -/
 theorem zoneMixed_colPair_of_colCutMixed {n m : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : MatrixDivision n m) (hcol : 0 < D.colCuts)
     (R : Finset (Fin n)) (j : Fin D.colCuts)
     (hmix : ColCutMixed M R D.colDiv j) :
@@ -368,7 +370,7 @@ theorem zoneMixed_colPair_of_colCutMixed {n m : ℕ}
 /-- A mixed row cut is visible as a mixed zone in one of the two paired row
 coarsenings. -/
 theorem zoneMixed_rowPair_of_rowCutMixed {n m : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : MatrixDivision n m) (hrow : 0 < D.rowCuts)
     (C : Finset (Fin m)) (i : Fin D.rowCuts)
     (hmix : RowCutMixed M D.rowDiv C i) :
@@ -411,7 +413,7 @@ theorem zoneMixed_rowPair_of_rowCutMixed {n m : ℕ}
 /-- Every mixed item of a row set on the column division is visible in one of
 the two paired column coarsenings. -/
 theorem colMixedItem_visible_pair {n m : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : MatrixDivision n m) (hcol : 0 < D.colCuts)
     (R : Finset (Fin n)) {x : Sum (Fin (D.colCuts + 1)) (Fin D.colCuts)}
     (hx : x ∈ colMixedItems M R D.colDiv) :
@@ -440,7 +442,7 @@ theorem colMixedItem_visible_pair {n m : ℕ}
 
 /-- Row-side version of `colMixedItem_visible_pair`. -/
 theorem rowMixedItem_visible_pair {n m : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : MatrixDivision n m) (hrow : 0 < D.rowCuts)
     (C : Finset (Fin m)) {x : Sum (Fin (D.rowCuts + 1)) (Fin D.rowCuts)}
     (hx : x ∈ rowMixedItems M D.rowDiv C) :
@@ -565,7 +567,7 @@ theorem colFuse_pairLeft_part_subset {n m : ℕ}
 /-- If no row fusion is good, then every canonical left row-pair fusion has
 new row-part mixed value strictly above the bound. -/
 theorem colMixedValue_rowPair_gt_of_no_good_row {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : MatrixDivision n m) (hrow : 0 < D.rowCuts)
     (hbad :
       ¬ ∃ hrow' : 0 < D.rowCuts, ∃ i : Fin D.rowCuts,
@@ -592,7 +594,7 @@ theorem colMixedValue_rowPair_gt_of_no_good_row {n m d : ℕ}
 
 /-- Column-side analogue of `colMixedValue_rowPair_gt_of_no_good_row`. -/
 theorem rowMixedValue_colPair_gt_of_no_good_col {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : MatrixDivision n m) (hcol : 0 < D.colCuts)
     (hbad :
       ¬ ∃ hcol' : 0 < D.colCuts, ∃ j : Fin D.colCuts,
@@ -619,7 +621,7 @@ theorem rowMixedValue_colPair_gt_of_no_good_col {n m d : ℕ}
 
 /-- Cardinal form of `colMixedValue_rowPair_gt_of_no_good_row`. -/
 theorem colMixedItems_rowPair_card_gt_of_no_good_row {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : MatrixDivision n m) (hrow : 0 < D.rowCuts)
     (hbad :
       ¬ ∃ hrow' : 0 < D.rowCuts, ∃ i : Fin D.rowCuts,
@@ -648,7 +650,7 @@ theorem colMixedItems_rowPair_card_gt_of_no_good_row {n m d : ℕ}
 
 /-- Cardinal form of `rowMixedValue_colPair_gt_of_no_good_col`. -/
 theorem rowMixedItems_colPair_card_gt_of_no_good_col {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : MatrixDivision n m) (hcol : 0 < D.colCuts)
     (hbad :
       ¬ ∃ hcol' : 0 < D.colCuts, ∃ j : Fin D.colCuts,
@@ -679,7 +681,7 @@ theorem rowMixedItems_colPair_card_gt_of_no_good_col {n m d : ℕ}
 set.  The left summand records mixed zones of the left pairing and the right
 summand records mixed zones of the shifted right pairing. -/
 noncomputable def colPairedMixedTargets {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (D : MatrixDivision n m) (hcol : 0 < D.colCuts)
     (R : Finset (Fin n)) :
     Finset (Sum (Fin (Division.pairCount (D.colCuts + 1)))
@@ -694,7 +696,7 @@ noncomputable def colPairedMixedTargets {n m : ℕ}
         ⟨Sum.inr, by intro a b h; simpa using h⟩
 
 @[simp] theorem mem_colPairedMixedTargets_left {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (D : MatrixDivision n m) (hcol : 0 < D.colCuts)
     (R : Finset (Fin n))
     (a : Fin (Division.pairCount (D.colCuts + 1))) :
@@ -704,7 +706,7 @@ noncomputable def colPairedMixedTargets {n m : ℕ}
   simp [colPairedMixedTargets]
 
 @[simp] theorem mem_colPairedMixedTargets_right {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (D : MatrixDivision n m) (hcol : 0 < D.colCuts)
     (R : Finset (Fin n))
     (a : Fin (Division.pairCount (D.colCuts + 1))) :
@@ -715,7 +717,7 @@ noncomputable def colPairedMixedTargets {n m : ℕ}
 
 /-- Row-side analogue of `colPairedMixedTargets`. -/
 noncomputable def rowPairedMixedTargets {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (D : MatrixDivision n m) (hrow : 0 < D.rowCuts)
     (C : Finset (Fin m)) :
     Finset (Sum (Fin (Division.pairCount (D.rowCuts + 1)))
@@ -730,7 +732,7 @@ noncomputable def rowPairedMixedTargets {n m : ℕ}
         ⟨Sum.inr, by intro a b h; simpa using h⟩
 
 @[simp] theorem mem_rowPairedMixedTargets_left {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (D : MatrixDivision n m) (hrow : 0 < D.rowCuts)
     (C : Finset (Fin m))
     (a : Fin (Division.pairCount (D.rowCuts + 1))) :
@@ -740,7 +742,7 @@ noncomputable def rowPairedMixedTargets {n m : ℕ}
   simp [rowPairedMixedTargets]
 
 @[simp] theorem mem_rowPairedMixedTargets_right {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (D : MatrixDivision n m) (hrow : 0 < D.rowCuts)
     (C : Finset (Fin m))
     (a : Fin (Division.pairCount (D.rowCuts + 1))) :
@@ -751,7 +753,7 @@ noncomputable def rowPairedMixedTargets {n m : ℕ}
 
 /-- Membership form of `colMixedItem_visible_pair`. -/
 theorem exists_mem_colPairedMixedTargets_of_colMixedItem {n m : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : MatrixDivision n m) (hcol : 0 < D.colCuts)
     (R : Finset (Fin n)) {x : Sum (Fin (D.colCuts + 1)) (Fin D.colCuts)}
     (hx : x ∈ colMixedItems M R D.colDiv) :
@@ -764,7 +766,7 @@ theorem exists_mem_colPairedMixedTargets_of_colMixedItem {n m : ℕ}
 
 /-- Membership form of `rowMixedItem_visible_pair`. -/
 theorem exists_mem_rowPairedMixedTargets_of_rowMixedItem {n m : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : MatrixDivision n m) (hrow : 0 < D.rowCuts)
     (C : Finset (Fin m)) {x : Sum (Fin (D.rowCuts + 1)) (Fin D.rowCuts)}
     (hx : x ∈ rowMixedItems M D.rowDiv C) :
@@ -806,7 +808,7 @@ theorem pairedItem_card_le_ten_mul_target_card {k : ℕ} (hk : 0 < k)
 the left summand is the matrix for the left column pairing and the right
 summand is the matrix for the shifted right column pairing. -/
 noncomputable def rowPairAuxTargets {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (D : MatrixDivision n m) (hrow : 0 < D.rowCuts) (hcol : 0 < D.colCuts) :
     Finset (Fin (Division.pairCount (D.rowCuts + 1)) ×
       Sum (Fin (Division.pairCount (D.colCuts + 1)))
@@ -837,7 +839,7 @@ noncomputable def rowPairAuxTargets {n m : ℕ}
                   exact Prod.ext h.1 h.2⟩
 
 @[simp] theorem mem_rowPairAuxTargets_left {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (D : MatrixDivision n m) (hrow : 0 < D.rowCuts) (hcol : 0 < D.colCuts)
     (a : Fin (Division.pairCount (D.rowCuts + 1)))
     (b : Fin (Division.pairCount (D.colCuts + 1))) :
@@ -848,7 +850,7 @@ noncomputable def rowPairAuxTargets {n m : ℕ}
   simp [rowPairAuxTargets, oneEntries, mixedZoneMatrix]
 
 @[simp] theorem mem_rowPairAuxTargets_right {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (D : MatrixDivision n m) (hrow : 0 < D.rowCuts) (hcol : 0 < D.colCuts)
     (a : Fin (Division.pairCount (D.rowCuts + 1)))
     (b : Fin (Division.pairCount (D.colCuts + 1))) :
@@ -860,7 +862,7 @@ noncomputable def rowPairAuxTargets {n m : ℕ}
 
 /-- Marcus--Tardos upper bound for the two row-pair auxiliary matrices. -/
 theorem rowPairAuxTargets_card_lt {n m t c : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : MatrixDivision n m) (hrow : 0 < D.rowCuts) (hcol : 0 < D.colCuts)
     (hMT : IsMarcusTardosConstant t c) (hfree : MixedFree M t) :
     (rowPairAuxTargets M D hrow hcol).card <
@@ -905,7 +907,7 @@ theorem rowPairAuxTargets_card_lt {n m t c : ℕ}
 /-- A mixed item of the fused row pair contributes a mixed entry to one of the
 two row-pair auxiliary matrices. -/
 theorem exists_mem_rowPairAuxTargets_of_rowPair_colMixedItem {n m : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : MatrixDivision n m) (hrow : 0 < D.rowCuts) (hcol : 0 < D.colCuts)
     (a : Fin (Division.pairCount (D.rowCuts + 1)))
     {x : Sum (Fin (D.colCuts + 1)) (Fin D.colCuts)}
@@ -948,7 +950,7 @@ theorem exists_mem_rowPairAuxTargets_of_rowPair_colMixedItem {n m : ℕ}
 `exists_mem_rowPairAuxTargets_of_rowPair_colMixedItem`, using the paired target
 map from `Division`. -/
 theorem pairedItemTarget_mem_rowPairAuxTargets_of_rowPair_colMixedItem {n m : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : MatrixDivision n m) (hrow : 0 < D.rowCuts) (hcol : 0 < D.colCuts)
     (a : Fin (Division.pairCount (D.rowCuts + 1)))
     {x : Sum (Fin (D.colCuts + 1)) (Fin D.colCuts)}
@@ -1058,7 +1060,7 @@ theorem pairedItemTarget_mem_rowPairAuxTargets_of_rowPair_colMixedItem {n m : �
 
 /-- The row-pair auxiliary entries in a fixed paired row. -/
 noncomputable def rowPairAuxFiber {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (D : MatrixDivision n m) (hrow : 0 < D.rowCuts) (hcol : 0 < D.colCuts)
     (a : Fin (Division.pairCount (D.rowCuts + 1))) :
     Finset
@@ -1068,7 +1070,7 @@ noncomputable def rowPairAuxFiber {n m : ℕ}
   exact Finset.univ.filter fun y => (a, y) ∈ rowPairAuxTargets M D hrow hcol
 
 theorem colMixedItems_rowPair_card_le_ten_mul_rowPairAuxFiber_card {n m : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : MatrixDivision n m) (hrow : 0 < D.rowCuts) (hcol : 0 < D.colCuts)
     (a : Fin (Division.pairCount (D.rowCuts + 1))) :
     let i : Fin D.rowCuts :=
@@ -1086,7 +1088,7 @@ theorem colMixedItems_rowPair_card_le_ten_mul_rowPairAuxFiber_card {n m : ℕ}
     D hrow hcol a (by simpa [i, fi] using hx)
 
 theorem rowPairAuxTargets_card_gt_of_fibers_gt {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : MatrixDivision n m) (hrow : 0 < D.rowCuts) (hcol : 0 < D.colCuts)
     (h :
       ∀ a : Fin (Division.pairCount (D.rowCuts + 1)),
@@ -1150,7 +1152,7 @@ theorem rowPairAuxTargets_card_gt_of_fibers_gt {n m d : ℕ}
 /-- The two auxiliary mixed-zone matrices used when column pairs are the
 columns, dual to `rowPairAuxTargets`. -/
 noncomputable def colPairAuxTargets {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (D : MatrixDivision n m) (hrow : 0 < D.rowCuts) (hcol : 0 < D.colCuts) :
     Finset (Sum (Fin (Division.pairCount (D.rowCuts + 1)))
         (Fin (Division.pairCount (D.rowCuts + 1))) ×
@@ -1181,7 +1183,7 @@ noncomputable def colPairAuxTargets {n m : ℕ}
                   exact Prod.ext h.1 h.2⟩
 
 @[simp] theorem mem_colPairAuxTargets_left {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (D : MatrixDivision n m) (hrow : 0 < D.rowCuts) (hcol : 0 < D.colCuts)
     (a : Fin (Division.pairCount (D.rowCuts + 1)))
     (b : Fin (Division.pairCount (D.colCuts + 1))) :
@@ -1192,7 +1194,7 @@ noncomputable def colPairAuxTargets {n m : ℕ}
   simp [colPairAuxTargets, oneEntries, mixedZoneMatrix]
 
 @[simp] theorem mem_colPairAuxTargets_right {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (D : MatrixDivision n m) (hrow : 0 < D.rowCuts) (hcol : 0 < D.colCuts)
     (a : Fin (Division.pairCount (D.rowCuts + 1)))
     (b : Fin (Division.pairCount (D.colCuts + 1))) :
@@ -1204,7 +1206,7 @@ noncomputable def colPairAuxTargets {n m : ℕ}
 
 /-- Marcus--Tardos upper bound for the two column-pair auxiliary matrices. -/
 theorem colPairAuxTargets_card_lt {n m t c : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : MatrixDivision n m) (hrow : 0 < D.rowCuts) (hcol : 0 < D.colCuts)
     (hMT : IsMarcusTardosConstant t c) (hfree : MixedFree M t) :
     (colPairAuxTargets M D hrow hcol).card <
@@ -1249,7 +1251,7 @@ theorem colPairAuxTargets_card_lt {n m t c : ℕ}
 /-- Column-side analogue of
 `exists_mem_rowPairAuxTargets_of_rowPair_colMixedItem`. -/
 theorem exists_mem_colPairAuxTargets_of_colPair_rowMixedItem {n m : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : MatrixDivision n m) (hrow : 0 < D.rowCuts) (hcol : 0 < D.colCuts)
     (b : Fin (Division.pairCount (D.colCuts + 1)))
     {x : Sum (Fin (D.rowCuts + 1)) (Fin D.rowCuts)}
@@ -1290,7 +1292,7 @@ theorem exists_mem_colPairAuxTargets_of_colPair_rowMixedItem {n m : ℕ}
 
 /-- Column-side deterministic paired-target membership. -/
 theorem pairedItemTarget_mem_colPairAuxTargets_of_colPair_rowMixedItem {n m : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : MatrixDivision n m) (hrow : 0 < D.rowCuts) (hcol : 0 < D.colCuts)
     (b : Fin (Division.pairCount (D.colCuts + 1)))
     {x : Sum (Fin (D.rowCuts + 1)) (Fin D.rowCuts)}
@@ -1400,7 +1402,7 @@ theorem pairedItemTarget_mem_colPairAuxTargets_of_colPair_rowMixedItem {n m : �
 
 /-- The column-pair auxiliary entries in a fixed paired column. -/
 noncomputable def colPairAuxFiber {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (D : MatrixDivision n m) (hrow : 0 < D.rowCuts) (hcol : 0 < D.colCuts)
     (b : Fin (Division.pairCount (D.colCuts + 1))) :
     Finset
@@ -1410,7 +1412,7 @@ noncomputable def colPairAuxFiber {n m : ℕ}
   exact Finset.univ.filter fun y => (y, b) ∈ colPairAuxTargets M D hrow hcol
 
 theorem rowMixedItems_colPair_card_le_ten_mul_colPairAuxFiber_card {n m : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : MatrixDivision n m) (hrow : 0 < D.rowCuts) (hcol : 0 < D.colCuts)
     (b : Fin (Division.pairCount (D.colCuts + 1))) :
     let j : Fin D.colCuts :=
@@ -1428,7 +1430,7 @@ theorem rowMixedItems_colPair_card_le_ten_mul_colPairAuxFiber_card {n m : ℕ}
     D hrow hcol b (by simpa [j, fj] using hx)
 
 theorem colPairAuxTargets_card_gt_of_fibers_gt {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : MatrixDivision n m) (hrow : 0 < D.rowCuts) (hcol : 0 < D.colCuts)
     (h :
       ∀ b : Fin (Division.pairCount (D.colCuts + 1)),
@@ -1517,7 +1519,7 @@ theorem hasColFusion_colFuse {n m : ℕ} (D : MatrixDivision n m)
 
 /-- Row fusion does not increase the mixed value of any column part. -/
 theorem rowMixedValue_rowFuse_le {n m : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : MatrixDivision n m) (hrow : 0 < D.rowCuts) (i : Fin D.rowCuts)
     (j : Fin ((rowFuse D hrow i).colCuts + 1)) :
     rowMixedValue M (rowFuse D hrow i).rowDiv
@@ -1538,7 +1540,7 @@ theorem rowMixedValue_rowFuse_le {n m : ℕ}
 
 /-- Column fusion does not increase the mixed value of any row part. -/
 theorem colMixedValue_colFuse_le {n m : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : MatrixDivision n m) (hcol : 0 < D.colCuts) (j : Fin D.colCuts)
     (i : Fin ((colFuse D hcol j).rowCuts + 1)) :
     colMixedValue M ((colFuse D hcol j).rowDiv.part i)
@@ -1631,7 +1633,7 @@ theorem colFuse_colPart_eq_of_gt {n m : ℕ}
 /-- A row fusion preserves bounded mixed value once the newly fused row part
 has bounded mixed value on the column division. -/
 theorem mixedValueAtMost_rowFuse {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : MatrixDivision n m) (hD : MixedValueAtMost M D d)
     (hrow : 0 < D.rowCuts) (i : Fin D.rowCuts)
     (hnew :
@@ -1663,7 +1665,7 @@ theorem mixedValueAtMost_rowFuse {n m d : ℕ}
 /-- A column fusion preserves bounded mixed value once the newly fused column
 part has bounded mixed value on the row division. -/
 theorem mixedValueAtMost_colFuse {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : MatrixDivision n m) (hD : MixedValueAtMost M D d)
     (hcol : 0 < D.colCuts) (j : Fin D.colCuts)
     (hnew :
@@ -1694,7 +1696,7 @@ theorem mixedValueAtMost_colFuse {n m d : ℕ}
 
 /-- A good row cut gives a valid greedy fusion step. -/
 theorem exists_exactFusion_of_goodRowCut {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : MatrixDivision n m) (hD : MixedValueAtMost M D d)
     (hrow : 0 < D.rowCuts) (i : Fin D.rowCuts)
     (hnew :
@@ -1711,7 +1713,7 @@ theorem exists_exactFusion_of_goodRowCut {n m d : ℕ}
 
 /-- A good column cut gives a valid greedy fusion step. -/
 theorem exists_exactFusion_of_goodColCut {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : MatrixDivision n m) (hD : MixedValueAtMost M D d)
     (hcol : 0 < D.colCuts) (j : Fin D.colCuts)
     (hnew :
@@ -1752,7 +1754,7 @@ theorem cutCount_lt_of_hasFusionShape {n m : ℕ}
   rcases h with h | h <;> dsimp [cutCount] <;> omega
 
 theorem rowMixedValue_eq_zero_of_col_singleton {n m : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : MatrixDivision n m) {j : Fin (D.colCuts + 1)} {c : Fin m}
     (hc : D.colDiv.part j = {c}) :
     rowMixedValue M D.rowDiv (D.colDiv.part j) = 0 := by
@@ -1789,7 +1791,7 @@ theorem rowMixedValue_eq_zero_of_col_singleton {n m : ℕ}
   simp [rowMixedValue, hz, hcuts]
 
 theorem colMixedValue_eq_zero_of_row_singleton {n m : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : MatrixDivision n m) {i : Fin (D.rowCuts + 1)} {r : Fin n}
     (hr : D.rowDiv.part i = {r}) :
     colMixedValue M (D.rowDiv.part i) D.colDiv = 0 := by
@@ -1826,7 +1828,7 @@ theorem colMixedValue_eq_zero_of_row_singleton {n m : ℕ}
   simp [colMixedValue, hz, hcuts]
 
 theorem colMixedValue_le_one_of_colCuts_eq_zero {n m : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : MatrixDivision n m) (hcol : D.colCuts = 0)
     (R : Finset (Fin n)) :
     colMixedValue M R D.colDiv ≤ 1 := by
@@ -1847,7 +1849,7 @@ theorem colMixedValue_le_one_of_colCuts_eq_zero {n m : ℕ}
   simpa [colMixedValue, hcuts] using hzones
 
 theorem rowMixedValue_le_one_of_rowCuts_eq_zero {n m : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (D : MatrixDivision n m) (hrow : D.rowCuts = 0)
     (C : Finset (Fin m)) :
     rowMixedValue M D.rowDiv C ≤ 1 := by
@@ -1868,7 +1870,7 @@ theorem rowMixedValue_le_one_of_rowCuts_eq_zero {n m : ℕ}
   simpa [rowMixedValue, hcuts] using hzones
 
 theorem exists_goodRowCut_of_colCuts_eq_zero {n m t c : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (hMT : IsMarcusTardosConstant t c) (ht : 0 < t)
     (D : MatrixDivision n m) (hrow : 0 < D.rowCuts) (hcol : D.colCuts = 0) :
     ∃ i : Fin D.rowCuts,
@@ -1895,7 +1897,7 @@ theorem exists_goodRowCut_of_colCuts_eq_zero {n m t c : ℕ}
   exact le_trans hle1 (by omega)
 
 theorem exists_goodColCut_of_rowCuts_eq_zero {n m t c : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (hMT : IsMarcusTardosConstant t c) (ht : 0 < t)
     (D : MatrixDivision n m) (hcol : 0 < D.colCuts) (hrow : D.rowCuts = 0) :
     ∃ j : Fin D.colCuts,
@@ -1922,7 +1924,7 @@ theorem exists_goodColCut_of_rowCuts_eq_zero {n m t c : ℕ}
   exact le_trans hle1 (by omega)
 
 theorem mixedValueAtMost_of_isFinest {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {D : MatrixDivision n m}
     (hD : IsFinest D) :
     MixedValueAtMost M D d := by
@@ -1941,7 +1943,7 @@ end MatrixDivision
 /-- A tail of a bounded mixed-value division sequence starting from a prescribed
 division. -/
 structure BoundedMixedValueDivisionTail {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool) (d : ℕ)
+    (M : _root_.Matrix (Fin n) (Fin m) α) (d : ℕ)
     (D₀ : MatrixDivision n m) where
   /-- Number of remaining fusions. -/
   stepCount : ℕ
@@ -1961,7 +1963,7 @@ structure BoundedMixedValueDivisionTail {n m : ℕ}
 /-- A concrete division sequence all of whose divisions have mixed value at
 most `d`. -/
 structure BoundedMixedValueDivisionSequence {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool) (d : ℕ) where
+    (M : _root_.Matrix (Fin n) (Fin m) α) (d : ℕ) where
   /-- Number of fusions. -/
   stepCount : ℕ
   /-- Division at each time. -/
@@ -1980,7 +1982,7 @@ structure BoundedMixedValueDivisionSequence {n m : ℕ}
 /-- The local greedy step used in Lemma 13: every non-coarsest division whose
 mixed value is already bounded admits one fusion preserving the same bound. -/
 def GreedyFusionStep {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool) (d : ℕ) : Prop :=
+    (M : _root_.Matrix (Fin n) (Fin m) α) (d : ℕ) : Prop :=
   ∀ D : MatrixDivision n m,
     MatrixDivision.MixedValueAtMost M D d →
       ¬ MatrixDivision.IsCoarsest D →
@@ -1992,7 +1994,7 @@ def GreedyFusionStep {n m : ℕ}
 every non-coarsest bounded division has either a good row cut or a good column
 cut. -/
 theorem greedyFusionStep_of_goodCut {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (hgood :
       ∀ D : MatrixDivision n m,
         MatrixDivision.MixedValueAtMost M D d →
@@ -2024,7 +2026,7 @@ theorem greedyFusionStep_of_goodCut {n m d : ℕ}
 namespace BoundedMixedValueDivisionTail
 
 /-- Prepend one fusion to a bounded tail. -/
-def cons {n m d : ℕ} {M : _root_.Matrix (Fin n) (Fin m) Bool}
+def cons {n m d : ℕ} {M : _root_.Matrix (Fin n) (Fin m) α}
     {D E : MatrixDivision n m}
     (hDE : MatrixDivision.HasExactFusion D E)
     (hD : MatrixDivision.MixedValueAtMost M D d)
@@ -2061,7 +2063,7 @@ end BoundedMixedValueDivisionTail
 available, repeatedly applying it gives a bounded mixed-value division sequence
 from any bounded starting division. -/
 theorem exists_boundedMixedValueDivisionTail_of_greedyStep {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (hstep : GreedyFusionStep M d) :
     ∀ D : MatrixDivision n m,
       MatrixDivision.MixedValueAtMost M D d →
@@ -2093,7 +2095,7 @@ theorem exists_boundedMixedValueDivisionTail_of_greedyStep {n m d : ℕ}
 /-- Convert a bounded tail from a finest division into the public sequence
 object. -/
 def boundedMixedValueDivisionSequence_of_tail {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {D₀ : MatrixDivision n m}
     (hfinest : MatrixDivision.IsFinest D₀)
     (S : BoundedMixedValueDivisionTail M d D₀) :
@@ -2113,7 +2115,7 @@ local greedy step; see
 `greedyFusionStep_of_marcusTardos` for the fully proved explicit constant used
 in this formalization. -/
 theorem boundedMixedValueDivisionSequence_of_greedyStep {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {D₀ : MatrixDivision n m}
     (hfinest : MatrixDivision.IsFinest D₀)
     (hD₀ : MatrixDivision.MixedValueAtMost M D₀ d)
@@ -2132,7 +2134,7 @@ def lemma13MixedValueBound (c : ℕ → ℕ) (t : ℕ) : ℕ :=
 finite-fiber constant used in this formalization. -/
 theorem pairedMarcusTardosCountingStep
     {c : ℕ → ℕ} :
-    ∀ {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool) (t : ℕ)
+    ∀ {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) α) (t : ℕ)
       (_hMT : IsMarcusTardosConstant t (c t)) (_hfree : MixedFree M t)
       (D : MatrixDivision n m),
         MatrixDivision.MixedValueAtMost M D (lemma13MixedValueBound c t) →
@@ -2213,7 +2215,7 @@ theorem pairedMarcusTardosCountingStep
 theorem greedyFusionStep_of_marcusTardos
     {c : ℕ → ℕ}
     (hMT : ∀ t : ℕ, IsMarcusTardosConstant t (c t)) :
-    ∀ {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool) (t : ℕ),
+    ∀ {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) α) (t : ℕ),
       MixedFree M t → GreedyFusionStep M (lemma13MixedValueBound c t) := by
   intro n m M t hfree
   by_cases ht : t = 0
@@ -2274,7 +2276,7 @@ theorem boundedMixedValueDivisionSequence_positive_of_marcusTardos
     {c : ℕ → ℕ}
     (hMT : ∀ t : ℕ, IsMarcusTardosConstant t (c t)) :
     ∀ {n m : ℕ}, 0 < n → 0 < m →
-      (M : _root_.Matrix (Fin n) (Fin m) Bool) → (t : ℕ) →
+      (M : _root_.Matrix (Fin n) (Fin m) α) → (t : ℕ) →
         MixedFree M t →
           Nonempty (BoundedMixedValueDivisionSequence M (lemma13MixedValueBound c t)) := by
   intro n m hn hm M t hfree
@@ -2288,7 +2290,7 @@ theorem boundedMixedValueDivisionSequence_positive_of_marcusTardos
 theorem greedyFusionProducesBoundedMixedValueSequence
     {c : ℕ → ℕ}
     (hMT : ∀ t : ℕ, IsMarcusTardosConstant t (c t)) :
-    ∀ {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool) (t : ℕ)
+    ∀ {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) α) (t : ℕ)
       (D₀ : MatrixDivision n m),
         MixedFree M t →
           MatrixDivision.IsFinest D₀ →
@@ -2304,7 +2306,7 @@ theorem boundedMixedValueDivisionSequenceTheorem
     {c : ℕ → ℕ}
     (hMT : ∀ t : ℕ, IsMarcusTardosConstant t (c t)) :
     ∀ {n m : ℕ}, 0 < n → 0 < m →
-      ∀ (M : _root_.Matrix (Fin n) (Fin m) Bool) (t : ℕ),
+      ∀ (M : _root_.Matrix (Fin n) (Fin m) α) (t : ℕ),
         MixedFree M t →
           Nonempty (BoundedMixedValueDivisionSequence M (lemma13MixedValueBound c t)) := by
   intro n m hn hm M t hfree
@@ -2316,12 +2318,12 @@ proved from the grid-form Marcus--Tardos theorem. -/
 theorem boundedMixedValueDivisionSequence_of_greedyFusion
     {c : ℕ → ℕ}
     (hgreedy :
-      ∀ {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool) (t : ℕ)
+      ∀ {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) α) (t : ℕ)
         (D₀ : MatrixDivision n m),
           MixedFree M t →
             MatrixDivision.IsFinest D₀ →
               GreedyFusionStep M (lemma13MixedValueBound c t)) :
-    ∀ {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool) (t : ℕ)
+    ∀ {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) α) (t : ℕ)
       (D₀ : MatrixDivision n m),
         MixedFree M t →
           MatrixDivision.IsFinest D₀ →
@@ -2336,13 +2338,13 @@ finest starting point. -/
 theorem boundedMixedValueDivisionSequence_of_greedyFusion_positive
     {c : ℕ → ℕ}
     (hgreedy :
-      ∀ {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool) (t : ℕ)
+      ∀ {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) α) (t : ℕ)
         (D₀ : MatrixDivision n m),
           MixedFree M t →
             MatrixDivision.IsFinest D₀ →
               GreedyFusionStep M (lemma13MixedValueBound c t))
     {n m : ℕ} (hn : 0 < n) (hm : 0 < m)
-    (M : _root_.Matrix (Fin n) (Fin m) Bool) (t : ℕ)
+    (M : _root_.Matrix (Fin n) (Fin m) α) (t : ℕ)
     (hfree : MixedFree M t) :
     Nonempty (BoundedMixedValueDivisionSequence M (lemma13MixedValueBound c t)) :=
   boundedMixedValueDivisionSequence_of_greedyFusion hgreedy M t
@@ -2358,7 +2360,7 @@ theorem lemma13_bounded_mixed_value_division_sequence
     {c : ℕ → ℕ}
     (hMT : ∀ t : ℕ, IsMarcusTardosConstant t (c t)) :
     ∀ {n m : ℕ}, 0 < n → 0 < m →
-      ∀ (M : _root_.Matrix (Fin n) (Fin m) Bool) (t : ℕ),
+      ∀ (M : _root_.Matrix (Fin n) (Fin m) α) (t : ℕ),
         MixedFree M t →
           Nonempty (BoundedMixedValueDivisionSequence M (20 * c t)) := by
   intro n m hn hm M t hfree

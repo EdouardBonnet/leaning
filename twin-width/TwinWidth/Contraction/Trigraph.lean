@@ -45,6 +45,25 @@ namespace TrigraphState
 noncomputable def singletonBags (V : Type*) [Fintype V] [DecidableEq V] : Finset (Finset V) :=
   Finset.univ.image (fun v : V => ({v} : Finset V))
 
+@[simp] theorem mem_singletonBags {V : Type*} [Fintype V] [DecidableEq V]
+    {A : Finset V} :
+    A ∈ singletonBags V ↔ ∃ v : V, A = {v} := by
+  classical
+  constructor
+  · intro hA
+    rcases Finset.mem_image.mp hA with ⟨v, _hv, rfl⟩
+    exact ⟨v, rfl⟩
+  · rintro ⟨v, rfl⟩
+    exact Finset.mem_image.mpr ⟨v, by simp, rfl⟩
+
+@[simp] theorem card_singletonBags (V : Type*) [Fintype V] [DecidableEq V] :
+    (singletonBags V).card = Fintype.card V := by
+  classical
+  rw [singletonBags]
+  refine Finset.card_image_of_injective _ ?_
+  intro a b h
+  exact Finset.singleton_inj.mp h
+
 /-- The red degree of a bag in a trigraph state. -/
 noncomputable def redDegree {V : Type*} [DecidableEq V]
     (T : TrigraphState V) (A : Finset V) : ℕ :=

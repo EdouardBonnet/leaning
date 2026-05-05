@@ -13,10 +13,14 @@ sequences.
 namespace TwinWidth
 namespace Matrix
 
+universe u
+
+variable {α : Type u}
+
 /-- Negating verticality produces two rows and one column witnessing different
 entries. -/
 theorem not_cellVertical_iff_exists {n m k : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (R : Division n k) (C : Division m k) (i j : Fin k) :
     ¬ CellVertical M R C i j ↔
       ∃ r₁, r₁ ∈ R.part i ∧
@@ -28,7 +32,7 @@ theorem not_cellVertical_iff_exists {n m k : ℕ}
 /-- Negating horizontality produces one row and two columns witnessing
 different entries. -/
 theorem not_cellHorizontal_iff_exists {n m k : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (R : Division n k) (C : Division m k) (i j : Fin k) :
     ¬ CellHorizontal M R C i j ↔
       ∃ r, r ∈ R.part i ∧
@@ -86,7 +90,7 @@ theorem containsMinorBlock_of_isCoarsest {n m k : ℕ}
 /-- At the finest division, no block of a positive mixed minor has already been
 swallowed by a singleton row or column part. -/
 theorem not_containsMinorBlock_of_isFinest_of_mixed {n m k : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {R : Division n k} {C : Division m k} {D : MatrixDivision n m}
     (hk : 0 < k) (hD : IsFinest D)
     (hmix : ∀ i j : Fin k, CellMixed M R C i j) :
@@ -172,7 +176,7 @@ the containing row part sees at least one nonconstant error for every other
 minor column block.  Taking the even-indexed column blocks gives `d + 2`
 distinct errors when `2 * d + 2 < k`, contradicting error value at most `d`. -/
 theorem false_of_rowBlock_subset_of_no_colBlock_subset {n m k d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {R : Division n k} {C : Division m k} {D : MatrixDivision n m}
     (hk : 2 * d + 2 < k)
     (hmix : ∀ i j : Fin k, CellMixed M R C i j)
@@ -260,7 +264,7 @@ theorem false_of_rowBlock_subset_of_no_colBlock_subset {n m k d : ℕ}
 /-- Column-side counting core of the first item of Theorem 10, dual to
 `false_of_rowBlock_subset_of_no_colBlock_subset`. -/
 theorem false_of_colBlock_subset_of_no_rowBlock_subset {n m k d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {R : Division n k} {C : Division m k} {D : MatrixDivision n m}
     (hk : 2 * d + 2 < k)
     (hmix : ∀ i j : Fin k, CellMixed M R C i j)
@@ -348,7 +352,7 @@ theorem false_of_colBlock_subset_of_no_rowBlock_subset {n m k d : ℕ}
 /-- Ordered first item of matrix Theorem 10: a bounded-error division sequence
 for the current row and column orders bounds the matrix mixed number linearly. -/
 theorem theorem10_ordered_matrix_mixed_number_le_of_twin_ordered_at_most
-    {n m d : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool) :
+    {n m d : ℕ} (M : _root_.Matrix (Fin n) (Fin m) α) :
     MatrixTwinOrderedAtMost M d → matrixMixedNumber M ≤ 2 * d + 2 := by
   classical
   rintro ⟨S⟩
@@ -416,7 +420,7 @@ theorem theorem10_ordered_matrix_mixed_number_le_of_twin_ordered_at_most
 
 /-- Predicate-wrapper form of the first item of matrix Theorem 10. -/
 theorem theorem10_first_item_ordered :
-    MatrixMixedNumberBoundedByTwinOrdered theorem10MatrixMixedNumberBound := by
+    MatrixMixedNumberBoundedByTwinOrdered (α := α) theorem10MatrixMixedNumberBound := by
   intro n m d M hM
   exact theorem10_ordered_matrix_mixed_number_le_of_twin_ordered_at_most M hM
 
@@ -1119,7 +1123,7 @@ theorem colParts_eq_empty_of_zero_cols {n : ℕ} (P : MatrixPartition n 0) :
 
 /-- Every partition of a matrix with no rows has error value zero. -/
 theorem errorValueAtMost_zeroRows {m d : ℕ}
-    (M : _root_.Matrix (Fin 0) (Fin m) Bool) (P : MatrixPartition 0 m) :
+    (M : _root_.Matrix (Fin 0) (Fin m) α) (P : MatrixPartition 0 m) :
     ErrorValueAtMost M P d := by
   constructor
   · intro R hR
@@ -1131,7 +1135,7 @@ theorem errorValueAtMost_zeroRows {m d : ℕ}
 
 /-- Every partition of a matrix with no columns has error value zero. -/
 theorem errorValueAtMost_zeroCols {n d : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin 0) Bool) (P : MatrixPartition n 0) :
+    (M : _root_.Matrix (Fin n) (Fin 0) α) (P : MatrixPartition n 0) :
     ErrorValueAtMost M P d := by
   constructor
   · intro R hR
@@ -1143,7 +1147,7 @@ theorem errorValueAtMost_zeroCols {n d : ℕ}
 
 /-- Error-value bounds are monotone in the numerical bound. -/
 theorem errorValueAtMost_mono {n m d e : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {P : MatrixPartition n m}
     (hde : d ≤ e) (hP : ErrorValueAtMost M P d) :
     ErrorValueAtMost M P e := by
@@ -1220,7 +1224,7 @@ end MatrixPartition
 /-- A contraction tail from a prescribed matrix partition to a coarsest
 partition. -/
 structure MatrixContractionTail {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool) (d : ℕ)
+    (M : _root_.Matrix (Fin n) (Fin m) α) (d : ℕ)
     (P₀ : MatrixPartition n m) where
   /-- Number of remaining contractions. -/
   stepCount : ℕ
@@ -1240,7 +1244,7 @@ namespace MatrixContractionTail
 
 /-- Prepend one matrix-partition contraction to a contraction tail. -/
 noncomputable def cons {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {P Q : MatrixPartition n m}
     (hPQ : MatrixPartition.IsContraction P Q)
     (hP : ErrorValueAtMost M P d)
@@ -1273,7 +1277,7 @@ noncomputable def cons {n m d : ℕ}
 
 /-- Relax the numerical error bound on a contraction tail. -/
 noncomputable def mono {n m d e : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {P : MatrixPartition n m}
     (hde : d ≤ e) (S : MatrixContractionTail M d P) :
     MatrixContractionTail M e P where
@@ -1291,7 +1295,7 @@ end MatrixContractionTail
 /-- From any partition of a matrix with no rows, repeatedly contract column
 parts until the partition is coarsest.  All intermediate error values are zero. -/
 theorem exists_matrixContractionTail_zeroRows {m d : ℕ}
-    (M : _root_.Matrix (Fin 0) (Fin m) Bool) :
+    (M : _root_.Matrix (Fin 0) (Fin m) α) :
     ∀ P : MatrixPartition 0 m, Nonempty (MatrixContractionTail M d P) := by
   classical
   intro P
@@ -1327,7 +1331,7 @@ theorem exists_matrixContractionTail_zeroRows {m d : ℕ}
 /-- From any partition of a matrix with no columns, repeatedly contract row
 parts until the partition is coarsest.  All intermediate error values are zero. -/
 theorem exists_matrixContractionTail_zeroCols {n d : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin 0) Bool) :
+    (M : _root_.Matrix (Fin n) (Fin 0) α) :
     ∀ P : MatrixPartition n 0, Nonempty (MatrixContractionTail M d P) := by
   classical
   intro P
@@ -1362,7 +1366,7 @@ theorem exists_matrixContractionTail_zeroCols {n d : ℕ}
 
 /-- Matrices with no rows have matrix twin-width at most every bound. -/
 theorem matrixTwinWidthAtMost_zeroRows {m d : ℕ}
-    (M : _root_.Matrix (Fin 0) (Fin m) Bool) :
+    (M : _root_.Matrix (Fin 0) (Fin m) α) :
     MatrixTwinWidthAtMost M d := by
   rcases exists_matrixContractionTail_zeroRows (d := d) M
       (MatrixPartition.singleton 0 m) with ⟨S⟩
@@ -1379,7 +1383,7 @@ theorem matrixTwinWidthAtMost_zeroRows {m d : ℕ}
 
 /-- Matrices with no columns have matrix twin-width at most every bound. -/
 theorem matrixTwinWidthAtMost_zeroCols {n d : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin 0) Bool) :
+    (M : _root_.Matrix (Fin n) (Fin 0) α) :
     MatrixTwinWidthAtMost M d := by
   rcases exists_matrixContractionTail_zeroCols (d := d) M
       (MatrixPartition.singleton n 0) with ⟨S⟩
@@ -1612,7 +1616,7 @@ theorem rrefines_colContract {n m r : ℕ}
 /-- Error values pull back across bounded refinements, with the expected
 multiplicative loss. -/
 theorem errorValueAtMost_of_rrefines {n m r t : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {P Q : MatrixPartition n m}
     (hPQ : MatrixPartition.RRefines P Q r)
     (hQ : ErrorValueAtMost M Q t) :
@@ -1700,7 +1704,7 @@ namespace MatrixContractionPath
 
 /-- The empty contraction path at a partition whose error is already bounded. -/
 def nil {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {P : MatrixPartition n m}
     (hP : ErrorValueAtMost M P d) :
     MatrixContractionPath M d P P where
@@ -1713,7 +1717,7 @@ def nil {n m d : ℕ}
 
 /-- Prepend one contraction to a contraction path. -/
 noncomputable def cons {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {P Q R : MatrixPartition n m}
     (hPQ : MatrixPartition.IsContraction P Q)
     (hP : ErrorValueAtMost M P d)
@@ -1755,7 +1759,7 @@ The proof repeatedly merges two fine row or column parts lying in the same
 coarse part.  Bounded refinement is preserved at every merge, so the pulled
 back error bound remains `r * t`. -/
 theorem exists_of_rrefines {n m r t : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool} :
+    {M : _root_.Matrix (Fin n) (Fin m) α} :
     ∀ (P Q : MatrixPartition n m),
       MatrixPartition.RRefines P Q r →
       ErrorValueAtMost M Q t →
@@ -1828,7 +1832,7 @@ remaining suffix expands to an ordinary contraction tail of error at most
 `r * t`. -/
 theorem exists_matrixContractionTail_of_boundedErrorRefinementPartitionSequence
     {n m r t : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (hr : 0 < r)
     (S : BoundedErrorRefinementPartitionSequence M r t) :
     ∀ i, i ≤ S.stepCount →
@@ -1880,7 +1884,7 @@ expands to a matrix contraction sequence, with the multiplicative error
 bound `r * t`. -/
 theorem matrixTwinWidthAtMost_of_boundedErrorRefinementPartitionSequence
     {n m r t : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (hr : 0 < r)
     (S : Nonempty (BoundedErrorRefinementPartitionSequence M r t)) :
     MatrixTwinWidthAtMost M (r * t) := by
@@ -1898,30 +1902,31 @@ theorem matrixTwinWidthAtMost_of_boundedErrorRefinementPartitionSequence
     errorValue_le := T.errorValue_le
   }⟩
 
-/-- Lemma 8 with the numerical parameters used by Theorem 10 in the Boolean
-matrix case. -/
+/-- Lemma 8 with the numerical parameters used by Theorem 10 for alphabet size
+`a`. -/
 theorem matrixTwinWidthAtMost_of_theorem10ErrorRefinementSequence
-    {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {n m a d : ℕ}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
+    (ha : 0 < a)
     (S : Nonempty (BoundedErrorRefinementPartitionSequence M
-      (2 * 2 ^ (d + 1)) (d * 2 ^ (d + 1)))) :
-    MatrixTwinWidthAtMost M (theorem10ErrorRefinementBound d) := by
-  have hr : 0 < 2 * 2 ^ (d + 1) := by
-    exact Nat.mul_pos (by decide : 0 < 2) (pow_pos (by decide : 0 < 2) _)
+      (2 * a ^ (d + 1)) (d * a ^ (d + 1)))) :
+    MatrixTwinWidthAtMost M (theorem10AlphabetErrorRefinementBound a d) := by
+  have hr : 0 < 2 * a ^ (d + 1) := by
+    exact Nat.mul_pos (by decide : 0 < 2) (pow_pos ha _)
   have h := matrixTwinWidthAtMost_of_boundedErrorRefinementPartitionSequence
-    (M := M) (r := 2 * 2 ^ (d + 1)) (t := d * 2 ^ (d + 1)) hr S
+    (M := M) (r := 2 * a ^ (d + 1)) (t := d * a ^ (d + 1)) hr S
   have hmul :
-      (2 * 2 ^ (d + 1)) * (d * 2 ^ (d + 1)) =
-        theorem10ErrorRefinementBound d := by
-    unfold theorem10ErrorRefinementBound
-    have hp : 2 ^ (d + 1) * 2 ^ (d + 1) = 2 ^ (2 * (d + 1)) := by
+      (2 * a ^ (d + 1)) * (d * a ^ (d + 1)) =
+        theorem10AlphabetErrorRefinementBound a d := by
+    unfold theorem10AlphabetErrorRefinementBound
+    have hp : a ^ (d + 1) * a ^ (d + 1) = a ^ (2 * (d + 1)) := by
       rw [← pow_add]
       have hexp : d + 1 + (d + 1) = 2 * (d + 1) := by omega
       simp [hexp]
     calc
-      (2 * 2 ^ (d + 1)) * (d * 2 ^ (d + 1))
-          = 2 * d * (2 ^ (d + 1) * 2 ^ (d + 1)) := by ring
-      _ = 2 * d * 2 ^ (2 * (d + 1)) := by rw [hp]
+      (2 * a ^ (d + 1)) * (d * a ^ (d + 1))
+          = 2 * d * (a ^ (d + 1) * a ^ (d + 1)) := by ring
+      _ = 2 * d * a ^ (2 * (d + 1)) := by rw [hp]
   simpa [hmul] using h
 
 namespace MatrixDivision
@@ -1980,15 +1985,15 @@ noncomputable def toPartition {n m : ℕ} (D : MatrixDivision n m) :
         ⟨D.colDiv.part, D.colDiv.part_injective⟩ :=
   rfl
 
-/-- Boolean profiles used in the Section 5.8 refinement.  A row or column
-part of mixed value at most `d` has at most `d + 1` non-mixed intervals, so a
-Boolean value on `Fin (d + 1)` is enough to encode its profile. -/
-abbrev BoolProfile (d : ℕ) : Type :=
-  Fin (d + 1) → Bool
+/-- Alphabet profiles used in the Section 5.8 refinement.  A row or column
+part of mixed value at most `d` has at most `d + 1` non-mixed intervals, so an
+alphabet value on `Fin (d + 1)` is enough to encode its profile. -/
+abbrev AlphabetProfile (α : Type u) (d : ℕ) : Type u :=
+  Fin (d + 1) → α
 
-@[simp] theorem fintype_card_boolProfile (d : ℕ) :
-    Fintype.card (BoolProfile d) = 2 ^ (d + 1) := by
-  simp [BoolProfile]
+@[simp] theorem fintype_card_alphabetProfile [Fintype α] (d : ℕ) :
+    Fintype.card (AlphabetProfile α d) = Fintype.card α ^ (d + 1) := by
+  simp [AlphabetProfile]
 
 /-- Linear position of a column mixed-value item: zones have even positions
 and cuts have odd positions. -/
@@ -2004,7 +2009,7 @@ def rowMixedItemPos {k : ℕ} : Sum (Fin (k + 1)) (Fin k) → ℕ
 
 /-- Number of mixed zones/cuts strictly before a column zone. -/
 noncomputable def colBadBefore {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (D : MatrixDivision n m) (i : Fin (D.rowCuts + 1))
     (j : Fin (D.colCuts + 1)) : ℕ :=
   ((colMixedItems M (D.rowDiv.part i) D.colDiv).filter
@@ -2012,14 +2017,14 @@ noncomputable def colBadBefore {n m : ℕ}
 
 /-- Number of mixed zones/cuts strictly before a row zone. -/
 noncomputable def rowBadBefore {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (D : MatrixDivision n m) (j : Fin (D.colCuts + 1))
     (i : Fin (D.rowCuts + 1)) : ℕ :=
   ((rowMixedItems M D.rowDiv (D.colDiv.part j)).filter
     fun item => rowMixedItemPos item < 2 * i.1).card
 
 theorem colBadBefore_le_colMixedValue {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (D : MatrixDivision n m) (i : Fin (D.rowCuts + 1))
     (j : Fin (D.colCuts + 1)) :
     colBadBefore M D i j ≤ colMixedValue M (D.rowDiv.part i) D.colDiv := by
@@ -2033,7 +2038,7 @@ theorem colBadBefore_le_colMixedValue {n m : ℕ}
           colMixedItems_card M (D.rowDiv.part i) D.colDiv
 
 theorem rowBadBefore_le_rowMixedValue {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (D : MatrixDivision n m) (j : Fin (D.colCuts + 1))
     (i : Fin (D.rowCuts + 1)) :
     rowBadBefore M D j i ≤ rowMixedValue M D.rowDiv (D.colDiv.part j) := by
@@ -2047,7 +2052,7 @@ theorem rowBadBefore_le_rowMixedValue {n m : ℕ}
           rowMixedItems_card M D.rowDiv (D.colDiv.part j)
 
 theorem colBadBefore_lt_succ_of_mixedValueAtMost {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {D : MatrixDivision n m}
     (hD : MixedValueAtMost M D d)
     (i : Fin (D.rowCuts + 1)) (j : Fin (D.colCuts + 1)) :
@@ -2056,7 +2061,7 @@ theorem colBadBefore_lt_succ_of_mixedValueAtMost {n m d : ℕ}
     (le_trans (colBadBefore_le_colMixedValue M D i j) (hD.2 i))
 
 theorem rowBadBefore_lt_succ_of_mixedValueAtMost {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {D : MatrixDivision n m}
     (hD : MixedValueAtMost M D d)
     (j : Fin (D.colCuts + 1)) (i : Fin (D.rowCuts + 1)) :
@@ -2066,7 +2071,7 @@ theorem rowBadBefore_lt_succ_of_mixedValueAtMost {n m d : ℕ}
 
 /-- Candidate representative column zones for a row-profile coordinate. -/
 noncomputable def rowProfileCandidates {n m d : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (D : MatrixDivision n m) (i : Fin (D.rowCuts + 1))
     (q : Fin (d + 1)) : Finset (Fin (D.colCuts + 1)) :=
   by
@@ -2077,7 +2082,7 @@ noncomputable def rowProfileCandidates {n m d : ℕ}
 
 /-- Candidate representative row zones for a column-profile coordinate. -/
 noncomputable def colProfileCandidates {n m d : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (D : MatrixDivision n m) (j : Fin (D.colCuts + 1))
     (q : Fin (d + 1)) : Finset (Fin (D.rowCuts + 1)) :=
   by
@@ -2087,7 +2092,7 @@ noncomputable def colProfileCandidates {n m d : ℕ}
         rowBadBefore M D j i = q.1
 
 theorem mem_rowProfileCandidates {n m d : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (D : MatrixDivision n m) (i : Fin (D.rowCuts + 1))
     (q : Fin (d + 1)) (j : Fin (D.colCuts + 1)) :
     j ∈ rowProfileCandidates (d := d) M D i q ↔
@@ -2097,7 +2102,7 @@ theorem mem_rowProfileCandidates {n m d : ℕ}
   simp [rowProfileCandidates]
 
 theorem mem_colProfileCandidates {n m d : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (D : MatrixDivision n m) (j : Fin (D.colCuts + 1))
     (q : Fin (d + 1)) (i : Fin (D.rowCuts + 1)) :
     i ∈ colProfileCandidates (d := d) M D j q ↔
@@ -2107,7 +2112,7 @@ theorem mem_colProfileCandidates {n m d : ℕ}
   simp [colProfileCandidates]
 
 theorem rowProfileCandidates_nonempty_of_not_zoneMixed {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {D : MatrixDivision n m}
     (hD : MixedValueAtMost M D d)
     (i : Fin (D.rowCuts + 1)) (j : Fin (D.colCuts + 1))
@@ -2120,7 +2125,7 @@ theorem rowProfileCandidates_nonempty_of_not_zoneMixed {n m d : ℕ}
   exact ⟨hnot, rfl⟩
 
 theorem colProfileCandidates_nonempty_of_not_zoneMixed {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {D : MatrixDivision n m}
     (hD : MixedValueAtMost M D d)
     (i : Fin (D.rowCuts + 1)) (j : Fin (D.colCuts + 1))
@@ -2133,7 +2138,7 @@ theorem colProfileCandidates_nonempty_of_not_zoneMixed {n m d : ℕ}
   exact ⟨hnot, rfl⟩
 
 theorem no_colMixedItem_between_profile_min_and_zone {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {D : MatrixDivision n m}
     (hD : MixedValueAtMost M D d)
     (i : Fin (D.rowCuts + 1)) (j : Fin (D.colCuts + 1))
@@ -2178,7 +2183,7 @@ theorem no_colMixedItem_between_profile_min_and_zone {n m d : ℕ}
   omega
 
 theorem no_rowMixedItem_between_profile_min_and_zone {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {D : MatrixDivision n m}
     (hD : MixedValueAtMost M D d)
     (i : Fin (D.rowCuts + 1)) (j : Fin (D.colCuts + 1))
@@ -2223,7 +2228,7 @@ theorem no_rowMixedItem_between_profile_min_and_zone {n m d : ℕ}
   omega
 
 theorem row_eq_next_col_zone_of_not_mixed_adjacent {n m k : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {R : Finset (Fin n)} {C : Division m (k + 1)}
     (u : Fin k)
     (hL : ¬ ZoneMixed M R (C.part u.castSucc))
@@ -2249,7 +2254,7 @@ theorem row_eq_next_col_zone_of_not_mixed_adjacent {n m k : ℕ}
     exact h₁.symm.trans (hleft.trans h₂)
 
 theorem col_eq_next_row_zone_of_not_mixed_adjacent {n m k : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {R : Division n (k + 1)} {C : Finset (Fin m)}
     (u : Fin k)
     (hL : ¬ ZoneMixed M (R.part u.castSucc) C)
@@ -2275,7 +2280,7 @@ theorem col_eq_next_row_zone_of_not_mixed_adjacent {n m k : ℕ}
   · exact hh (Finset.mem_union_right _ (R.first_mem u.succ)) hc₁ hc₂
 
 theorem row_eq_col_zone_first_of_no_mixed_between {n m k : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {R : Finset (Fin n)} {C : Division m (k + 1)}
     {a b : Fin (k + 1)}
     (hab : a ≤ b)
@@ -2360,7 +2365,7 @@ decreasing_by
   omega
 
 theorem col_eq_row_zone_first_of_no_mixed_between {n m k : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {R : Division n (k + 1)} {C : Finset (Fin m)}
     {a b : Fin (k + 1)}
     (hab : a ≤ b)
@@ -2444,34 +2449,37 @@ decreasing_by
   simp_wf
   omega
 
-/-- Row profile for one row part of a division.  The `q`-th bit is read at
+/-- Row profile for one row part of a division.  The `q`-th coordinate is read at
 the first non-mixed column zone whose preceding-bad-item count is `q`, if such
 a zone exists. -/
 noncomputable def rowProfile {n m d : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    [Inhabited α]
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (D : MatrixDivision n m) (i : Fin (D.rowCuts + 1))
-    (r : Fin n) : BoolProfile d := by
+    (r : Fin n) : AlphabetProfile α d := by
   classical
   exact fun q =>
     if h : (rowProfileCandidates (d := d) M D i q).Nonempty then
       M r (D.colDiv.first ((rowProfileCandidates (d := d) M D i q).min' h))
     else
-      false
+      default
 
 /-- Column profile dual to `rowProfile`. -/
 noncomputable def colProfile {n m d : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    [Inhabited α]
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (D : MatrixDivision n m) (j : Fin (D.colCuts + 1))
-    (c : Fin m) : BoolProfile d := by
+    (c : Fin m) : AlphabetProfile α d := by
   classical
   exact fun q =>
     if h : (colProfileCandidates (d := d) M D j q).Nonempty then
       M (D.rowDiv.first ((colProfileCandidates (d := d) M D j q).min' h)) c
     else
-      false
+      default
 
 theorem row_eq_on_horizontal_zone_of_profile_eq {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    [Inhabited α]
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {D : MatrixDivision n m}
     (hD : MixedValueAtMost M D d)
     (i : Fin (D.rowCuts + 1)) (j : Fin (D.colCuts + 1))
@@ -2516,7 +2524,8 @@ theorem row_eq_on_horizontal_zone_of_profile_eq {n m d : ℕ}
   exact h₁.symm.trans (hfirst.trans h₂)
 
 theorem col_eq_on_vertical_zone_of_profile_eq {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    [Inhabited α]
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {D : MatrixDivision n m}
     (hD : MixedValueAtMost M D d)
     (i : Fin (D.rowCuts + 1)) (j : Fin (D.colCuts + 1))
@@ -2609,19 +2618,21 @@ theorem colIndexOfPartitionPart_spec {n m : ℕ}
 /-- The profile refinement of a matrix division: each row part is split by
 its row profile and each column part by its column profile. -/
 noncomputable def profilePartition {n m d : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    [Fintype α] [DecidableEq α] [Inhabited α]
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (D : MatrixDivision n m) : MatrixPartition n m :=
   D.toPartition.refineByLabels
     (fun R r => rowProfile (d := d) M D (rowIndexOfPartitionPart D R) r)
     (fun C c => colProfile (d := d) M D (colIndexOfPartitionPart D C) c)
 
 /-- A profile partition refines its underlying division partition with factor
-`2^(d+1)` on both sides. -/
+`|α|^(d+1)` on both sides. -/
 theorem profilePartition_rrefines_toPartition {n m d : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    [Fintype α] [DecidableEq α] [Inhabited α]
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (D : MatrixDivision n m) :
     MatrixPartition.RRefines (profilePartition (d := d) M D) D.toPartition
-      (2 ^ (d + 1)) := by
+      (Fintype.card α ^ (d + 1)) := by
   classical
   constructor
   · simpa [profilePartition] using
@@ -2630,17 +2641,18 @@ theorem profilePartition_rrefines_toPartition {n m d : ℕ}
         (label := fun R r =>
           rowProfile (d := d) M D (rowIndexOfPartitionPart D R) r)
         D.toPartition.row_disjoint
-        (by simp [BoolProfile])
+        (by simp [AlphabetProfile])
   · simpa [profilePartition] using
       MatrixPartition.partsRRefine_splitPartsByLabel
         (P := D.toPartition.colParts)
         (label := fun C c =>
           colProfile (d := d) M D (colIndexOfPartitionPart D C) c)
         D.toPartition.col_disjoint
-        (by simp [BoolProfile])
+        (by simp [AlphabetProfile])
 
 theorem rowProfile_eq_of_mem_profilePartition_rowPart_of_subset {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    [Fintype α] [DecidableEq α] [Inhabited α]
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {D : MatrixDivision n m}
     {R : Finset (Fin n)} {i : Fin (D.rowCuts + 1)}
     (hR : R ∈ (profilePartition (d := d) M D).rowParts)
@@ -2675,7 +2687,8 @@ theorem rowProfile_eq_of_mem_profilePartition_rowPart_of_subset {n m d : ℕ}
   simpa [hidx] using h₁.trans h₂.symm
 
 theorem colProfile_eq_of_mem_profilePartition_colPart_of_subset {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    [Fintype α] [DecidableEq α] [Inhabited α]
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {D : MatrixDivision n m}
     {C : Finset (Fin m)} {j : Fin (D.colCuts + 1)}
     (hC : C ∈ (profilePartition (d := d) M D).colParts)
@@ -2713,7 +2726,8 @@ theorem colProfile_eq_of_mem_profilePartition_colPart_of_subset {n m d : ℕ}
 constant.  Horizontal zones are handled by the row profile; vertical zones are
 handled by the column profile. -/
 theorem profilePartition_nonmixed_zones_constant {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    [Fintype α] [DecidableEq α] [Inhabited α]
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {D : MatrixDivision n m}
     (hD : MixedValueAtMost M D d) :
     ∀ ⦃R C⦄,
@@ -2757,7 +2771,7 @@ theorem profilePartition_nonmixed_zones_constant {n m d : ℕ}
 /-- Error columns for a division partition are exactly the nonconstant column
 indices, transported through the column-part embedding. -/
 theorem rowErrorSet_toPartition {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (D : MatrixDivision n m) (i : Fin (D.rowCuts + 1)) :
     rowErrorSet M D.toPartition (D.rowDiv.part i) =
       (MatrixDivision.nonconstantRowErrorSet M D i).map
@@ -2774,7 +2788,7 @@ theorem rowErrorSet_toPartition {n m : ℕ}
 /-- Error rows for a division partition are exactly the nonconstant row
 indices, transported through the row-part embedding. -/
 theorem colErrorSet_toPartition {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (D : MatrixDivision n m) (j : Fin (D.colCuts + 1)) :
     colErrorSet M D.toPartition (D.colDiv.part j) =
       (MatrixDivision.nonconstantColErrorSet M D j).map
@@ -2791,7 +2805,7 @@ theorem colErrorSet_toPartition {n m : ℕ}
 /-- Bounded nonconstant division error gives bounded partition error for the
 underlying matrix partition. -/
 theorem errorValueAtMost_toPartition_of_nonconstantErrorValueAtMost {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {D : MatrixDivision n m}
     (hD : MatrixDivision.NonconstantErrorValueAtMost M D d) :
     ErrorValueAtMost M D.toPartition d := by
@@ -2807,6 +2821,30 @@ theorem errorValueAtMost_toPartition_of_nonconstantErrorValueAtMost {n m d : ℕ
     change (colErrorSet M D.toPartition (D.colDiv.part j)).card ≤ d
     rw [colErrorSet_toPartition]
     simpa using hD.2 j
+
+/-- Bounded error for the unordered partition underlying a division is
+equivalent to bounded nonconstant error for the division.  This direction is
+used when a graph partition gives the same row and column parts as an ordered
+matrix division. -/
+theorem nonconstantErrorValueAtMost_of_errorValueAtMost_toPartition {n m d : ℕ}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
+    {D : MatrixDivision n m}
+    (hD : ErrorValueAtMost M D.toPartition d) :
+    MatrixDivision.NonconstantErrorValueAtMost M D d := by
+  classical
+  constructor
+  · intro i
+    have hrow :
+        (rowErrorSet M D.toPartition (D.rowDiv.part i)).card ≤ d :=
+      hD.1 (R := D.rowDiv.part i) (by simp [MatrixDivision.toPartition])
+    rw [rowErrorSet_toPartition] at hrow
+    simpa using hrow
+  · intro j
+    have hcol :
+        (colErrorSet M D.toPartition (D.colDiv.part j)).card ≤ d :=
+      hD.2 (C := D.colDiv.part j) (by simp [MatrixDivision.toPartition])
+    rw [colErrorSet_toPartition] at hcol
+    simpa using hcol
 
 /-- A finest division induces a finest matrix partition. -/
 theorem toPartition_isFinest {n m : ℕ}
@@ -2842,7 +2880,8 @@ theorem toPartition_isFinest {n m : ℕ}
 
 /-- The profile refinement of a finest division is a finest matrix partition. -/
 theorem profilePartition_isFinest_of_isFinest {n m d : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    [Fintype α] [DecidableEq α] [Inhabited α]
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     {D : MatrixDivision n m} (hD : IsFinest D) :
     MatrixPartition.IsFinest (profilePartition (d := d) M D) := by
   have hrefine := profilePartition_rrefines_toPartition (d := d) M D
@@ -2850,14 +2889,14 @@ theorem profilePartition_isFinest_of_isFinest {n m d : ℕ}
     ⟨hrefine.1.1, hrefine.2.1⟩ (toPartition_isFinest hD)
 
 theorem colMixedZones_card_le_colMixedValue {n m k : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (R : Finset (Fin n)) (C : Division m (k + 1)) :
     (colMixedZones M R C).card ≤ colMixedValue M R C := by
   unfold colMixedValue
   omega
 
 theorem rowMixedZones_card_le_rowMixedValue {n m k : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     (R : Division n (k + 1)) (C : Finset (Fin m)) :
     (rowMixedZones M R C).card ≤ rowMixedValue M R C := by
   unfold rowMixedValue
@@ -2869,7 +2908,7 @@ mixed zones.  Since each original part is split into at most `a` refined parts,
 the error value is bounded by `d * a`. -/
 theorem errorValueAtMost_of_rrefines_toPartition_of_nonmixed_zones_constant
     {n m d a : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {D : MatrixDivision n m}
     {P : MatrixPartition n m}
     (href : MatrixPartition.RRefines P D.toPartition a)
@@ -2987,7 +3026,8 @@ property that every originally non-mixed zone becomes constant after the row
 and column profile splits. -/
 theorem errorValueAtMost_profilePartition_of_nonmixed_zones_constant
     {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    [Fintype α] [DecidableEq α] [Inhabited α]
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {D : MatrixDivision n m}
     (hD : MixedValueAtMost M D d)
     (hconst :
@@ -2998,17 +3038,20 @@ theorem errorValueAtMost_profilePartition_of_nonmixed_zones_constant
           R ⊆ D.rowDiv.part i → C ⊆ D.colDiv.part j →
             ¬ ZoneMixed M (D.rowDiv.part i) (D.colDiv.part j) →
               ZoneConstant M R C) :
-    ErrorValueAtMost M (profilePartition (d := d) M D) (d * 2 ^ (d + 1)) :=
+    ErrorValueAtMost M (profilePartition (d := d) M D)
+      (d * Fintype.card α ^ (d + 1)) :=
   errorValueAtMost_of_rrefines_toPartition_of_nonmixed_zones_constant
     (profilePartition_rrefines_toPartition (d := d) M D) hD hconst
 
 /-- The profile partition associated to a division of mixed value at most `d`
-has nonconstant error value at most `d * 2^(d+1)`. -/
+has nonconstant error value at most `d * |α|^(d+1)`. -/
 theorem errorValueAtMost_profilePartition {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    [Fintype α] [DecidableEq α] [Inhabited α]
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {D : MatrixDivision n m}
     (hD : MixedValueAtMost M D d) :
-    ErrorValueAtMost M (profilePartition (d := d) M D) (d * 2 ^ (d + 1)) :=
+    ErrorValueAtMost M (profilePartition (d := d) M D)
+      (d * Fintype.card α ^ (d + 1)) :=
   errorValueAtMost_profilePartition_of_nonmixed_zones_constant hD
     (profilePartition_nonmixed_zones_constant hD)
 
@@ -3174,7 +3217,8 @@ theorem rrefines_toPartition_of_hasExactFusion {n m : ℕ}
 partitions have the bounded-refinement factor from Section 5.8. -/
 theorem rrefines_profilePartition_of_hasExactFusion_of_profile_mono
     {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    [Fintype α] [DecidableEq α] [Inhabited α]
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {D E : MatrixDivision n m}
     (hDE : HasExactFusion D E)
     (hrow :
@@ -3189,14 +3233,14 @@ theorem rrefines_profilePartition_of_hasExactFusion_of_profile_mono
         A ⊆ B → x ∈ A → y ∈ A →
           colProfile (d := d) M D (colIndexOfPartitionPart D A) x =
             colProfile (d := d) M D (colIndexOfPartitionPart D A) y →
-          colProfile (d := d) M E (colIndexOfPartitionPart E B) x =
+            colProfile (d := d) M E (colIndexOfPartitionPart E B) x =
             colProfile (d := d) M E (colIndexOfPartitionPart E B) y) :
     MatrixPartition.RRefines (profilePartition (d := d) M D)
-      (profilePartition (d := d) M E) (2 * 2 ^ (d + 1)) := by
+      (profilePartition (d := d) M E) (2 * Fintype.card α ^ (d + 1)) := by
   classical
   have hbase := rrefines_toPartition_of_hasExactFusion hDE
   constructor
-  · simpa [profilePartition, BoolProfile] using
+  · simpa [profilePartition, AlphabetProfile] using
       MatrixPartition.partsRRefine_splitPartsByLabel_of_partsRRefine
         (Q := E.toPartition.rowParts)
         (P := D.toPartition.rowParts)
@@ -3205,7 +3249,7 @@ theorem rrefines_profilePartition_of_hasExactFusion_of_profile_mono
         (qLabel := fun R r =>
           rowProfile (d := d) M E (rowIndexOfPartitionPart E R) r)
         E.toPartition.row_disjoint hbase.1 hrow
-  · simpa [profilePartition, BoolProfile] using
+  · simpa [profilePartition, AlphabetProfile] using
       MatrixPartition.partsRRefine_splitPartsByLabel_of_partsRRefine
         (Q := E.toPartition.colParts)
         (P := D.toPartition.colParts)
@@ -3219,7 +3263,8 @@ theorem rrefines_profilePartition_of_hasExactFusion_of_profile_mono
 part that had the same old profile also have the same profile in the coarser
 row part containing them. -/
 theorem rowProfile_mono_of_hasExactFusion {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    [Inhabited α]
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {D E : MatrixDivision n m}
     (hDmix : MixedValueAtMost M D d)
     (hDE : HasExactFusion D E) :
@@ -3287,7 +3332,8 @@ theorem rowProfile_mono_of_hasExactFusion {n m d : ℕ}
 
 /-- Column-profile analogue of `rowProfile_mono_of_hasExactFusion`. -/
 theorem colProfile_mono_of_hasExactFusion {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    [Inhabited α]
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {D E : MatrixDivision n m}
     (hDmix : MixedValueAtMost M D d)
     (hDE : HasExactFusion D E) :
@@ -3356,12 +3402,13 @@ theorem colProfile_mono_of_hasExactFusion {n m d : ℕ}
 /-- Consecutive profile partitions in a bounded mixed-value division sequence
 have the bounded-refinement factor from Section 5.8. -/
 theorem rrefines_profilePartition_of_hasExactFusion {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    [Fintype α] [DecidableEq α] [Inhabited α]
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     {D E : MatrixDivision n m}
     (hDmix : MixedValueAtMost M D d)
     (hDE : HasExactFusion D E) :
     MatrixPartition.RRefines (profilePartition (d := d) M D)
-      (profilePartition (d := d) M E) (2 * 2 ^ (d + 1)) :=
+      (profilePartition (d := d) M E) (2 * Fintype.card α ^ (d + 1)) :=
   rrefines_profilePartition_of_hasExactFusion_of_profile_mono hDE
     (rowProfile_mono_of_hasExactFusion hDmix hDE)
     (colProfile_mono_of_hasExactFusion hDmix hDE)
@@ -3371,7 +3418,7 @@ end MatrixDivision
 /-- A bounded nonconstant-error division sequence induces a matrix contraction
 sequence with the same error bound. -/
 noncomputable def matrixContractionSequence_of_boundedErrorValueDivisionSequence {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (S : BoundedErrorValueDivisionSequence M d) :
     MatrixContractionSequence M d where
   stepCount := S.stepCount
@@ -3388,7 +3435,7 @@ noncomputable def matrixContractionSequence_of_boundedErrorValueDivisionSequence
 
 /-- Theorem 10 bridge in predicate form. -/
 theorem matrixTwinWidthAtMost_of_boundedErrorValueDivisionSequence {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (S : Nonempty (BoundedErrorValueDivisionSequence M d)) :
     MatrixTwinWidthAtMost M d := by
   rcases S with ⟨S⟩
@@ -3396,7 +3443,7 @@ theorem matrixTwinWidthAtMost_of_boundedErrorValueDivisionSequence {n m d : ℕ}
 
 /-- A coarsest matrix partition has error value at most one. -/
 theorem errorValueAtMost_one_of_isCoarsest {n m : ℕ}
-    (M : _root_.Matrix (Fin n) (Fin m) Bool)
+    (M : _root_.Matrix (Fin n) (Fin m) α)
     {P : MatrixPartition n m}
     (hP : MatrixPartition.IsCoarsest P) :
     ErrorValueAtMost M P 1 := by
@@ -3416,15 +3463,16 @@ theorem errorValueAtMost_one_of_isCoarsest {n m : ℕ}
       _ ≤ 1 := hP.1
 
 /-- Section 5.8 bridge: a positive mixed-value division sequence yields a
-bounded-error bounded-refinement partition sequence with the Boolean-profile
-parameters. -/
+bounded-error bounded-refinement partition sequence with finite-alphabet
+profile parameters. -/
 noncomputable def boundedErrorRefinementPartitionSequence_of_boundedMixedValue
     {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    [Fintype α] [DecidableEq α] [Inhabited α]
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (hd : 0 < d)
     (S : BoundedMixedValueDivisionSequence M d) :
     BoundedErrorRefinementPartitionSequence M
-      (2 * 2 ^ (d + 1)) (d * 2 ^ (d + 1)) where
+      (2 * Fintype.card α ^ (d + 1)) (d * Fintype.card α ^ (d + 1)) where
   stepCount := S.stepCount + 1
   partition := fun s =>
     if h : s ≤ S.stepCount then
@@ -3446,8 +3494,9 @@ noncomputable def boundedErrorRefinementPartitionSequence_of_boundedMixedValue
       exact MatrixPartition.rrefines_mono
         (by
           calc
-            2 ^ (d + 1) = 1 * 2 ^ (d + 1) := by simp
-            _ ≤ 2 * 2 ^ (d + 1) :=
+            Fintype.card α ^ (d + 1) =
+                1 * Fintype.card α ^ (d + 1) := by simp
+            _ ≤ 2 * Fintype.card α ^ (d + 1) :=
               Nat.mul_le_mul_right _ (by decide : 1 ≤ 2))
         (MatrixDivision.profilePartition_rrefines_toPartition
           (d := d) M (S.division S.stepCount))
@@ -3471,19 +3520,21 @@ noncomputable def boundedErrorRefinementPartitionSequence_of_boundedMixedValue
           ErrorValueAtMost M (S.division S.stepCount).toPartition 1 :=
         errorValueAtMost_one_of_isCoarsest M
           (MatrixDivision.toPartition_isCoarsest S.ends)
-      have hle : 1 ≤ d * 2 ^ (d + 1) := by
-        have hpos : 0 < d * 2 ^ (d + 1) :=
-          Nat.mul_pos hd (pow_pos (by decide : 0 < 2) _)
+      have hle : 1 ≤ d * Fintype.card α ^ (d + 1) := by
+        have hαpos : 0 < Fintype.card α := Fintype.card_pos
+        have hpos : 0 < d * Fintype.card α ^ (d + 1) :=
+          Nat.mul_pos hd (pow_pos hαpos _)
         exact hpos
       exact MatrixPartition.errorValueAtMost_mono hle hone
 
 theorem exists_boundedErrorRefinementPartitionSequence_of_boundedMixedValue
     {n m d : ℕ}
-    {M : _root_.Matrix (Fin n) (Fin m) Bool}
+    [Fintype α] [DecidableEq α] [Inhabited α]
+    {M : _root_.Matrix (Fin n) (Fin m) α}
     (hd : 0 < d)
     (S : Nonempty (BoundedMixedValueDivisionSequence M d)) :
     Nonempty (BoundedErrorRefinementPartitionSequence M
-      (2 * 2 ^ (d + 1)) (d * 2 ^ (d + 1))) := by
+      (2 * Fintype.card α ^ (d + 1)) (d * Fintype.card α ^ (d + 1))) := by
   rcases S with ⟨S⟩
   exact ⟨boundedErrorRefinementPartitionSequence_of_boundedMixedValue hd S⟩
 
@@ -3494,7 +3545,7 @@ theorem theorem10_second_item_mixedValue
     {c : ℕ → ℕ}
     (hMT : ∀ t : ℕ, IsMarcusTardosConstant t (c t)) :
     ∀ {n m : ℕ}, 0 < n → 0 < m →
-      (M : _root_.Matrix (Fin n) (Fin m) Bool) →
+      (M : _root_.Matrix (Fin n) (Fin m) α) →
         Nonempty (BoundedMixedValueDivisionSequence M
           (theorem10MixedValueBound c (matrixMixedNumber M))) := by
   intro n m hn hm M
@@ -3522,7 +3573,7 @@ theorem isMarcusTardosConstant_marcusTardosConstantOfTheorem
 theorem theorem10_second_item_mixedValue_of_marcusTardos
     (hMT : MarcusTardosTheorem) :
     ∀ {n m : ℕ}, 0 < n → 0 < m →
-      (M : _root_.Matrix (Fin n) (Fin m) Bool) →
+      (M : _root_.Matrix (Fin n) (Fin m) α) →
         Nonempty (BoundedMixedValueDivisionSequence M
           (theorem10MixedValueBound
             (marcusTardosConstantOfTheorem hMT) (matrixMixedNumber M))) :=
@@ -3533,7 +3584,7 @@ theorem theorem10_second_item_mixedValue_of_marcusTardos
 Theorem 10 for positive-size matrices. -/
 theorem theorem10_mixedValue :
     ∀ {n m : ℕ}, 0 < n → 0 < m →
-      (M : _root_.Matrix (Fin n) (Fin m) Bool) →
+      (M : _root_.Matrix (Fin n) (Fin m) α) →
         Nonempty (BoundedMixedValueDivisionSequence M
           (theorem10MixedValueBound marcusTardosConstant (matrixMixedNumber M))) :=
   theorem10_second_item_mixedValue isMarcusTardosConstant_marcusTardosConstant
@@ -3550,17 +3601,19 @@ theorem theorem10MixedValueBound_pos (k : ℕ) :
 expressed as a precise hypothesis.
 
 Once a bounded mixed-value division sequence is refined into a bounded-error
-partition sequence with the paper's Boolean alphabet parameters, the proved
+partition sequence with the finite-alphabet profile parameters, the proved
 Lemma 13 machinery and the proved Lemma 8 expansion give the advertised matrix
 twin-width bound. -/
 theorem theorem10_matrixTwinWidthAtMost_of_mixedValue_refinement
+    [Fintype α] [DecidableEq α] [Inhabited α]
     (hrefine :
-      ∀ {n m d : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool),
+      ∀ {n m d : ℕ} (M : _root_.Matrix (Fin n) (Fin m) α),
         Nonempty (BoundedMixedValueDivisionSequence M d) →
           Nonempty (BoundedErrorRefinementPartitionSequence M
-            (2 * 2 ^ (d + 1)) (d * 2 ^ (d + 1)))) :
-    ∀ {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool),
-      MatrixTwinWidthAtMost M (theorem10MatrixTwinWidthBound (matrixMixedNumber M)) := by
+            (2 * Fintype.card α ^ (d + 1)) (d * Fintype.card α ^ (d + 1)))) :
+    ∀ {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) α),
+      MatrixTwinWidthAtMost M
+        (theorem10AlphabetMatrixTwinWidthBound (Fintype.card α) (matrixMixedNumber M)) := by
   intro n m M
   by_cases hn : n = 0
   · subst n
@@ -3574,17 +3627,24 @@ theorem theorem10_matrixTwinWidthAtMost_of_mixedValue_refinement
       have hmixed : Nonempty (BoundedMixedValueDivisionSequence M d) := by
         simpa [d] using theorem10_mixedValue hnpos hmpos M
       have hrefined : Nonempty (BoundedErrorRefinementPartitionSequence M
-          (2 * 2 ^ (d + 1)) (d * 2 ^ (d + 1))) :=
+          (2 * Fintype.card α ^ (d + 1)) (d * Fintype.card α ^ (d + 1))) :=
         hrefine M hmixed
-      have htww : MatrixTwinWidthAtMost M (theorem10ErrorRefinementBound d) :=
-        matrixTwinWidthAtMost_of_theorem10ErrorRefinementSequence hrefined
-      simpa [theorem10MatrixTwinWidthBound, d] using htww
+      have hαpos : 0 < Fintype.card α := Fintype.card_pos
+      have htww :
+          MatrixTwinWidthAtMost M
+            (theorem10AlphabetErrorRefinementBound (Fintype.card α) d) :=
+        matrixTwinWidthAtMost_of_theorem10ErrorRefinementSequence
+          (a := Fintype.card α) hαpos hrefined
+      simpa [theorem10AlphabetMatrixTwinWidthBound, d] using htww
 
-/-- The completed second item of matrix Theorem 10: matrix twin-width is
-bounded by the explicit Theorem 10 function of the matrix mixed number. -/
-theorem theorem10_matrixTwinWidthAtMost :
-    ∀ {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool),
-      MatrixTwinWidthAtMost M (theorem10MatrixTwinWidthBound (matrixMixedNumber M)) := by
+/-- The completed second item of matrix Theorem 10 over a nonempty finite
+alphabet: matrix twin-width is bounded by the explicit Theorem 10 function of
+the alphabet size and matrix mixed number. -/
+theorem theorem10_matrixTwinWidthAtMost
+    [Fintype α] [DecidableEq α] [Inhabited α] :
+    ∀ {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) α),
+      MatrixTwinWidthAtMost M
+        (theorem10AlphabetMatrixTwinWidthBound (Fintype.card α) (matrixMixedNumber M)) := by
   intro n m M
   by_cases hn : n = 0
   · subst n
@@ -3598,27 +3658,55 @@ theorem theorem10_matrixTwinWidthAtMost :
       have hmixed : Nonempty (BoundedMixedValueDivisionSequence M d) := by
         simpa [d] using theorem10_mixedValue hnpos hmpos M
       have hrefined : Nonempty (BoundedErrorRefinementPartitionSequence M
-          (2 * 2 ^ (d + 1)) (d * 2 ^ (d + 1))) :=
+          (2 * Fintype.card α ^ (d + 1)) (d * Fintype.card α ^ (d + 1))) :=
         exists_boundedErrorRefinementPartitionSequence_of_boundedMixedValue
           (by simpa [d] using theorem10MixedValueBound_pos (matrixMixedNumber M))
           hmixed
-      have htww : MatrixTwinWidthAtMost M (theorem10ErrorRefinementBound d) :=
-        matrixTwinWidthAtMost_of_theorem10ErrorRefinementSequence hrefined
-      simpa [theorem10MatrixTwinWidthBound, d] using htww
+      have hαpos : 0 < Fintype.card α := Fintype.card_pos
+      have htww :
+          MatrixTwinWidthAtMost M
+            (theorem10AlphabetErrorRefinementBound (Fintype.card α) d) :=
+        matrixTwinWidthAtMost_of_theorem10ErrorRefinementSequence
+          (a := Fintype.card α) hαpos hrefined
+      simpa [theorem10AlphabetMatrixTwinWidthBound, d] using htww
+
+/-- Boolean specialization of the completed second item of matrix Theorem 10. -/
+theorem theorem10_bool_matrixTwinWidthAtMost :
+    ∀ {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool),
+      MatrixTwinWidthAtMost M (theorem10MatrixTwinWidthBound (matrixMixedNumber M)) := by
+  intro n m M
+  simpa [theorem10MatrixTwinWidthBound, theorem10AlphabetMatrixTwinWidthBound]
+    using theorem10_matrixTwinWidthAtMost (α := Bool) M
 
 /-- Matrix Theorem 10 in the public contract shape: bounded matrix
 twin-orderedness bounds mixed number, and matrix mixed number bounds matrix
 twin-width via the explicit Section 5.8 function. -/
-theorem theorem10_matrix_mixed_number_and_matrix_twin_width_bound_each_other :
+theorem theorem10_matrix_mixed_number_and_matrix_twin_width_bound_each_other
+    [Fintype α] [DecidableEq α] [Inhabited α] :
+    (∀ {n m d : ℕ} (M : _root_.Matrix (Fin n) (Fin m) α),
+      MatrixTwinOrderedAtMost M d → matrixMixedNumber M ≤ 2 * d + 2) ∧
+    (∀ {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) α),
+      MatrixTwinWidthAtMost M
+        (theorem10AlphabetMatrixTwinWidthBound (Fintype.card α) (matrixMixedNumber M))) := by
+  constructor
+  · intro n m d M hM
+    simpa [theorem10MatrixMixedNumberBound] using
+      theorem10_first_item_ordered (n := n) (m := m) (d := d) M hM
+  · intro n m M
+    exact theorem10_matrixTwinWidthAtMost M
+
+/-- Boolean-alphabet specialization of the public contract shape retained for
+graph adjacency matrices. -/
+theorem theorem10_bool_matrix_mixed_number_and_matrix_twin_width_bound_each_other :
     (∀ {n m d : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool),
       MatrixTwinOrderedAtMost M d → matrixMixedNumber M ≤ 2 * d + 2) ∧
     (∀ {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) Bool),
       MatrixTwinWidthAtMost M (theorem10MatrixTwinWidthBound (matrixMixedNumber M))) := by
   constructor
   · intro n m d M hM
-    simpa [theorem10MatrixMixedNumberBound] using
-      theorem10_first_item_ordered (n := n) (m := m) (d := d) M hM
-  · exact theorem10_matrixTwinWidthAtMost
+    exact (theorem10_matrix_mixed_number_and_matrix_twin_width_bound_each_other
+      (α := Bool)).1 M hM
+  · exact theorem10_bool_matrixTwinWidthAtMost
 
 end Matrix
 end TwinWidth
