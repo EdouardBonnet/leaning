@@ -1249,13 +1249,15 @@
     els.accountButton.textContent = loggedIn ? store.currentUser : "Register/Login";
     els.accountButton.title = loggedIn ? `Logged in as ${store.currentUser}` : "Guests are read-only";
     els.sourceImportButton.disabled = !loggedIn;
-    els.compileButton.disabled = !loggedIn || !appState.compileAvailable;
+    els.compileButton.disabled = !loggedIn;
     els.sourceImportButton.title = loggedIn ? "Import a Lean file" : "Login to import Lean files";
     els.compileButton.title = !loggedIn
       ? "Login to compile"
       : appState.compileAvailable
         ? "Run lake build at the selected node"
-        : "Compile is unavailable in this deployment";
+        : appState.serverAvailable
+          ? "Show why Compile is unavailable"
+          : "Compile needs the JS server";
   }
 
   function toggleTheme() {
@@ -1380,7 +1382,7 @@
     if (!appState.compileAvailable) {
       showToolOutput(
         "Compile unavailable",
-        "This deployment does not include Lean. Use the default root Dockerfile on Render if server-side Compile is required.",
+        "This deployment does not include Lean. The current Render setup is Node-only for faster deploys, so server-side Compile needs a separate Lean/elan install.",
       );
       return;
     }

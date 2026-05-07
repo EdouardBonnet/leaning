@@ -1,0 +1,11 @@
+{
+  "name": "leaneage",
+  "private": true,
+  "scripts": {
+    "build": "node twin-width-viewer/scripts/generate-data.mjs twin-width twin-width-viewer/lean-data.js",
+    "start": "node twin-width-viewer/server.js"
+  },
+  "engines": {
+    "node": ">=22 <23"
+  }
+}

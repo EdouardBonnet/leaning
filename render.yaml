@@ -1,9 +1,12 @@
 services:
   - type: web
     name: leaneage
-    env: docker
-    dockerfilePath: ./Dockerfile
+    runtime: node
+    buildCommand: npm run build
+    startCommand: npm run start
     autoDeploy: true
     envVars:
       - key: HOST
         value: 0.0.0.0
+      - key: NODE_ENV
+        value: production

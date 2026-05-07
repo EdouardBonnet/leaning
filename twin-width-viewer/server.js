@@ -63,9 +63,8 @@ async function compileNode(request, response) {
       ok: false,
       command: `lake ${args.join(" ")}`,
       output:
-        "Server-side Lean compilation is not available in this deployment. " +
-        "Use the default root Dockerfile if you need Compile on the server; " +
-        "Dockerfile.fast intentionally omits Lean.",
+        "Server-side Lean compilation is not available in this deployment because lake is not on PATH. " +
+        "The current Render configuration is Node-only for faster deploys; install Lean/elan in the service environment if server-side Compile is required.",
     });
   }
   const output = await run("lake", args, sourceRoot);

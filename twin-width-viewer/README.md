@@ -4,14 +4,17 @@ Static browser for the Lean files in `../twin-width`.
 
 ## Render
 
-The default root `Dockerfile` uses Node plus elan to install the exact Lean
-toolchain from `../twin-width/lean-toolchain`, so the deployed Compile button
-can run `lake build`. It also fetches the mathlib cache during image build, so
-this is slower than a static viewer deployment but keeps server-side compilation
-available.
+The default `render.yaml` uses Render's native Node runtime, not Docker. Its
+build command regenerates `lean-data.js` from `../twin-width`, and its start
+command runs the small Node server in this directory.
 
-Use `Dockerfile.fast` only if you want a much faster Node-only deployment and
-can accept Compile being unavailable on the deployed service.
+This keeps deploys fast. Server-side Compile is available only in environments
+where `lake` is already on `PATH`; the current Render setup intentionally does
+not install Lean during deploy.
+
+Render does not let an existing service switch runtime after creation. If the
+current `leaneage` service was created as Docker, create a fresh Node service
+from this blueprint, or delete and recreate the existing service.
 
 ## Use
 
