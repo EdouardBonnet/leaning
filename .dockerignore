@@ -1,0 +1,8 @@
+.git
+.agents
+.codex
+**/.codex
+**/.lake
+**/node_modules
+**/.DS_Store
+twin-width/*.pdf

@@ -54,6 +54,7 @@
     selectedLine: null,
     query: "",
     serverAvailable: false,
+    compileAvailable: false,
     selectedIssue: null,
   };
 
@@ -1161,9 +1162,13 @@
     els.accountButton.textContent = loggedIn ? store.currentUser : "Register/Login";
     els.accountButton.title = loggedIn ? `Logged in as ${store.currentUser}` : "Guests are read-only";
     els.sourceImportButton.disabled = !loggedIn;
-    els.compileButton.disabled = !loggedIn;
+    els.compileButton.disabled = !loggedIn || !appState.compileAvailable;
     els.sourceImportButton.title = loggedIn ? "Import a Lean file" : "Login to import Lean files";
-    els.compileButton.title = loggedIn ? "Run lake build at the selected node" : "Login to compile";
+    els.compileButton.title = !loggedIn
+      ? "Login to compile"
+      : appState.compileAvailable
+        ? "Run lake build at the selected node"
+        : "Compile is unavailable in the fast Render image";
   }
 
   function toggleTheme() {
@@ -1185,9 +1190,13 @@
     try {
       const response = await fetch("api/status", { cache: "no-store" });
       appState.serverAvailable = response.ok;
+      const payload = response.ok ? await response.json() : {};
+      appState.compileAvailable = Boolean(payload.compileAvailable);
     } catch {
       appState.serverAvailable = false;
+      appState.compileAvailable = false;
     }
+    updateAccountUI();
     refreshStatus();
   }
 
@@ -1279,6 +1288,13 @@
     }
     if (!appState.serverAvailable) {
       showToolOutput("Compile unavailable", "Compile needs the local JS server because browsers cannot run lake build directly. Start it with: node server.js");
+      return;
+    }
+    if (!appState.compileAvailable) {
+      showToolOutput(
+        "Compile unavailable",
+        "This deployment is optimized for fast Render builds and does not install Lean. Use Dockerfile.lean on Render if server-side Compile is required.",
+      );
       return;
     }
     showToolOutput("Compiling", `Running lake build for ${selected.path || "root"}...`);

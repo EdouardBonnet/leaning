@@ -1,6 +1,16 @@
-# TwinWidth Lean API Viewer
+# Leaneage
 
 Static browser for the Lean files in `../twin-width`.
+
+## Render
+
+The default root `Dockerfile` is optimized for fast Render deploys. It uses a
+Node-only image, regenerates `lean-data.js`, and serves the viewer. Server-side
+Compile is disabled in that fast image because installing Lean/mathlib makes
+Render builds much slower.
+
+Use `Dockerfile.lean` instead only if the deployed service must run `lake build`
+from the Compile button.
 
 ## Use
 

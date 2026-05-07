@@ -20,7 +20,13 @@ const mimeTypes = {
 const server = http.createServer(async (request, response) => {
   try {
     const url = new URL(request.url, `http://${request.headers.host || "localhost"}`);
-    if (url.pathname === "/api/status") return sendJson(response, { ok: true, sourceRoot });
+    if (url.pathname === "/api/status") {
+      return sendJson(response, {
+        ok: true,
+        sourceRoot,
+        compileAvailable: commandAvailable("lake"),
+      });
+    }
     if (url.pathname === "/api/import" && request.method === "POST") return importLeanFile(request, response);
     if (url.pathname === "/api/compile" && request.method === "POST") return compileNode(request, response);
     return serveStatic(url.pathname, response);
@@ -52,12 +58,27 @@ async function compileNode(request, response) {
   const type = body.type === "dir" ? "dir" : "file";
   const targets = compileTargets(relativePath, type);
   const args = ["build", ...targets];
+  if (!commandAvailable("lake")) {
+    return sendJson(response, {
+      ok: false,
+      command: `lake ${args.join(" ")}`,
+      output:
+        "Server-side Lean compilation is not available in this deployment. " +
+        "The default Render image is optimized for fast deploys and does not install elan/mathlib. " +
+        "Use Dockerfile.lean if you need Compile on the server.",
+    });
+  }
   const output = await run("lake", args, sourceRoot);
   sendJson(response, {
     ok: output.code === 0,
     command: `lake ${args.join(" ")}`,
     output: trimOutput(output.text),
   });
+}
+
+function commandAvailable(command) {
+  const result = spawnSync(command, ["--version"], { encoding: "utf8" });
+  return result.status === 0;
 }
 
 function compileTargets(relativePath, type) {
