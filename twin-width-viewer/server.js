@@ -7,6 +7,7 @@ const here = __dirname;
 const sourceRoot = path.resolve(here, "../twin-width");
 const dataFile = path.join(here, "lean-data.js");
 const port = Number(process.env.PORT || 4173);
+const host = process.env.HOST || "127.0.0.1";
 
 const mimeTypes = {
   ".html": "text/html; charset=utf-8",
@@ -28,8 +29,8 @@ const server = http.createServer(async (request, response) => {
   }
 });
 
-server.listen(port, "127.0.0.1", () => {
-  console.log(`TwinWidth viewer: http://127.0.0.1:${port}/`);
+server.listen(port, host, () => {
+  console.log(`Leaneage: http://${host}:${port}/`);
 });
 
 async function importLeanFile(request, response) {
