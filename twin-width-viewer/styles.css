@@ -194,6 +194,10 @@ button {
   background: var(--accent);
 }
 
+.utility-button.danger {
+  color: var(--rose);
+}
+
 .utility-button:disabled {
   cursor: default;
   opacity: 0.48;
@@ -896,6 +900,13 @@ body[data-theme="dark"] .report-list {
   color: var(--muted);
   font-size: 13px;
   line-height: 1.4;
+}
+
+.modal-card .modal-error {
+  margin: 10px 0 0;
+  color: var(--rose);
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .modal-card label {

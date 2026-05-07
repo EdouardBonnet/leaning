@@ -81,19 +81,18 @@
     <div id="accountModal" class="modal-backdrop" hidden>
       <form id="accountForm" class="modal-card">
         <h2>Register or Login</h2>
-        <p>Choose a local reviewer identity for conformity checks and issue discussions.</p>
+        <p>Use a local reviewer identity for conformity checks and issue discussions. Moderator rights are assigned automatically to prescribed user names.</p>
         <label>
           <span>User name</span>
           <input id="accountName" type="text" autocomplete="name" required placeholder="e.g. anne">
         </label>
         <label>
-          <span>Role</span>
-          <select id="accountRole">
-            <option value="reviewer">Reviewer</option>
-            <option value="moderator">Moderator</option>
-          </select>
+          <span>Password</span>
+          <input id="accountPassword" type="password" autocomplete="current-password" required>
         </label>
+        <p id="accountError" class="modal-error" hidden></p>
         <div class="modal-actions">
+          <button id="accountLogout" class="utility-button danger" type="button" hidden>Logout</button>
           <button id="accountCancel" class="utility-button" type="button">Cancel</button>
           <button class="utility-button primary" type="submit">Continue</button>
         </div>

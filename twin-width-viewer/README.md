@@ -4,13 +4,13 @@ Static browser for the Lean files in `../twin-width`.
 
 ## Render
 
-The default root `Dockerfile` is optimized for fast Render deploys. It uses a
-Node-only image, regenerates `lean-data.js`, and serves the viewer. Server-side
-Compile is disabled in that fast image because installing Lean/mathlib makes
-Render builds much slower.
+The default root `Dockerfile` uses the Lean toolchain image and installs Node so
+the deployed Compile button can run `lake build`. It also fetches the mathlib
+cache during image build, so this is slower than a static viewer deployment but
+keeps server-side compilation available.
 
-Use `Dockerfile.lean` instead only if the deployed service must run `lake build`
-from the Compile button.
+Use `Dockerfile.fast` only if you want a much faster Node-only deployment and
+can accept Compile being unavailable on the deployed service.
 
 ## Use
 
@@ -28,6 +28,10 @@ definitions. Select an excerpt inside a votable item to raise a mandatory-commen
 issue for that exact text. Conformity tallies, local users, night mode, issue
 reports, and issue replies are stored in the browser's `localStorage`. Compile
 output appears in the main workspace below the source view.
+
+Login passwords are local to the browser storage used by the viewer. Moderator
+rights are not selectable in the UI; they are assigned only to prescribed user
+names in `app.js`.
 
 Opening `index.html` directly still works for browsing and local-only state, but
 Compile cannot run `lake build` and Import only adds files to the in-browser

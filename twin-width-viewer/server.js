@@ -64,8 +64,8 @@ async function compileNode(request, response) {
       command: `lake ${args.join(" ")}`,
       output:
         "Server-side Lean compilation is not available in this deployment. " +
-        "The default Render image is optimized for fast deploys and does not install elan/mathlib. " +
-        "Use Dockerfile.lean if you need Compile on the server.",
+        "Use the default root Dockerfile if you need Compile on the server; " +
+        "Dockerfile.fast intentionally omits Lean.",
     });
   }
   const output = await run("lake", args, sourceRoot);

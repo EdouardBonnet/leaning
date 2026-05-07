@@ -32,7 +32,9 @@
     accountModal: document.getElementById("accountModal"),
     accountForm: document.getElementById("accountForm"),
     accountName: document.getElementById("accountName"),
-    accountRole: document.getElementById("accountRole"),
+    accountPassword: document.getElementById("accountPassword"),
+    accountError: document.getElementById("accountError"),
+    accountLogout: document.getElementById("accountLogout"),
     accountCancel: document.getElementById("accountCancel"),
     themeToggle: document.getElementById("themeToggle"),
     sourceImportButton: document.getElementById("sourceImportButton"),
@@ -61,6 +63,7 @@
   const storeKey = "twinWidthConformState.v2";
   const oldVoteKey = "twinWidthFormalizationVotes.v1";
   let store = readStore();
+  const moderatorUsernames = new Set(["edouardbonnet", "ebonnet"]);
 
   const declarationPattern =
     /^\s*(?:(?:noncomputable|private|protected|partial|unsafe|scoped)\s+)*(theorem|lemma|def|abbrev|structure|class|inductive|instance|axiom|opaque)\b\s*([A-Za-z_][A-Za-z0-9_'.!?]*)?/;
@@ -140,6 +143,7 @@
 
     els.accountButton.addEventListener("click", openAccountModal);
     els.accountCancel.addEventListener("click", closeAccountModal);
+    els.accountLogout.addEventListener("click", logout);
     els.accountModal.addEventListener("click", (event) => {
       if (event.target === els.accountModal) closeAccountModal();
     });
@@ -704,7 +708,7 @@
       }
 
       item.appendChild(jump);
-      item.appendChild(makeDeclarationActions(decl));
+      item.appendChild(makeDeclarationActions(decl, { readOnly: true }));
 
       const reports = reportsFor(decl.id);
       if (reports.length && options.showReports) item.appendChild(makeReportList(reports, options.compact));
@@ -727,19 +731,21 @@
     return span;
   }
 
-  function makeDeclarationActions(decl) {
+  function makeDeclarationActions(decl, options = {}) {
     const actions = document.createElement("div");
     actions.className = "decl-actions";
 
-    actions.appendChild(makeConformTicks(decl, "panel"));
+    actions.appendChild(makeConformTicks(decl, "panel", options.readOnly));
     return actions;
   }
 
-  function makeConformTicks(decl, variant) {
+  function makeConformTicks(decl, variant, readOnly = false) {
     const state = itemState(decl.id);
     const group = document.createElement("div");
     group.className = `tick-group ${variant}`;
-    group.title = state.validated
+    group.title = readOnly
+      ? `${state.tally}/5 conformity tally`
+      : state.validated
       ? "Validated"
       : store.currentUser
         ? `${state.tally}/5 conformity tally`
@@ -754,7 +760,7 @@
       tick.classList.toggle("validated", state.validated);
 
       const value = conformValueForTick(state, index);
-      if (value && store.currentUser && !state.validated) {
+      if (!readOnly && value && store.currentUser && !state.validated) {
         tick.dataset.conformId = decl.id;
         tick.dataset.conformValue = String(value);
         tick.title = value === 2 ? "Conform: completely sure" : "Conform: checked";
@@ -1073,7 +1079,7 @@
       return normalizeStore({
         ...base,
         currentUser: "",
-        users: { legacy: { createdAt: new Date().toISOString(), role: "reviewer" } },
+        users: { legacy: { createdAt: new Date().toISOString(), role: "reviewer", passwordHash: "" } },
         conforms,
       });
     } catch {
@@ -1086,7 +1092,8 @@
     for (const [name, user] of Object.entries(users)) {
       users[name] = {
         createdAt: user?.createdAt || new Date().toISOString(),
-        role: user?.role === "moderator" ? "moderator" : "reviewer",
+        role: roleForUser(name),
+        passwordHash: typeof user?.passwordHash === "string" ? user.passwordHash : "",
       };
     }
     return {
@@ -1131,30 +1138,78 @@
 
   function openAccountModal() {
     els.accountName.value = store.currentUser || "";
-    els.accountRole.value = store.currentUser && isModerator(store.currentUser) ? "moderator" : "reviewer";
+    els.accountPassword.value = "";
+    els.accountError.hidden = true;
+    els.accountLogout.hidden = !store.currentUser;
     els.accountModal.hidden = false;
-    requestAnimationFrame(() => els.accountName.focus());
+    requestAnimationFrame(() => (store.currentUser ? els.accountPassword : els.accountName).focus());
   }
 
   function closeAccountModal() {
     els.accountModal.hidden = true;
   }
 
-  function saveAccount(event) {
+  async function saveAccount(event) {
     event.preventDefault();
     const normalized = els.accountName.value.trim().replace(/\s+/g, " ");
     if (!normalized) {
       els.accountName.focus();
       return;
     }
-    const role = els.accountRole.value === "moderator" ? "moderator" : "reviewer";
+    const password = els.accountPassword.value;
+    if (!password) {
+      showAccountError("Enter a password.");
+      els.accountPassword.focus();
+      return;
+    }
+    const hash = await passwordHash(normalized, password);
+    const existing = store.users[normalized];
+    if (existing?.passwordHash && existing.passwordHash !== hash) {
+      showAccountError("The password does not match this user name.");
+      els.accountPassword.focus();
+      return;
+    }
+    const role = roleForUser(normalized);
     store.currentUser = normalized;
-    store.users[normalized] = store.users[normalized] || { createdAt: new Date().toISOString(), role };
+    store.users[normalized] = store.users[normalized] || { createdAt: new Date().toISOString(), role, passwordHash: hash };
     store.users[normalized].role = role;
+    store.users[normalized].passwordHash = existing?.passwordHash || hash;
     saveStore();
     closeAccountModal();
     updateAccountUI();
     renderAll();
+  }
+
+  function logout() {
+    store.currentUser = "";
+    saveStore();
+    closeAccountModal();
+    updateAccountUI();
+    renderAll();
+  }
+
+  function showAccountError(message) {
+    els.accountError.textContent = message;
+    els.accountError.hidden = false;
+  }
+
+  function roleForUser(user) {
+    return moderatorUsernames.has(user.trim().toLowerCase()) ? "moderator" : "reviewer";
+  }
+
+  async function passwordHash(user, password) {
+    const input = `${user.trim().toLowerCase()}\n${password}`;
+    if (window.crypto?.subtle) {
+      const bytes = new TextEncoder().encode(input);
+      const digest = await window.crypto.subtle.digest("SHA-256", bytes);
+      return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+    }
+    let hash = 2166136261;
+    for (let index = 0; index < input.length; index += 1) {
+      hash ^= input.charCodeAt(index);
+      hash = Math.imul(hash, 16777619);
+    }
+    return `fnv1a:${(hash >>> 0).toString(16)}`;
   }
 
   function updateAccountUI() {
@@ -1168,7 +1223,7 @@
       ? "Login to compile"
       : appState.compileAvailable
         ? "Run lake build at the selected node"
-        : "Compile is unavailable in the fast Render image";
+        : "Compile is unavailable in this deployment";
   }
 
   function toggleTheme() {
@@ -1293,7 +1348,7 @@
     if (!appState.compileAvailable) {
       showToolOutput(
         "Compile unavailable",
-        "This deployment is optimized for fast Render builds and does not install Lean. Use Dockerfile.lean on Render if server-side Compile is required.",
+        "This deployment does not include Lean. Use the default root Dockerfile on Render if server-side Compile is required.",
       );
       return;
     }
