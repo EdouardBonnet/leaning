@@ -4,10 +4,11 @@ Static browser for the Lean files in `../twin-width`.
 
 ## Render
 
-The default root `Dockerfile` uses the Lean toolchain image and installs Node so
-the deployed Compile button can run `lake build`. It also fetches the mathlib
-cache during image build, so this is slower than a static viewer deployment but
-keeps server-side compilation available.
+The default root `Dockerfile` uses Node plus elan to install the exact Lean
+toolchain from `../twin-width/lean-toolchain`, so the deployed Compile button
+can run `lake build`. It also fetches the mathlib cache during image build, so
+this is slower than a static viewer deployment but keeps server-side compilation
+available.
 
 Use `Dockerfile.fast` only if you want a much faster Node-only deployment and
 can accept Compile being unavailable on the deployed service.
