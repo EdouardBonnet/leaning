@@ -995,6 +995,31 @@ body[data-theme="dark"] .report-list {
   white-space: nowrap;
 }
 
+.symbol-link {
+  display: inline;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  line-height: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.symbol-link:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.symbol-link:focus-visible {
+  outline: 1px solid var(--green);
+  outline-offset: 2px;
+}
+
 .tok-keyword {
   color: #7b3f8c;
   font-weight: 700;

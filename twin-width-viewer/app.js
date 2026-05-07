@@ -11,6 +11,8 @@
   let allDeclarations = [];
   let votableDeclarations = [];
   let declarationById = new Map();
+  let allDeclarationById = new Map();
+  let symbolIndex = new Map();
   let tree = null;
   let dirPaths = new Set();
 
@@ -195,14 +197,24 @@
 
       const jump = event.target.closest("[data-decl-id]");
       if (jump) {
-        const decl = declarationById.get(jump.dataset.declId);
+        const decl = allDeclarationById.get(jump.dataset.declId) || declarationById.get(jump.dataset.declId);
         if (decl) navigateTo(decl.filePath, decl.line);
+        return;
       }
 
       const nodeButton = event.target.closest("[data-node-path]");
       if (nodeButton) {
         selectNode(nodeButton.dataset.nodePath, nodeButton.dataset.nodeType);
       }
+    });
+    document.body.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      const jump = event.target.closest("[data-decl-id]");
+      if (!jump) return;
+      const decl = allDeclarationById.get(jump.dataset.declId) || declarationById.get(jump.dataset.declId);
+      if (!decl) return;
+      event.preventDefault();
+      navigateTo(decl.filePath, decl.line);
     });
 
     window.addEventListener("hashchange", () => openFromHash());
@@ -242,8 +254,28 @@
       .sort((a, b) => a.filePath.localeCompare(b.filePath) || a.line - b.line);
     votableDeclarations = allDeclarations.filter((decl) => decl.votable);
     declarationById = new Map(votableDeclarations.map((decl) => [decl.id, decl]));
+    allDeclarationById = new Map(allDeclarations.map((decl) => [decl.id, decl]));
+    symbolIndex = buildSymbolIndex(allDeclarations);
     tree = buildTree(files);
     dirPaths = collectDirPaths(files);
+  }
+
+  function buildSymbolIndex(declarations) {
+    const index = new Map();
+    const add = (key, decl) => {
+      if (!key || leanKeywords.has(key) || declarationKeywords.has(key) || index.has(key)) return;
+      index.set(key, decl);
+    };
+
+    for (const decl of declarations) {
+      add(decl.name, decl);
+      add(decl.fullName, decl);
+      const parts = String(decl.fullName || "").split(".").filter(Boolean);
+      for (let start = 1; start < parts.length; start += 1) {
+        add(parts.slice(start).join("."), decl);
+      }
+    }
+    return index;
   }
 
   function renderAll() {
@@ -1587,11 +1619,30 @@
       else if (/^\d+$/.test(token)) className = "tok-number";
       else if (/^(Prop|Type|Sort|Nat|Fin|Finset|Fintype|Bool|True|False)$/.test(token)) className = "tok-atom";
       else if (/^[A-Z]/.test(token)) className = "tok-type";
-      output += className ? `<span class="${className}">${escapeHtml(token)}</span>` : escapeHtml(token);
+      const target = lookupSymbol(token);
+      if (target) {
+        const classes = ["symbol-link"];
+        if (className) classes.push(className);
+        output +=
+          `<span class="${classes.join(" ")}" data-decl-id="${escapeHtml(target.id)}" role="link" tabindex="0" title="Go to ${escapeHtml(target.fullName)}">${escapeHtml(token)}</span>`;
+      } else {
+        output += className ? `<span class="${className}">${escapeHtml(token)}</span>` : escapeHtml(token);
+      }
       cursor = match.index + token.length;
     }
     output += escapeHtml(text.slice(cursor));
     return output;
+  }
+
+  function lookupSymbol(token) {
+    if (!token || leanKeywords.has(token) || declarationKeywords.has(token) || /^\d+$/.test(token)) return null;
+    if (symbolIndex.has(token)) return symbolIndex.get(token);
+    const parts = token.split(".").filter(Boolean);
+    for (let start = 1; start < parts.length; start += 1) {
+      const suffix = parts.slice(start).join(".");
+      if (symbolIndex.has(suffix)) return symbolIndex.get(suffix);
+    }
+    return null;
   }
 
   function spanHtml(className, text) {
