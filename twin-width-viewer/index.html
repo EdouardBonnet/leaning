@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Leaneage</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-title">Leaneage</div>
+        </div>
+
+        <label class="search-box">
+          <span class="search-label">Search</span>
+          <input id="globalSearch" type="search" autocomplete="off" placeholder="File, declaration, theorem, definition">
+        </label>
+
+        <div class="action-group" aria-label="Workspace actions">
+          <button id="accountButton" class="utility-button" type="button">Register/Login</button>
+          <button id="themeToggle" class="utility-button" type="button">Night mode</button>
+          <button id="sourceImportButton" class="utility-button" type="button">Import .lean</button>
+          <input id="sourceImportFile" class="hidden-file" type="file" accept=".lean,text/plain">
+          <button id="compileButton" class="utility-button primary" type="button">Compile</button>
+        </div>
+      </header>
+
+      <aside class="sidebar" aria-label="File browser">
+        <div class="panel-heading">
+          <div>
+            <h1>Files</h1>
+            <p id="fileCount">Loading</p>
+          </div>
+        </div>
+        <nav id="fileTree" class="file-tree"></nav>
+      </aside>
+
+      <main class="workspace">
+        <section class="file-header">
+          <div class="file-title-block">
+            <div id="breadcrumb" class="breadcrumb"></div>
+            <h2 id="fileTitle">Select a file</h2>
+          </div>
+          <div id="fileStats" class="file-stats"></div>
+        </section>
+
+        <section id="codeView" class="code-view" aria-label="Lean source code"></section>
+        <div id="selectionToolbar" class="selection-toolbar" hidden>
+          <button id="selectionIssueButton" class="utility-button primary" type="button">Raise issue</button>
+        </div>
+        <section id="compileOutputPanel" class="compile-output-panel" hidden>
+          <div class="compile-output-heading">
+            <h2>Compile Output</h2>
+            <button id="clearOutputButton" class="text-button" type="button">Clear</button>
+          </div>
+          <pre id="toolOutput" class="tool-output"></pre>
+        </section>
+      </main>
+
+      <aside class="inspector" aria-label="Statement inspector">
+        <section class="inspector-section">
+          <div class="section-title-row">
+            <h2>Raised Items</h2>
+            <span id="raisedCount" class="muted-count"></span>
+          </div>
+          <div id="raisedItems" class="declaration-list"></div>
+        </section>
+
+        <section class="inspector-section">
+          <div class="section-title-row">
+            <h2>Open Items</h2>
+            <span id="candidateCount" class="muted-count"></span>
+          </div>
+          <div id="candidateItems" class="declaration-list"></div>
+        </section>
+      </aside>
+    </div>
+
+    <div id="accountModal" class="modal-backdrop" hidden>
+      <form id="accountForm" class="modal-card">
+        <h2>Register or Login</h2>
+        <p>Choose a local reviewer identity for conformity checks and issue discussions.</p>
+        <label>
+          <span>User name</span>
+          <input id="accountName" type="text" autocomplete="name" required placeholder="e.g. anne">
+        </label>
+        <label>
+          <span>Role</span>
+          <select id="accountRole">
+            <option value="reviewer">Reviewer</option>
+            <option value="moderator">Moderator</option>
+          </select>
+        </label>
+        <div class="modal-actions">
+          <button id="accountCancel" class="utility-button" type="button">Cancel</button>
+          <button class="utility-button primary" type="submit">Continue</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="issueModal" class="modal-backdrop" hidden>
+      <form id="issueForm" class="modal-card">
+        <h2>Raise Issue</h2>
+        <p>Report a mismatch between this selected Lean excerpt and the intended meaning.</p>
+        <pre id="issueExcerpt" class="issue-excerpt"></pre>
+        <label>
+          <span>Comment</span>
+          <textarea id="issueComment" required rows="4" placeholder="Describe the formalization issue."></textarea>
+        </label>
+        <div class="modal-actions">
+          <button id="issueCancel" class="utility-button" type="button">Cancel</button>
+          <button class="utility-button primary" type="submit">Raise issue</button>
+        </div>
+      </form>
+    </div>
+
+    <script src="lean-data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
