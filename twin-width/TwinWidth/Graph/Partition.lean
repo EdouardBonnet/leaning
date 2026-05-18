@@ -70,6 +70,11 @@ theorem IsBagPartition.card_pos_of_nonempty_type
   rcases hbags.2.2 v with ⟨A, hA, _hvA⟩
   exact Finset.card_pos.mpr ⟨A, hA⟩
 
+/-- Every trigraph state carries a bag partition. -/
+theorem TrigraphState.isBagPartition {V : Type*} (T : TrigraphState V) :
+    IsBagPartition T.bags :=
+  ⟨T.bag_nonempty, T.bag_disjoint, T.bag_cover⟩
+
 /-- Every pair in `A × B` is an edge of `G`. -/
 def CompleteBetween {V : Type*} (G : _root_.SimpleGraph V)
     (A B : Finset V) : Prop :=
@@ -584,6 +589,14 @@ def IsBagContraction {V : Type*} [DecidableEq V]
   ∃ A ∈ P, ∃ B ∈ P, A ≠ B ∧
     Q = insert (A ∪ B) ((P.erase A).erase B)
 
+/-- A semantic trigraph contraction induces the corresponding contraction of
+its bag family. -/
+theorem IsContractionStep.isBagContraction {V : Type*} [DecidableEq V]
+    {T U : TrigraphState V} (h : IsContractionStep T U) :
+    IsBagContraction T.bags U.bags := by
+  rcases h with ⟨A, hA, B, hB, hAB, hbags, _hred, _hblack⟩
+  exact ⟨A, hA, B, hB, hAB, hbags⟩
+
 /-- Reverse one bag contraction in an ordered list of bags: the merged bag
 `A ∪ B` is replaced by the adjacent pair `A, B`; all other bags keep their
 relative order. -/
@@ -1001,6 +1014,26 @@ theorem ContractionSequence.isSemanticState
       exact isContractionStep_isSemanticState (ih (le_of_lt hi'))
         (S.step_contracts i hi')
 
+/-- The red-degree bound of a contraction sequence, read in the semantic
+partition language. -/
+theorem ContractionSequence.partitionRedDegreeAtMost_state
+    {V : Type*} [Fintype V] [DecidableEq V]
+    {G : _root_.SimpleGraph V} {d : ℕ}
+    (S : ContractionSequence G d) {i : ℕ} (hi : i ≤ S.stepCount) :
+    PartitionRedDegreeAtMost G (S.state i).bags d := by
+  classical
+  intro A hA
+  have hsem := S.isSemanticState i hi
+  have hfilter :
+      ((S.state i).bags.filter fun B => partitionRedAdj G A B) =
+        ((S.state i).bags.filter fun B => (S.state i).redAdj A B) := by
+    ext B
+    by_cases hB : B ∈ (S.state i).bags
+    · simp [hB, (hsem.1 hA hB).symm]
+    · simp [hB]
+  rw [hfilter]
+  exact S.redDegree_le i hi hA
+
 theorem isContractionStep_trigraphStateOfPartition_of_isBagContraction
     {V : Type*} [DecidableEq V]
     {G : _root_.SimpleGraph V} {P Q : Finset (Finset V)}
@@ -1355,6 +1388,25 @@ theorem hasTwinWidthAtMost_twinWidth'
     (G : _root_.SimpleGraph V) :
     HasTwinWidthAtMost G (twinWidth G) :=
   hasTwinWidthAtMost_twinWidth G ⟨Fintype.card V, hasTwinWidthAtMost_card G⟩
+
+/-- A numerical upper bound on `twinWidth` can be witnessed by a contraction
+sequence with that bound. -/
+theorem hasTwinWidthAtMost_of_twinWidth_le
+    {V : Type*} [Fintype V] [DecidableEq V]
+    {G : _root_.SimpleGraph V} {d : ℕ}
+    (h : twinWidth G ≤ d) :
+    HasTwinWidthAtMost G d :=
+  hasTwinWidthAtMost_mono (hasTwinWidthAtMost_twinWidth' G) h
+
+/-- To prove a strict lower bound on twin-width, it is enough to rule out
+bounded contraction sequences at that width. -/
+theorem lt_twinWidth_of_not_hasTwinWidthAtMost
+    {V : Type*} [Fintype V] [DecidableEq V]
+    {G : _root_.SimpleGraph V} {d : ℕ}
+    (h : ¬ HasTwinWidthAtMost G d) :
+    d < twinWidth G := by
+  by_contra hnot
+  exact h (hasTwinWidthAtMost_of_twinWidth_le (Nat.le_of_not_gt hnot))
 
 /-- The trivial finite upper bound on graph twin-width. -/
 theorem twinWidth_le_card

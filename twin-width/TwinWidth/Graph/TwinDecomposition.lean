@@ -1067,6 +1067,7 @@ noncomputable def castList {L L' : List (Finset V)}
     intro i
     simpa [Division.castIndex] using D.part_eq i
 
+omit [Fintype V] [DecidableEq V] in
 private theorem get_pair_left
     (P Q : List (Finset V)) (A B : Finset V) :
     let k := P.length + Q.length
@@ -1075,10 +1076,9 @@ private theorem get_pair_left
     (P ++ [A, B] ++ Q).get ((finCongr hcur).symm idx.castSucc) = A := by
   classical
   dsimp
-  simpa [List.get_eq_getElem] using
-    (List.getElem_append_right (as := P) (bs := [A, B] ++ Q) (i := P.length)
-      (by omega : P.length ≤ P.length))
+  simp
 
+omit [Fintype V] [DecidableEq V] in
 private theorem get_pair_right
     (P Q : List (Finset V)) (A B : Finset V) :
     let k := P.length + Q.length
@@ -1087,10 +1087,9 @@ private theorem get_pair_right
     (P ++ [A, B] ++ Q).get ((finCongr hcur).symm idx.succ) = B := by
   classical
   dsimp
-  simpa [List.get_eq_getElem] using
-    (List.getElem_append_right (as := P) (bs := [A, B] ++ Q) (i := P.length + 1)
-      (by omega : P.length ≤ P.length + 1))
+  simp
 
+omit [Fintype V] in
 private theorem get_merged
     (P Q : List (Finset V)) (A B : Finset V) :
     let k := P.length + Q.length
@@ -1099,10 +1098,9 @@ private theorem get_merged
     (P ++ [A ∪ B] ++ Q).get ((finCongr hnext).symm idx) = A ∪ B := by
   classical
   dsimp
-  simpa [List.get_eq_getElem] using
-    (List.getElem_append_right (as := P) (bs := [A ∪ B] ++ Q) (i := P.length)
-      (by omega : P.length ≤ P.length))
+  simp
 
+omit [Fintype V] in
 private theorem get_before_fused_pair
     (P Q : List (Finset V)) (A B : Finset V) :
     let k := P.length + Q.length
@@ -1118,6 +1116,7 @@ private theorem get_before_fused_pair
   intro j hj
   simp [List.getElem_append_left, hj]
 
+omit [Fintype V] in
 private theorem get_after_fused_pair
     (P Q : List (Finset V)) (A B : Finset V) :
     let k := P.length + Q.length
@@ -1861,8 +1860,8 @@ theorem hasRowFusion_matrixDivisionAtTimes_step
       · omega
       · rfl
   · intro j
-    simp [matrixDivisionAtTimes, matrixDivisionOfBagListsWithCuts, C,
-      A, B, hcurCuts, BagListDivision.castList, Division.castIndex_castIndex]
+    simp [matrixDivisionAtTimes, matrixDivisionOfBagListsWithCuts, hcurCuts,
+      Division.castIndex_castIndex]
 
 /-- The odd matrix step corresponding to graph step `i` mirrors the same
 contraction as a column fusion. -/
@@ -1913,8 +1912,8 @@ theorem hasColFusion_matrixDivisionAtTimes_step
   · simp [matrixDivisionAtTimes, matrixDivisionOfBagListsWithCuts, hnextCuts]
     omega
   · intro j
-    simp [matrixDivisionAtTimes, matrixDivisionOfBagListsWithCuts, R,
-      A, B, hnextCuts, BagListDivision.castList, Division.castIndex_castIndex]
+    simp [matrixDivisionAtTimes, matrixDivisionOfBagListsWithCuts, hnextCuts,
+      Division.castIndex_castIndex]
   · convert (BagListDivision.isFusionAt_of_adjacent_merge (S := S) Ccur Cnext) using 1
     · simp only [matrixDivisionAtTimes, matrixDivisionOfBagListsWithCuts, Ccur,
         BagListDivision.castList, Division.castIndex_castIndex]

@@ -1,5 +1,16 @@
 # AGENTS.md
 
+## Most important operating rule
+
+- Work autonomously for long uninterrupted stretches. For substantial proof,
+  implementation, or formalization tasks, do a larger coherent chunk of work
+  before terminating: continue for at least one hour before stopping unless
+  there is a concrete reason to stop, such as an explicit design uncertainty
+  that cannot be resolved from the repository or papers, a safety/permission
+  blocker, an external dependency blocker, or a direct user instruction to
+  pause. Do not stop merely because one small lemma, local edit, or verification
+  step is complete; if there is no real blocker, keep going.
+
 ## Project mission
 
 This repository formalizes, in Lean 4 using mathlib, the theorem that **twin-width** and **mixed minor number** are functionally equivalent graph parameters for finite simple graphs.
