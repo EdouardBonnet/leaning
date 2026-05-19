@@ -1299,10 +1299,9 @@ theorem EndpointCleanPathPacking.augment_from_recursive_last_intersection
             exact ⟨jQ, hjQ_ne_qx, hjQ_ne_qy, hjQ.symm⟩
         · simp [Q, hQ'card, hP'card]
 
-/-- The remaining strengthened finite-Menger augmentation statement in the
-endpoint-clean convention.  Proving this statement self-containedly is exactly
-the remaining hard part of Diestel's proof after the split and replacement
-lemmas above. -/
+/-- The strengthened finite-Menger augmentation statement in the endpoint-clean
+convention.  This is the induction statement used in Diestel's proof after the
+split and replacement lemmas above. -/
 def EndpointCleanAugmentationStatement : Prop :=
   ∀ {V : Type u} [Fintype V] [DecidableEq V]
     (G : _root_.SimpleGraph V) (S T : Finset V)

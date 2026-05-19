@@ -119,6 +119,15 @@ structure Crossbar {V : Type*} [DecidableEq V]
     ∀ i : Index, ∃ v : V,
       (spokePath i).IsEndpoint v ∧
         (mainPath i).MeetsExactlyAt (spokePath i) v
+  /-- The endpoint of each spoke opposite its attachment point lies in `X` and
+  is not on the corresponding main path.  This rules out the degenerate case
+  where the spoke is a trivial path at a vertex already lying in `X`. -/
+  spoke_exits_own_main :
+    ∀ i : Index, ∃ v : V,
+      (spokePath i).IsEndpoint v ∧
+        (mainPath i).MeetsExactlyAt (spokePath i) v ∧
+          (spokePath i).otherEndpoint v ∈ X ∧
+            (spokePath i).otherEndpoint v ∉ (mainPath i).vertexSet
   /-- Each spoke is disjoint from every other main path. -/
   spoke_disjoint_other_main :
     ∀ ⦃i j : Index⦄, i ≠ j →
@@ -177,6 +186,7 @@ noncomputable def reindex {ι : Type} [Fintype ι] [DecidableEq ι]
     intro i j hij
     exact C.spoke_nodeDisjoint (fun h => hij (e.injective h))
   spoke_meets_own_main := fun i => C.spoke_meets_own_main (e i)
+  spoke_exits_own_main := fun i => C.spoke_exits_own_main (e i)
   spoke_disjoint_other_main := by
     intro i j hij
     exact C.spoke_disjoint_other_main (fun h => hij (e.injective h))
@@ -275,6 +285,19 @@ def mapLe (C : Crossbar G A B X rho) {G' : _root_.SimpleGraph V}
     refine ⟨v, ?_, ?_⟩
     · simpa [GraphPath.mapLe, GraphPath.IsEndpoint] using hvendpoint
     · simpa [GraphPath.MeetsExactlyAt] using hmeet
+  spoke_exits_own_main := by
+    intro i
+    rcases C.spoke_exits_own_main i with
+      ⟨v, hvendpoint, hmeet, hotherX, hotherMain⟩
+    refine ⟨v, ?_, ?_, ?_, ?_⟩
+    · simpa [GraphPath.mapLe, GraphPath.IsEndpoint] using hvendpoint
+    · simpa [GraphPath.MeetsExactlyAt] using hmeet
+    · simpa [GraphPath.mapLe, GraphPath.otherEndpoint] using hotherX
+    · change
+        ((C.spokePath i).mapLe hGG').otherEndpoint v ∉
+          ((C.mainPath i).mapLe hGG').vertexSet
+      rw [GraphPath.mapLe_vertexSet]
+      simpa [GraphPath.mapLe, GraphPath.otherEndpoint] using hotherMain
   spoke_disjoint_other_main := by
     intro i j hij
     simpa [GraphPath.NodeDisjoint] using C.spoke_disjoint_other_main hij

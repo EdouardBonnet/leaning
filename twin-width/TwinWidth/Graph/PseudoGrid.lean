@@ -1,4 +1,5 @@
 import Mathlib.Data.Finset.Card
+import Mathlib.Data.Nat.Find
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import TwinWidth.Graph.Crossbar
 import TwinWidth.Graph.CrossbarPower
@@ -13,8 +14,9 @@ paths, and `Q` is the family of disjoint `A`-to-`X` paths.
 
 The theorem at the end of the file proves the final assembly step of
 Theorem 4.1 from the iteration data produced by the contraction/Menger
-argument.  `Theorem41.lean` proves that concrete separator choices in the
-contracted graphs supply this iteration data.
+argument.  The self-contained Section 4.1 proof is completed in
+`Theorem41.lean`, which constructs those separator choices and lifts successful
+contracted linkages to crossbars.
 -/
 
 namespace TwinWidth
@@ -330,6 +332,14 @@ structure PseudoGrid {V : Type u} [DecidableEq V]
     ∀ j : QIndex,
       (qPath j).vertexSet ⊆
         (Q.path (P.matchedSourceIndex Q (parent j))).vertexSet
+  /-- Each selected segment is an actual subpath of the corresponding original
+  `Q_P` path, at the edge-set level.  This is needed in Section 4.2 when
+  replacing part of `P` by a linkage in `H'`: edges contributed by retained
+  `Q''` segments must already be edges of the original `Q` family. -/
+  qPath_edgeSet_subset_matched :
+    ∀ j : QIndex,
+      (qPath j).edgeSet ⊆
+        (Q.path (P.matchedSourceIndex Q (parent j))).edgeSet
   /-- Each selected segment has exactly one endpoint in `X`. -/
   qPath_exactly_one_endpoint_in_X :
     ∀ j : QIndex, (qPath j).ExactlyOneEndpointIn X
@@ -426,6 +436,10 @@ structure PseudoGridIterationData {V : Type u} [DecidableEq V]
     ∀ j : QIndex,
       (qPath j).vertexSet ⊆
         (Q.path (P.matchedSourceIndex Q (parent j))).vertexSet
+  qPath_edgeSet_subset_matched :
+    ∀ j : QIndex,
+      (qPath j).edgeSet ⊆
+        (Q.path (P.matchedSourceIndex Q (parent j))).edgeSet
   qPath_exactly_one_endpoint_in_X :
     ∀ j : QIndex, (qPath j).ExactlyOneEndpointIn X
   qPath_nodeDisjoint :
@@ -514,6 +528,7 @@ noncomputable def toPseudoGrid
   parent_injective := I.parent_injective
   qPath := I.qPath
   qPath_subset_matched := I.qPath_subset_matched
+  qPath_edgeSet_subset_matched := I.qPath_edgeSet_subset_matched
   qPath_exactly_one_endpoint_in_X := I.qPath_exactly_one_endpoint_in_X
   qPath_nodeDisjoint := I.qPath_nodeDisjoint
   remaining_disjoint_qPath := I.remaining_disjoint_qPath
@@ -542,13 +557,38 @@ def PerfectPathPacking.IsMinimumTheorem41Pair
   ∀ (P' : PerfectPathPacking G A B) (Q' : PerfectPathPacking G A X),
     P.pairUnionEdgeCount Q ≤ P'.pairUnionEdgeCount Q'
 
+/-- Among all perfect `A`-to-`B` and `A`-to-`X` path-packing pairs, one
+minimizes the edge count used in Theorem 4.1.
+
+The proof only uses well-foundedness of `Nat`: once one admissible pair exists,
+the set of possible edge-union counts has a least element. -/
+theorem PerfectPathPacking.exists_minimumTheorem41Pair
+    {V : Type u} [DecidableEq V] {G : _root_.SimpleGraph V}
+    {A B X : Finset V}
+    (P₀ : PerfectPathPacking G A B) (Q₀ : PerfectPathPacking G A X) :
+    ∃ (P : PerfectPathPacking G A B) (Q : PerfectPathPacking G A X),
+      P.IsMinimumTheorem41Pair Q := by
+  classical
+  let HasCount : ℕ → Prop := fun n =>
+    ∃ (P : PerfectPathPacking G A B) (Q : PerfectPathPacking G A X),
+      P.pairUnionEdgeCount Q = n
+  have hExists : ∃ n : ℕ, HasCount n :=
+    ⟨P₀.pairUnionEdgeCount Q₀, P₀, Q₀, rfl⟩
+  rcases Nat.find_spec hExists with ⟨P, Q, hPQ⟩
+  refine ⟨P, Q, ?_⟩
+  intro P' Q'
+  have hP' : HasCount (P'.pairUnionEdgeCount Q') := ⟨P', Q', rfl⟩
+  have hmin : Nat.find hExists ≤ P'.pairUnionEdgeCount Q' :=
+    Nat.find_min' (H := hExists) hP'
+  simpa [hPQ] using hmin
+
 /-- The explicit hypotheses of Chuzhoy--Tan Theorem 4.1, with the two path
 families represented as perfect oriented packings.
 
-The actual proof below does not use all fields yet: the unused fields are the
-inputs needed to construct `PseudoGridIterationData` from the paper's
-contracted-graph/Menger argument.  Keeping them in one structure fixes the
-target statement for the remaining formalization. -/
+This is the internal bundled form used by the proof in `Theorem41.lean`.
+The paper's minimum-pair hypothesis is retained as data, even though the
+Section 4.1 dichotomy itself is proved in a slightly stronger form that does
+not consume it. -/
 structure Theorem41Setup {V : Type u} [Fintype V] [DecidableEq V]
     (G : _root_.SimpleGraph V) (A B X : Finset V) (g kappa D : ℕ)
     (P : PerfectPathPacking G A B) (Q : PerfectPathPacking G A X) where
@@ -668,12 +708,12 @@ theorem theorem_four_one_of_iterationData
       Nonempty (PseudoGrid G A B X g D P Q) :=
   crossbar_or_pseudoGrid_of_theorem41_iterationData h
 
-/-- Theorem 4.1 with its paper hypotheses exposed, conditional only on the
+/-- Theorem 4.1 with its paper hypotheses exposed, conditional on the
 iteration data produced by the contracted-graph/Menger part of the proof.
 
-This is the current formal boundary for Section 4.1: proving the missing
-input from `Theorem41Setup` is the next step toward a fully self-contained
-proof of the paper's Theorem 4.1. -/
+This is kept as a small compatibility wrapper for modules that work directly
+with already-constructed iteration data.  The unconditional Section 4.1 theorem
+is `Theorem41Setup.theorem_four_one` in `Theorem41.lean`. -/
 theorem theorem_four_one_of_setup_and_iterationData
     {V : Type u} [Fintype V] [DecidableEq V] {G : _root_.SimpleGraph V}
     {A B X : Finset V} {g kappa D : ℕ}

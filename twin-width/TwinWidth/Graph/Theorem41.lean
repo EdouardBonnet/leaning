@@ -1311,6 +1311,19 @@ theorem spokePath_meets_mainPath_exactly (a : L.Index) :
     (looseSpoke S L a).cleanSuffixFromSet_inter_eq_singleton_source
       (mainPath S L a).vertexSet (looseSpoke_meets_mainPath S L a)
 
+/-- The spoke endpoint opposite the attachment point lies outside the
+associated main path. -/
+theorem spokePath_otherEndpoint_source_not_mem_mainPath (a : L.Index) :
+    (spokePath S L a).otherEndpoint (spokePath S L a).source ∉
+      (mainPath S L a).vertexSet := by
+  intro hmem
+  have htarget_mem :
+      (spokePath S L a).target ∈ (mainPath S L a).vertexSet := by
+    simpa [GraphPath.otherEndpoint] using hmem
+  exact Finset.disjoint_left.mp (S.P_path_disjoint_X (sourceIndex S L a))
+    (by simpa [mainPath] using htarget_mem)
+    (spokePath_target_mem_X S L a)
+
 /-- The main paths selected by a contracted linkage are pairwise disjoint. -/
 theorem mainPath_nodeDisjoint {a b : L.Index} (hab : a ≠ b) :
     GraphPath.NodeDisjoint (mainPath S L a) (mainPath S L b) := by
@@ -1419,6 +1432,12 @@ noncomputable def toCrossbar (hcard : L.card = g ^ 2) :
     intro a
     exact ⟨(spokePath S L a).source, Or.inl rfl,
       spokePath_meets_mainPath_exactly S L a⟩
+  spoke_exits_own_main := by
+    intro a
+    exact ⟨(spokePath S L a).source, Or.inl rfl,
+      spokePath_meets_mainPath_exactly S L a,
+      by simpa [GraphPath.otherEndpoint] using spokePath_target_mem_X S L a,
+      spokePath_otherEndpoint_source_not_mem_mainPath S L a⟩
   spoke_disjoint_other_main := by
     intro a b hab
     exact mainPath_disjoint_spokePath_of_ne S L hab
@@ -1723,6 +1742,16 @@ theorem finalSuffix_vertexSet_subset
     (R.trace (S.lastIterationIndex))
     (R.hitTraceOfRemaining (S.lastIterationIndex) p hp)
 
+/-- The selected suffix is a subpath, at the edge-set level, of the matched
+original `Q`-path. -/
+theorem finalSuffix_edgeSet_subset
+    (R : SeparatorRun S) (p : P.Index)
+    (hp : p ∈ pseudoGridRemaining R.reserved) :
+    (R.finalSuffix p hp).edgeSet ⊆ (R.matchedQPath p).edgeSet :=
+  (R.matchedQPath p).cleanSuffixFromSet_edgeSet_subset
+    (R.trace (S.lastIterationIndex))
+    (R.hitTraceOfRemaining (S.lastIterationIndex) p hp)
+
 /-- The selected final suffix has the pseudo-grid endpoint convention with
 respect to `X`. -/
 theorem finalSuffix_exactlyOneEndpointIn_X
@@ -1868,6 +1897,7 @@ theorem exists_iterationData
     parent_injective := ?parent_injective
     qPath := fun j : QIndex => R.selectedFinalSuffix hParents j
     qPath_subset_matched := ?qPath_subset
+    qPath_edgeSet_subset_matched := ?qPath_edge_subset
     qPath_exactly_one_endpoint_in_X := ?qPath_endpoint
     qPath_nodeDisjoint := ?qPath_disjoint
     remaining_disjoint_qPath := ?remaining_disjoint
@@ -1887,6 +1917,8 @@ theorem exists_iterationData
     exact Subtype.ext hij
   · intro j v hv
     exact R.finalSuffix_vertexSet_subset j.1 (hParents j.2) hv
+  · intro j e he
+    exact R.finalSuffix_edgeSet_subset j.1 (hParents j.2) he
   · intro j
     exact R.finalSuffix_exactlyOneEndpointIn_X j.1 (hParents j.2)
   · intro i j hij
@@ -1989,6 +2021,106 @@ theorem theorem_four_one
     (fun _I hI => S.crossbar_of_contractedLinkageAt hI)
 
 end Theorem41Setup
+
+/-- Chuzhoy--Tan Theorem 4.1 with the hypotheses exposed in the same shape as
+the paper statement.
+
+The paper assumes that the pair of path families minimizes the total number of
+edges in their union.  The Section 4.1 pseudo-grid/crossbar dichotomy proved
+above is slightly stronger and does not use this minimality hypothesis; it is
+kept here because later Section 4 arguments need the same selected pair. -/
+theorem theorem_four_one_explicit
+    {V : Type u} [Fintype V] [DecidableEq V]
+    (H : _root_.SimpleGraph V) {A B X : Finset V} {g kappa D : ℕ}
+    (P : PerfectPathPacking H A B) (Q : PerfectPathPacking H A X)
+    (hg : 2 ≤ g)
+    (hg_power : CrossbarContract.IsPowerOfTwo g)
+    (hA : A.card = kappa) (hB : B.card = kappa) (hX : X.card = kappa)
+    (hAB : Disjoint A B) (hAX : Disjoint A X) (hBX : Disjoint B X)
+    (hdegreeX : ∀ x ∈ X, DegreeEquals H x 1)
+    (hPcard : P.card = kappa) (hQcard : Q.card = kappa)
+    (hminimum : P.IsMinimumTheorem41Pair Q)
+    (hDpos : 1 ≤ D) (hDle : D ≤ kappa / (2 * g ^ 2)) :
+    Theorem41Conclusion H A B X g D P Q := by
+  let S : Theorem41Setup H A B X g kappa D P Q :=
+    { two_le_g := hg
+      g_power_two := hg_power
+      A_card := hA
+      B_card := hB
+      X_card := hX
+      disjoint_A_B := hAB
+      disjoint_A_X := hAX
+      disjoint_B_X := hBX
+      degree_X := hdegreeX
+      P_card := hPcard
+      Q_card := hQcard
+      minimal_pair := hminimum
+      D_pos := hDpos
+      D_le := hDle }
+  exact S.theorem_four_one
+
+/-- Chuzhoy--Tan Theorem 4.1 from two concrete node-disjoint path families,
+without asking the caller to provide a preselected minimum pair.
+
+The theorem promotes the two equal-cardinality path packings to perfect
+oriented packings, chooses a pair minimizing the edge-union count, and then
+applies the self-contained Section 4.1 proof above to that chosen pair. -/
+theorem theorem_four_one_of_pathPackings
+    {V : Type u} [Fintype V] [DecidableEq V]
+    (H : _root_.SimpleGraph V) {A B X : Finset V} {g kappa D : ℕ}
+    (hg : 2 ≤ g)
+    (hg_power : CrossbarContract.IsPowerOfTwo g)
+    (hA : A.card = kappa) (hB : B.card = kappa) (hX : X.card = kappa)
+    (hAB : Disjoint A B) (hAX : Disjoint A X) (hBX : Disjoint B X)
+    (hdegreeX : ∀ x ∈ X, DegreeEquals H x 1)
+    (Pab : PathPacking H A B) (hPab : Pab.card = kappa)
+    (Pax : PathPacking H A X) (hPax : Pax.card = kappa)
+    (hDpos : 1 ≤ D) (hDle : D ≤ kappa / (2 * g ^ 2)) :
+    ∃ (P : PerfectPathPacking H A B) (Q : PerfectPathPacking H A X),
+      P.card = kappa ∧
+        Q.card = kappa ∧
+          P.IsMinimumTheorem41Pair Q ∧
+            Theorem41Conclusion H A B X g D P Q := by
+  classical
+  let P₀ : PerfectPathPacking H A B :=
+    Pab.toPerfectOfCardEq (hPab.trans hA.symm) (hPab.trans hB.symm)
+  let Q₀ : PerfectPathPacking H A X :=
+    Pax.toPerfectOfCardEq (hPax.trans hA.symm) (hPax.trans hX.symm)
+  rcases PerfectPathPacking.exists_minimumTheorem41Pair P₀ Q₀ with
+    ⟨P, Q, hminimum⟩
+  have hPcard : P.card = kappa := P.card_eq_left_card.trans hA
+  have hQcard : Q.card = kappa := Q.card_eq_left_card.trans hA
+  refine ⟨P, Q, hPcard, hQcard, hminimum, ?_⟩
+  exact theorem_four_one_explicit H P Q hg hg_power hA hB hX
+    hAB hAX hBX hdegreeX hPcard hQcard hminimum hDpos hDle
+
+/-- Chuzhoy--Tan Theorem 4.1 in a self-contained existence form.
+
+This is the closest formal statement to the paper's phrasing: given the graph,
+the three terminal sets, degree-one terminals in `X`, and the existence of the
+two required node-disjoint path families, the theorem chooses a minimum pair
+of such families and returns either a crossbar or a pseudo-grid with respect
+to that chosen pair. -/
+theorem theorem_four_one_selfContained
+    {V : Type u} [Fintype V] [DecidableEq V]
+    (H : _root_.SimpleGraph V) {A B X : Finset V} {g kappa D : ℕ}
+    (hg : 2 ≤ g)
+    (hg_power : CrossbarContract.IsPowerOfTwo g)
+    (hA : A.card = kappa) (hB : B.card = kappa) (hX : X.card = kappa)
+    (hAB : Disjoint A B) (hAX : Disjoint A X) (hBX : Disjoint B X)
+    (hdegreeX : ∀ x ∈ X, DegreeEquals H x 1)
+    (hPab : ∃ Pab : PathPacking H A B, Pab.card = kappa)
+    (hPax : ∃ Pax : PathPacking H A X, Pax.card = kappa)
+    (hDpos : 1 ≤ D) (hDle : D ≤ kappa / (2 * g ^ 2)) :
+    ∃ (P : PerfectPathPacking H A B) (Q : PerfectPathPacking H A X),
+      P.card = kappa ∧
+        Q.card = kappa ∧
+          P.IsMinimumTheorem41Pair Q ∧
+            Theorem41Conclusion H A B X g D P Q := by
+  rcases hPab with ⟨Pab, hPab_card⟩
+  rcases hPax with ⟨Pax, hPax_card⟩
+  exact theorem_four_one_of_pathPackings H hg hg_power hA hB hX
+    hAB hAX hBX hdegreeX Pab hPab_card Pax hPax_card hDpos hDle
 
 end SimpleGraph
 end TwinWidth

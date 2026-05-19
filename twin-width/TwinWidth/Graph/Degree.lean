@@ -45,12 +45,51 @@ theorem mono {V : Type*} {G : _root_.SimpleGraph V} {v : V} {d e : ℕ}
 
 end DegreeAtMost
 
+namespace MaxDegreeAtMost
+
+/-- A chosen neighbor finset supplied by a maximum-degree certificate. -/
+noncomputable def neighborFinset {V : Type*} {G : _root_.SimpleGraph V} {d : ℕ}
+    (h : MaxDegreeAtMost G d) (v : V) : Finset V :=
+  Classical.choose (h v)
+
+theorem mem_neighborFinset {V : Type*} {G : _root_.SimpleGraph V} {d : ℕ}
+    (h : MaxDegreeAtMost G d) (v u : V) :
+    u ∈ neighborFinset h v ↔ G.Adj v u :=
+  (Classical.choose_spec (h v)).1 u
+
+theorem card_neighborFinset_le {V : Type*} {G : _root_.SimpleGraph V} {d : ℕ}
+    (h : MaxDegreeAtMost G d) (v : V) :
+    (neighborFinset h v).card ≤ d :=
+  (Classical.choose_spec (h v)).2
+
+end MaxDegreeAtMost
+
 /-- Maximum-degree upper bounds are monotone in the numerical bound. -/
 theorem maxDegreeAtMost_mono {V : Type*} {G : _root_.SimpleGraph V} {d e : ℕ}
     (h : MaxDegreeAtMost G d) (hde : d ≤ e) :
     MaxDegreeAtMost G e := by
   intro v
   exact DegreeAtMost.mono (h v) hde
+
+/-- Passing to a spanning subgraph cannot increase the maximum degree. -/
+theorem maxDegreeAtMost_of_le {V : Type*}
+    {G H : _root_.SimpleGraph V} {d : ℕ}
+    (hG : MaxDegreeAtMost G d) (hHG : H ≤ G) :
+    MaxDegreeAtMost H d := by
+  classical
+  intro v
+  let N : Finset V :=
+    (MaxDegreeAtMost.neighborFinset hG v).filter fun u => H.Adj v u
+  refine ⟨N, ?_, ?_⟩
+  · intro u
+    constructor
+    · intro hu
+      exact (Finset.mem_filter.mp hu).2
+    · intro huv
+      exact Finset.mem_filter.mpr
+        ⟨(MaxDegreeAtMost.mem_neighborFinset hG v u).2 (hHG huv), huv⟩
+  · exact (Finset.card_filter_le _ _).trans
+      (MaxDegreeAtMost.card_neighborFinset_le hG v)
 
 /-- A vertex has degree exactly one when it has a unique neighbor. -/
 theorem degreeEquals_one_of_unique_neighbor {V : Type*} [DecidableEq V]
