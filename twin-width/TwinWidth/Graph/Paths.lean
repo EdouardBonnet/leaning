@@ -487,6 +487,14 @@ theorem exists_edgeSet_incident_of_mem_vertexSet_of_source_ne_target
       exact P.dropUntil_edgeSet_subset hx heQ
     · simp [Q]
 
+/-- A graph path with distinct endpoints has a nonempty edge set. -/
+theorem edgeSet_nonempty_of_source_ne_target
+    (P : GraphPath G) (hne : P.source ≠ P.target) :
+    P.edgeSet.Nonempty := by
+  rcases P.exists_edgeSet_incident_of_mem_vertexSet_of_source_ne_target
+      hne (GraphPath.source_mem_vertexSet P) with ⟨e, he, _⟩
+  exact ⟨e, he⟩
+
 /-- Splitting a path at a vertex and appending the two resulting pieces
 recovers the original walk. -/
 theorem takeUntil_append_dropUntil_walk (P : GraphPath G) {v : V}
@@ -521,6 +529,15 @@ theorem between_vertexSet_subset (P : GraphPath G) {a b : V}
     ((P.dropUntil ha).takeUntil_vertexSet_subset hb)
     (P.dropUntil_vertexSet_subset ha)
 
+/-- A segment between two vertices of a path uses only edges from the
+original path. -/
+theorem between_edgeSet_subset (P : GraphPath G) {a b : V}
+    (ha : a ∈ P.vertexSet) (hb : b ∈ (P.dropUntil ha).vertexSet) :
+    (P.between ha hb).edgeSet ⊆ P.edgeSet := by
+  exact subset_trans
+    ((P.dropUntil ha).takeUntil_edgeSet_subset hb)
+    (P.dropUntil_edgeSet_subset ha)
+
 /-- Vertex `a` appears no later than vertex `b` along an oriented graph path. -/
 def Before (P : GraphPath G) (a b : V) : Prop :=
   ∃ ha : a ∈ P.vertexSet, b ∈ (P.dropUntil ha).vertexSet
@@ -547,6 +564,13 @@ theorem segmentOfBefore_vertexSet_subset (P : GraphPath G) {a b : V}
     (h : P.Before a b) :
     (P.segmentOfBefore h).vertexSet ⊆ P.vertexSet :=
   P.between_vertexSet_subset h.choose h.choose_spec
+
+/-- The path segment certified by a `Before` witness uses only edges from the
+original path. -/
+theorem segmentOfBefore_edgeSet_subset (P : GraphPath G) {a b : V}
+    (h : P.Before a b) :
+    (P.segmentOfBefore h).edgeSet ⊆ P.edgeSet :=
+  P.between_edgeSet_subset h.choose h.choose_spec
 
 /-- The zero-based position of a vertex in the support list of an oriented
 path.  Vertices outside the path get the list length, following `List.idxOf`;
@@ -779,6 +803,12 @@ theorem source_before_of_mem (P : GraphPath G) {v : V} (hv : v ∈ P.vertexSet) 
   rw [hsourceIndex]
   exact Nat.zero_le _
 
+/-- Every path vertex occurs before the target in the path order. -/
+theorem before_target_of_mem (P : GraphPath G) {v : V}
+    (hv : v ∈ P.vertexSet) :
+    P.Before v P.target := by
+  exact ⟨hv, by simpa using GraphPath.target_mem_vertexSet (P.dropUntil hv)⟩
+
 /-- Dropping a path at its source leaves every original path vertex available. -/
 theorem mem_dropUntil_source_of_mem (P : GraphPath G) {v : V}
     (hv : v ∈ P.vertexSet) :
@@ -945,6 +975,53 @@ theorem before_of_mem_takeUntil (P : GraphPath G) {b v : V}
     simpa [vertexIndex] using
       list_idxOf_le_of_mem_take_idxOf_succ hvTakeList
   exact (P.before_iff_vertexIndex_le).2 ⟨hvP, hb, hidx⟩
+
+/-- If a vertex occurs before the target of a prefix, then it lies in that
+prefix. -/
+theorem mem_takeUntil_of_before (P : GraphPath G) {b v : V}
+    (hb : b ∈ P.vertexSet) (hv : P.Before v b) :
+    v ∈ (P.takeUntil hb).vertexSet := by
+  classical
+  have hv' := (P.before_iff_vertexIndex_le).1 hv
+  have hvSupport : v ∈ P.walk.support := by
+    simpa [vertexSet] using hv'.1
+  have hvTakeList :
+      v ∈ P.walk.support.take (P.walk.support.idxOf b + 1) := by
+    have hidx : P.walk.support.idxOf v < P.walk.support.idxOf b + 1 := by
+      simpa [vertexIndex] using Nat.lt_succ_of_le hv'.2.2
+    exact (List.mem_take_iff_idxOf_lt hvSupport).2 hidx
+  have hvTakeSupport :
+      v ∈ (P.walk.takeUntil b (by simpa [vertexSet] using hb)).support := by
+    simpa [_root_.SimpleGraph.Walk.takeUntil_eq_take,
+      _root_.SimpleGraph.Walk.take_support_eq_support_take_succ] using
+      hvTakeList
+  simpa [takeUntil, vertexSet] using hvTakeSupport
+
+/-- A vertex between the endpoints of a certified segment lies in the segment.
+-/
+theorem mem_segmentOfBefore_of_before_of_before (P : GraphPath G) {a b v : V}
+    (h : P.Before a b) (hav : P.Before a v) (hvb : P.Before v b) :
+    v ∈ (P.segmentOfBefore h).vertexSet := by
+  classical
+  let Q : GraphPath G := P.dropUntil h.choose
+  have hbQ : b ∈ Q.vertexSet := by
+    simpa [Q] using h.choose_spec
+  have hvQ : v ∈ Q.vertexSet := by
+    simpa [Q] using hav.choose_spec
+  have hvbP := (P.before_iff_vertexIndex_le).1 hvb
+  have hvPidx :
+      P.vertexIndex v = P.vertexIndex a + Q.vertexIndex v := by
+    simpa [Q] using P.vertexIndex_eq_add_vertexIndex_dropUntil h.choose hvQ
+  have hbPidx :
+      P.vertexIndex b = P.vertexIndex a + Q.vertexIndex b := by
+    simpa [Q] using P.vertexIndex_eq_add_vertexIndex_dropUntil h.choose hbQ
+  have hidxQ : Q.vertexIndex v ≤ Q.vertexIndex b := by
+    omega
+  have hv_before_b_Q : Q.Before v b :=
+    (Q.before_iff_vertexIndex_le).2 ⟨hvQ, hbQ, hidxQ⟩
+  have hvTake : v ∈ (Q.takeUntil hbQ).vertexSet :=
+    Q.mem_takeUntil_of_before hbQ hv_before_b_Q
+  simpa [segmentOfBefore, between, Q] using hvTake
 
 /-- The first vertex of `P`, in the path order, that lies in a finite set
 `U`, assuming `P` meets `U`. -/
@@ -1278,6 +1355,199 @@ theorem connected_induce_vertexSet (P : GraphPath G) :
   rw [hset]
   exact P.walk.connected_induce_support
 
+/-- Cycle-erasure for a walk, packaged as a `GraphPath`.
+
+This is the graph-path version of mathlib's `Walk.toPath`: it keeps the same
+endpoints and chooses a simple subwalk of the original walk. -/
+noncomputable def ofWalk {s t : V} (W : G.Walk s t) : GraphPath G where
+  source := s
+  target := t
+  walk := W.toPath
+  isPath := _root_.SimpleGraph.Path.isPath W.toPath
+
+@[simp] theorem ofWalk_source {s t : V} (W : G.Walk s t) :
+    (ofWalk W).source = s := rfl
+
+@[simp] theorem ofWalk_target {s t : V} (W : G.Walk s t) :
+    (ofWalk W).target = t := rfl
+
+/-- The cycle-erased path uses only vertices of the original walk. -/
+theorem ofWalk_vertexSet_subset {s t : V} (W : G.Walk s t) :
+    (ofWalk W).vertexSet ⊆ W.support.toFinset := by
+  classical
+  intro v hv
+  have hv_support :
+      v ∈ ((W.toPath : G.Walk s t).support) := by
+    simpa [ofWalk, vertexSet] using hv
+  have hsub :
+      (W.toPath : G.Walk s t).support ⊆ W.support :=
+    _root_.SimpleGraph.Walk.support_toPath_subset W
+  exact by
+    simpa using hsub hv_support
+
+/-- The cycle-erased path uses only edges of the original walk. -/
+theorem ofWalk_edgeSet_subset {s t : V} (W : G.Walk s t) :
+    (ofWalk W).edgeSet ⊆ W.edges.toFinset := by
+  classical
+  intro e he
+  have he_edges :
+      e ∈ ((W.toPath : G.Walk s t).edges) := by
+    simpa [ofWalk, edgeSet] using he
+  have hsub :
+      (W.toPath : G.Walk s t).edges ⊆ W.edges :=
+    _root_.SimpleGraph.Walk.edges_toPath_subset W
+  exact by
+    simpa using hsub he_edges
+
+/-- Concatenate two compatible paths and erase any cycle in the resulting walk.
+
+This is the primitive needed for rerouting operations that are naturally
+described as concatenated walks followed by deletion of closed subwalks. -/
+noncomputable def appendWithEqToPath (P Q : GraphPath G)
+    (h : P.target = Q.source) : GraphPath G :=
+  ofWalk (P.walk.append (Q.walk.copy h.symm rfl))
+
+@[simp] theorem appendWithEqToPath_source (P Q : GraphPath G)
+    (h : P.target = Q.source) :
+    (P.appendWithEqToPath Q h).source = P.source := rfl
+
+@[simp] theorem appendWithEqToPath_target (P Q : GraphPath G)
+    (h : P.target = Q.source) :
+    (P.appendWithEqToPath Q h).target = Q.target := rfl
+
+/-- The cycle-erased concatenation uses only vertices of the two pieces. -/
+theorem appendWithEqToPath_vertexSet_subset (P Q : GraphPath G)
+    (h : P.target = Q.source) :
+    (P.appendWithEqToPath Q h).vertexSet ⊆ P.vertexSet ∪ Q.vertexSet := by
+  classical
+  intro v hv
+  have hvW :
+      v ∈ (P.walk.append (Q.walk.copy h.symm rfl)).support.toFinset :=
+    ofWalk_vertexSet_subset (P.walk.append (Q.walk.copy h.symm rfl)) hv
+  simpa [appendWithEqToPath, vertexSet,
+    _root_.SimpleGraph.Walk.mem_support_append_iff] using hvW
+
+/-- The cycle-erased concatenation uses only edges of the two pieces. -/
+theorem appendWithEqToPath_edgeSet_subset (P Q : GraphPath G)
+    (h : P.target = Q.source) :
+    (P.appendWithEqToPath Q h).edgeSet ⊆ P.edgeSet ∪ Q.edgeSet := by
+  classical
+  intro e he
+  have heW :
+      e ∈ (P.walk.append (Q.walk.copy h.symm rfl)).edges.toFinset :=
+    ofWalk_edgeSet_subset (P.walk.append (Q.walk.copy h.symm rfl)) he
+  simpa [appendWithEqToPath, edgeSet,
+    _root_.SimpleGraph.Walk.edges_append] using heW
+
+/-- Concatenate three compatible paths and erase cycles after the
+concatenation.  The definition is expressed by two binary concatenations so it
+can reuse the endpoint and support API for `appendWithEqToPath`. -/
+noncomputable def append3WithEqToPath (P Q R : GraphPath G)
+    (hPQ : P.target = Q.source) (hQR : Q.target = R.source) :
+    GraphPath G :=
+  (P.appendWithEqToPath Q hPQ).appendWithEqToPath R (by simpa using hQR)
+
+@[simp] theorem append3WithEqToPath_source (P Q R : GraphPath G)
+    (hPQ : P.target = Q.source) (hQR : Q.target = R.source) :
+    (P.append3WithEqToPath Q R hPQ hQR).source = P.source := rfl
+
+@[simp] theorem append3WithEqToPath_target (P Q R : GraphPath G)
+    (hPQ : P.target = Q.source) (hQR : Q.target = R.source) :
+    (P.append3WithEqToPath Q R hPQ hQR).target = R.target := rfl
+
+/-- The cycle-erased three-piece concatenation uses only vertices from the
+three input paths. -/
+theorem append3WithEqToPath_vertexSet_subset (P Q R : GraphPath G)
+    (hPQ : P.target = Q.source) (hQR : Q.target = R.source) :
+    (P.append3WithEqToPath Q R hPQ hQR).vertexSet ⊆
+      P.vertexSet ∪ Q.vertexSet ∪ R.vertexSet := by
+  classical
+  intro v hv
+  have hv₂ :
+      v ∈ (P.appendWithEqToPath Q hPQ).vertexSet ∪ R.vertexSet :=
+    (P.appendWithEqToPath Q hPQ).appendWithEqToPath_vertexSet_subset R
+      (by simpa using hQR) hv
+  rcases Finset.mem_union.1 hv₂ with hvPQ | hvR
+  · have hv₁ : v ∈ P.vertexSet ∪ Q.vertexSet :=
+      P.appendWithEqToPath_vertexSet_subset Q hPQ hvPQ
+    exact Finset.mem_union.2 (Or.inl hv₁)
+  · exact Finset.mem_union.2 (Or.inr hvR)
+
+/-- The cycle-erased three-piece concatenation uses only edges from the three
+input paths. -/
+theorem append3WithEqToPath_edgeSet_subset (P Q R : GraphPath G)
+    (hPQ : P.target = Q.source) (hQR : Q.target = R.source) :
+    (P.append3WithEqToPath Q R hPQ hQR).edgeSet ⊆
+      P.edgeSet ∪ Q.edgeSet ∪ R.edgeSet := by
+  classical
+  intro e he
+  have he₂ :
+      e ∈ (P.appendWithEqToPath Q hPQ).edgeSet ∪ R.edgeSet :=
+    (P.appendWithEqToPath Q hPQ).appendWithEqToPath_edgeSet_subset R
+      (by simpa using hQR) he
+  rcases Finset.mem_union.1 he₂ with hePQ | heR
+  · have he₁ : e ∈ P.edgeSet ∪ Q.edgeSet :=
+      P.appendWithEqToPath_edgeSet_subset Q hPQ hePQ
+    exact Finset.mem_union.2 (Or.inl he₁)
+  · exact Finset.mem_union.2 (Or.inr heR)
+
+/-- Concatenate four compatible paths and erase cycles after the
+concatenation.  This is the path-level operation used by the cross
+replacement: retained row piece, transversal segment, retained row piece, and
+then any later cleanup can again be treated as a graph path. -/
+noncomputable def append4WithEqToPath (P Q R S : GraphPath G)
+    (hPQ : P.target = Q.source) (hQR : Q.target = R.source)
+    (hRS : R.target = S.source) : GraphPath G :=
+  (P.append3WithEqToPath Q R hPQ hQR).appendWithEqToPath S (by simpa using hRS)
+
+@[simp] theorem append4WithEqToPath_source (P Q R S : GraphPath G)
+    (hPQ : P.target = Q.source) (hQR : Q.target = R.source)
+    (hRS : R.target = S.source) :
+    (P.append4WithEqToPath Q R S hPQ hQR hRS).source = P.source := rfl
+
+@[simp] theorem append4WithEqToPath_target (P Q R S : GraphPath G)
+    (hPQ : P.target = Q.source) (hQR : Q.target = R.source)
+    (hRS : R.target = S.source) :
+    (P.append4WithEqToPath Q R S hPQ hQR hRS).target = S.target := rfl
+
+/-- The cycle-erased four-piece concatenation uses only vertices from the
+four input paths. -/
+theorem append4WithEqToPath_vertexSet_subset (P Q R S : GraphPath G)
+    (hPQ : P.target = Q.source) (hQR : Q.target = R.source)
+    (hRS : R.target = S.source) :
+    (P.append4WithEqToPath Q R S hPQ hQR hRS).vertexSet ⊆
+      P.vertexSet ∪ Q.vertexSet ∪ R.vertexSet ∪ S.vertexSet := by
+  classical
+  intro v hv
+  have hv₂ :
+      v ∈ (P.append3WithEqToPath Q R hPQ hQR).vertexSet ∪ S.vertexSet :=
+    (P.append3WithEqToPath Q R hPQ hQR).appendWithEqToPath_vertexSet_subset S
+      (by simpa using hRS) hv
+  rcases Finset.mem_union.1 hv₂ with hvPQR | hvS
+  · have hv₁ : v ∈ P.vertexSet ∪ Q.vertexSet ∪ R.vertexSet :=
+      P.append3WithEqToPath_vertexSet_subset Q R hPQ hQR hvPQR
+    exact Finset.mem_union.2 (Or.inl hv₁)
+  · exact Finset.mem_union.2 (Or.inr hvS)
+
+/-- The cycle-erased four-piece concatenation uses only edges from the four
+input paths. -/
+theorem append4WithEqToPath_edgeSet_subset (P Q R S : GraphPath G)
+    (hPQ : P.target = Q.source) (hQR : Q.target = R.source)
+    (hRS : R.target = S.source) :
+    (P.append4WithEqToPath Q R S hPQ hQR hRS).edgeSet ⊆
+      P.edgeSet ∪ Q.edgeSet ∪ R.edgeSet ∪ S.edgeSet := by
+  classical
+  intro e he
+  have he₂ :
+      e ∈ (P.append3WithEqToPath Q R hPQ hQR).edgeSet ∪ S.edgeSet :=
+    (P.append3WithEqToPath Q R hPQ hQR).appendWithEqToPath_edgeSet_subset S
+      (by simpa using hRS) he
+  rcases Finset.mem_union.1 he₂ with hePQR | heS
+  · have he₁ : e ∈ P.edgeSet ∪ Q.edgeSet ∪ R.edgeSet :=
+      P.append3WithEqToPath_edgeSet_subset Q R hPQ hQR hePQR
+    exact Finset.mem_union.2 (Or.inl he₁)
+  · exact Finset.mem_union.2 (Or.inr heS)
+
 /-- Choose a simple path between two vertices in a connected finite induced
 subgraph. -/
 noncomputable def ofConnectedInduce
@@ -1532,6 +1802,44 @@ is an endpoint of the path. -/
 def InternallyDisjointFromSet (P : GraphPath G) (U : Finset V) : Prop :=
   ∀ ⦃v : V⦄, v ∈ P.vertexSet → v ∈ U → P.IsEndpoint v
 
+/-- A prefix of an internally-disjoint path is internally disjoint from the
+same finite set. -/
+theorem takeUntil_internallyDisjointFromSet (P : GraphPath G)
+    {b : V} (hb : b ∈ P.vertexSet) {U : Finset V}
+    (hP : P.InternallyDisjointFromSet U) :
+    (P.takeUntil hb).InternallyDisjointFromSet U := by
+  intro v hvPrefix hvU
+  have hvP : v ∈ P.vertexSet :=
+    P.takeUntil_vertexSet_subset hb hvPrefix
+  rcases hP hvP hvU with hsrc | htgt
+  · exact Or.inl (by simp [hsrc])
+  · have hbefore : P.Before P.target b := by
+      simpa [htgt] using P.before_of_mem_takeUntil hb hvPrefix
+    have htarget_before : P.Before b P.target :=
+      P.before_target_of_mem hb
+    have htarget_eq : P.target = b :=
+      P.before_antisymm hbefore htarget_before
+    exact Or.inr (by simp [htgt, htarget_eq])
+
+/-- A suffix of an internally-disjoint path is internally disjoint from the
+same finite set. -/
+theorem dropUntil_internallyDisjointFromSet (P : GraphPath G)
+    {b : V} (hb : b ∈ P.vertexSet) {U : Finset V}
+    (hP : P.InternallyDisjointFromSet U) :
+    (P.dropUntil hb).InternallyDisjointFromSet U := by
+  intro v hvSuffix hvU
+  have hvP : v ∈ P.vertexSet :=
+    P.dropUntil_vertexSet_subset hb hvSuffix
+  rcases hP hvP hvU with hsrc | htgt
+  · have hbefore : P.Before b P.source := by
+      exact ⟨hb, by simpa [hsrc] using hvSuffix⟩
+    have hsource_before : P.Before P.source b :=
+      P.source_before_of_mem hb
+    have hsource_eq : P.source = b :=
+      P.before_antisymm hsource_before hbefore
+    exact Or.inl (by simp [hsrc, hsource_eq])
+  · exact Or.inr (by simp [htgt])
+
 /-- The first-hit prefix is internally disjoint from the set it first hits. -/
 theorem cleanPrefixToSet_internallyDisjointFromSet
     (P : GraphPath G) (U : Finset V)
@@ -1541,6 +1849,30 @@ theorem cleanPrefixToSet_internallyDisjointFromSet
   exact Or.inr (by
     dsimp [cleanPrefixToSet]
     exact P.eq_firstHitVertex_of_mem_takeUntil_of_mem_set U hne hvPrefix hvU)
+
+/-- The first-hit prefix meets the set it enters in exactly its target
+vertex. -/
+theorem cleanPrefixToSet_inter_eq_singleton_target
+    (P : GraphPath G) (U : Finset V)
+    (hne : (P.vertexSet ∩ U).Nonempty) :
+    U ∩ (P.cleanPrefixToSet U hne).vertexSet =
+      {(P.cleanPrefixToSet U hne).target} := by
+  classical
+  ext v
+  constructor
+  · intro hv
+    rcases Finset.mem_inter.1 hv with ⟨hvU, hvPrefix⟩
+    have hvfirst :
+        v = P.firstHitVertex U hne :=
+      P.eq_firstHitVertex_of_mem_takeUntil_of_mem_set U hne hvPrefix hvU
+    simpa [cleanPrefixToSet] using hvfirst
+  · intro hv
+    have hvtarget : v = (P.cleanPrefixToSet U hne).target := by
+      simpa using hv
+    subst hvtarget
+    exact Finset.mem_inter.2
+      ⟨P.cleanPrefixToSet_target_mem U hne,
+        GraphPath.target_mem_vertexSet (P.cleanPrefixToSet U hne)⟩
 
 /-- The last-hit suffix is internally disjoint from the set it last leaves. -/
 theorem cleanSuffixFromSet_internallyDisjointFromSet
@@ -1789,6 +2121,41 @@ theorem orient_isEndpoint (P : GraphPath G) {S T : Finset V}
   · simp [orient, hst, IsEndpoint]
   · simp [orient, hst, IsEndpoint, reverse, or_comm]
 
+/-- Orient an unoriented segment so that it runs from `x` to `y`.
+
+This is the singleton-endpoint specialization used in rerouting arguments:
+the stored orientation of a transversal subpath is irrelevant, and the local
+replacement chooses whichever orientation has the required endpoints. -/
+def orientBetween (P : GraphPath G) {x y : V}
+    (h : P.Connects {x} {y}) : GraphPath G :=
+  P.orient h
+
+@[simp] theorem orientBetween_vertexSet (P : GraphPath G) {x y : V}
+    (h : P.Connects {x} {y}) :
+    (P.orientBetween h).vertexSet = P.vertexSet := by
+  simp [orientBetween]
+
+@[simp] theorem orientBetween_edgeSet (P : GraphPath G) {x y : V}
+    (h : P.Connects {x} {y}) :
+    (P.orientBetween h).edgeSet = P.edgeSet := by
+  simp [orientBetween]
+
+@[simp] theorem orientBetween_source (P : GraphPath G) {x y : V}
+    (h : P.Connects {x} {y}) :
+    (P.orientBetween h).source = x := by
+  classical
+  have hx : (P.orient h).source ∈ ({x} : Finset V) :=
+    P.orient_source_mem h
+  simpa [orientBetween] using hx
+
+@[simp] theorem orientBetween_target (P : GraphPath G) {x y : V}
+    (h : P.Connects {x} {y}) :
+    (P.orientBetween h).target = y := by
+  classical
+  have hy : (P.orient h).target ∈ ({y} : Finset V) :=
+    P.orient_target_mem h
+  simpa [orientBetween] using hy
+
 /-- Given a path connecting `S` to `T`, orient it from `S` to `T`, truncate at
 the first hit of `T`, and then discard the initial part before the last hit of
 `S`.  The resulting path has the same orientation convention and has no
@@ -1971,6 +2338,38 @@ theorem appendWithEq_vertexSet_subset (P Q : GraphPath G)
     _root_.SimpleGraph.Walk.mem_support_append_iff] at hv ⊢
   exact hv
 
+/-- The left constituent path is contained in a concatenation. -/
+theorem left_vertexSet_subset_appendWithEq (P Q : GraphPath G)
+    (h : P.target = Q.source)
+    (hpath : (P.walk.append (Q.walk.copy h.symm rfl)).IsPath) :
+    P.vertexSet ⊆ (P.appendWithEq Q h hpath).vertexSet := by
+  classical
+  intro v hv
+  simp [appendWithEq, vertexSet,
+    _root_.SimpleGraph.Walk.mem_support_append_iff] at hv ⊢
+  exact Or.inl hv
+
+/-- The right constituent path is contained in a concatenation. -/
+theorem right_vertexSet_subset_appendWithEq (P Q : GraphPath G)
+    (h : P.target = Q.source)
+    (hpath : (P.walk.append (Q.walk.copy h.symm rfl)).IsPath) :
+    Q.vertexSet ⊆ (P.appendWithEq Q h hpath).vertexSet := by
+  classical
+  intro v hv
+  simp [appendWithEq, vertexSet,
+    _root_.SimpleGraph.Walk.mem_support_append_iff] at hv ⊢
+  exact Or.inr hv
+
+/-- A concatenated path uses only edges from the two concatenated pieces. -/
+theorem appendWithEq_edgeSet_subset (P Q : GraphPath G)
+    (h : P.target = Q.source)
+    (hpath : (P.walk.append (Q.walk.copy h.symm rfl)).IsPath) :
+    (P.appendWithEq Q h hpath).edgeSet ⊆ P.edgeSet ∪ Q.edgeSet := by
+  classical
+  intro e he
+  simp [appendWithEq, edgeSet, _root_.SimpleGraph.Walk.edges_append] at he ⊢
+  exact he
+
 /-- If two simple paths meet only at the endpoint where they are glued, then
 their concatenation is again a simple path. -/
 theorem appendWithEq_isPath_of_inter_subset_target (P Q : GraphPath G)
@@ -2038,6 +2437,52 @@ theorem appendWithEqOfInterSubsetTarget_connects
     {S T : Finset V} (hsource : P.source ∈ S) (htarget : Q.target ∈ T) :
     (P.appendWithEqOfInterSubsetTarget Q h hinter).Connects S T :=
   Or.inl ⟨by simpa using hsource, by simpa using htarget⟩
+
+/-- Concatenating two internally clean paths at a glue vertex outside the
+forbidden set remains internally clean. -/
+theorem appendWithEqOfInterSubsetTarget_internallyDisjointFromSet
+    (P Q : GraphPath G) (h : P.target = Q.source)
+    (hinter :
+      ∀ ⦃v : V⦄, v ∈ P.vertexSet → v ∈ Q.vertexSet → v = P.target)
+    {U : Finset V}
+    (hP : P.InternallyDisjointFromSet U)
+    (hQ : Q.InternallyDisjointFromSet U)
+    (hglue : P.target ∉ U) :
+    (P.appendWithEqOfInterSubsetTarget Q h hinter).InternallyDisjointFromSet U := by
+  intro v hv hvU
+  have hvUnion :
+      v ∈ P.vertexSet ∪ Q.vertexSet :=
+    P.appendWithEq_vertexSet_subset Q h
+      (P.appendWithEq_isPath_of_inter_subset_target Q h hinter) hv
+  rcases Finset.mem_union.1 hvUnion with hvP | hvQ
+  · rcases hP hvP hvU with hsource | htarget
+    · exact Or.inl (by simp [hsource])
+    · exact False.elim (hglue (by simpa [htarget] using hvU))
+  · rcases hQ hvQ hvU with hsource | htarget
+    · exact False.elim (hglue (by simpa [h, hsource] using hvU))
+    · exact Or.inr (by simp [htarget])
+
+/-- The left constituent path is contained in a concatenation built using
+`appendWithEqOfInterSubsetTarget`. -/
+theorem left_vertexSet_subset_appendWithEqOfInterSubsetTarget
+    (P Q : GraphPath G) (h : P.target = Q.source)
+    (hinter :
+      ∀ ⦃v : V⦄, v ∈ P.vertexSet → v ∈ Q.vertexSet → v = P.target) :
+    P.vertexSet ⊆
+      (P.appendWithEqOfInterSubsetTarget Q h hinter).vertexSet := by
+  exact P.left_vertexSet_subset_appendWithEq Q h
+    (P.appendWithEq_isPath_of_inter_subset_target Q h hinter)
+
+/-- The right constituent path is contained in a concatenation built using
+`appendWithEqOfInterSubsetTarget`. -/
+theorem right_vertexSet_subset_appendWithEqOfInterSubsetTarget
+    (P Q : GraphPath G) (h : P.target = Q.source)
+    (hinter :
+      ∀ ⦃v : V⦄, v ∈ P.vertexSet → v ∈ Q.vertexSet → v = P.target) :
+    Q.vertexSet ⊆
+      (P.appendWithEqOfInterSubsetTarget Q h hinter).vertexSet := by
+  exact P.right_vertexSet_subset_appendWithEq Q h
+    (P.appendWithEq_isPath_of_inter_subset_target Q h hinter)
 
 /-- Append a suffix contained in a terminal region `U` to a path that starts
 outside `U` and is internally disjoint from `U`. -/
@@ -2518,6 +2963,20 @@ theorem orientedPath_internallyDisjoint (β : P.BridgeBetween i j) :
     (β.internallyDisjoint (by simpa [orientedPath] using hv) hP)
 
 end BridgeBetween
+
+/-- A path whose endpoints lie on two indexed paths of a packing, and whose
+internal vertices avoid the whole packing, is a bridge between those two
+indexed paths.  This is the standard way that a clean transversal segment
+creates an edge in the linkage auxiliary graph. -/
+def BridgeBetween.of_orientedPath (P : PathPacking G S T)
+    {i j : P.Index} (R : GraphPath G)
+    (hsource : R.source ∈ (P.path i).vertexSet)
+    (htarget : R.target ∈ (P.path j).vertexSet)
+    (hinternal : R.InternallyDisjointFromSet P.vertexSet) :
+    P.BridgeBetween i j where
+  path := R
+  connects := Or.inl ⟨hsource, htarget⟩
+  internallyDisjoint := hinternal
 
 /-- A packing has pairwise bridges if every pair of distinct indexed paths is
 connected by a bridge internally disjoint from the entire packing. -/

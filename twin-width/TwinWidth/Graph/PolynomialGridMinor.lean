@@ -2,6 +2,7 @@ import TwinWidth.Graph.PolynomialGridMinorBound
 import TwinWidth.Graph.HairyPathOfSetsTheorem
 import TwinWidth.Graph.HairyCrossbar
 import TwinWidth.Graph.HairyCrossbarExpander
+import TwinWidth.Graph.CutMatchingGame
 import TwinWidth.Graph.GridMinor
 import TwinWidth.Graph.GridMinorArithmetic
 
@@ -7922,6 +7923,20 @@ theorem polynomial_grid_minor_theorem_of_unbundledCutMatching
               ContainsGridMinor G target :=
   PolynomialGridMinor.polynomial_grid_minor_theorem_of_unbundledCutMatching
     hprovider
+
+/-- Public proof-facing form with the Section 4 cut-matching game internalized.
+The remaining imported deep inputs are the hairy path-of-sets theorem, the
+crossbar dichotomy, and the strong-minor branch; the large-case KRV
+cut-matching provider is supplied by `CutMatchingGame`. -/
+theorem polynomial_grid_minor_theorem_of_cutMatchingGame :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  polynomial_grid_minor_theorem_of_unbundledCutMatching
+    HairyCrossbarGrid.exists_fixedRoundCutMatchingUnbundledProvider
 
 /-- Public conditional proof-facing form using the unbundled fixed-round
 cut-matching sequence provider, the explicit Theorem 8.1 target-size provider,

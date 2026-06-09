@@ -23,7 +23,9 @@ import TwinWidth.Graph.LocalSubgraph
 import TwinWidth.Graph.PathOfSets
 import TwinWidth.Graph.ChekuriChuzhoyStitchedRows
 import TwinWidth.Graph.ChekuriChuzhoyContract
+import TwinWidth.Graph.ChekuriChuzhoyTheoremB1
 import TwinWidth.Graph.ChekuriChuzhoy
+import TwinWidth.Graph.PathOfSetsGridContract
 import TwinWidth.Graph.PathOfSetsGrid
 import TwinWidth.Graph.HairyPathOfSets
 import TwinWidth.Graph.HairyPathOfSetsContract

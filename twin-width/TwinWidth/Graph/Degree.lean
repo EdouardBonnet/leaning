@@ -118,6 +118,147 @@ theorem DegreeEquals.one_adj_eq {V : Type*} [DecidableEq V]
   have hwa : w = a := by simpa [ha] using hwN
   exact hua.trans hwa.symm
 
+/-- A degree-two vertex has no neighbor other than two given distinct
+neighbors. -/
+theorem DegreeEquals.two_adj_eq_or_eq {V : Type*} [DecidableEq V]
+    {G : _root_.SimpleGraph V} {v a b w : V}
+    (h : DegreeEquals G v 2) (ha : G.Adj v a) (hb : G.Adj v b)
+    (hab : a ≠ b) (hw : G.Adj v w) :
+    w = a ∨ w = b := by
+  classical
+  rcases h with ⟨N, hN, hcard⟩
+  have haN : a ∈ N := (hN a).2 ha
+  have hbN : b ∈ N := (hN b).2 hb
+  have hwN : w ∈ N := (hN w).2 hw
+  let P : Finset V := {a, b}
+  have hPsubset : P ⊆ N := by
+    intro x hx
+    simp [P] at hx
+    rcases hx with rfl | rfl
+    · exact haN
+    · exact hbN
+  have hPcard : P.card = 2 := by
+    simp [P, hab]
+  have hPN : P = N :=
+    Finset.eq_of_subset_of_card_le hPsubset (by
+      rw [hcard, hPcard])
+  have hwP : w ∈ P := by
+    simpa [hPN] using hwN
+  simpa [P] using hwP
+
+/-- A degree-two vertex adjacent to `a` has another neighbor distinct from
+`a`. -/
+theorem DegreeEquals.two_exists_adj_ne {V : Type*} [DecidableEq V]
+    {G : _root_.SimpleGraph V} {v a : V}
+    (h : DegreeEquals G v 2) (_ha : G.Adj v a) :
+    ∃ b : V, G.Adj v b ∧ b ≠ a := by
+  classical
+  rcases h with ⟨N, hN, hcard⟩
+  by_contra hnone
+  have hsub : N ⊆ ({a} : Finset V) := by
+    intro x hx
+    by_contra hxa
+    exact hnone ⟨x, (hN x).1 hx, by simpa using hxa⟩
+  have hcard_le : N.card ≤ 1 := by
+    have hcard_le' := Finset.card_le_card hsub
+    simpa using hcard_le'
+  omega
+
+/-- A degree-two vertex adjacent to two distinct accounted-for neighbors has
+no third neighbor. -/
+theorem DegreeEquals.two_not_adj_of_ne {V : Type*} [DecidableEq V]
+    {G : _root_.SimpleGraph V} {v a b w : V}
+    (h : DegreeEquals G v 2) (ha : G.Adj v a) (hb : G.Adj v b)
+    (hab : a ≠ b) (hwa : w ≠ a) (hwb : w ≠ b) :
+    ¬ G.Adj v w := by
+  intro hw
+  rcases DegreeEquals.two_adj_eq_or_eq h ha hb hab hw with hwa' | hwb'
+  · exact hwa hwa'
+  · exact hwb hwb'
+
+/-- Symmetric version of `DegreeEquals.two_not_adj_of_ne`. -/
+theorem DegreeEquals.two_not_adj_to_of_ne {V : Type*} [DecidableEq V]
+    {G : _root_.SimpleGraph V} {v a b w : V}
+    (h : DegreeEquals G v 2) (ha : G.Adj v a) (hb : G.Adj v b)
+    (hab : a ≠ b) (hwa : w ≠ a) (hwb : w ≠ b) :
+    ¬ G.Adj w v := by
+  intro hw
+  exact DegreeEquals.two_not_adj_of_ne h ha hb hab hwa hwb
+    (G.symm hw)
+
+/-- Finite graph core of the cross local no-skip argument.
+
+The four vertices are ordered as `A -- U -- V -- D`.  The middle vertices are
+saturated by the two consecutive local edges, while the left endpoint `A` is
+saturated by an outside neighbor `L` and the edge to `U`.  Consequently the
+three nonconsecutive local adjacencies touching `A` or the middle vertices are
+impossible.  The right endpoint saturation is not needed for these three
+undirected skip pairs, but the symmetric paper proof often supplies it as
+well. -/
+theorem DegreeEquals.cross_four_no_skip_left {α : Type*} [DecidableEq α]
+    {G : _root_.SimpleGraph α} {A U M D L : α}
+    (hAU : G.Adj A U) (hUM : G.Adj U M) (hMD : G.Adj M D)
+    (hU : DegreeEquals G U 2) (hM : DegreeEquals G M 2)
+    (hA : DegreeEquals G A 2) (hLA : G.Adj A L)
+    (hLU : L ≠ U)
+    (hAU_ne : A ≠ U) (hAD : A ≠ D) (hUD : U ≠ D)
+    (hAM : A ≠ M) (hDM : D ≠ M) (hLD : L ≠ D) :
+    ¬ G.Adj A M ∧ ¬ G.Adj A D ∧ ¬ G.Adj U D := by
+  constructor
+  · exact DegreeEquals.two_not_adj_to_of_ne hM
+      ((G.symm hUM)) hMD hUD hAU_ne hAD
+  constructor
+  · exact DegreeEquals.two_not_adj_of_ne hA hLA hAU hLU
+      (fun h => hLD h.symm) (fun h => hUD h.symm)
+  · exact DegreeEquals.two_not_adj_of_ne hU
+      ((G.symm hAU)) hUM hAM hAD.symm hDM
+
+/-- Paper-shaped finite graph core of the cross local no-skip argument.
+
+The local successor block is ordered as `A -- U -- V -- D`.  The endpoint
+vertices `A` and `D` are each saturated by one outside neighbor and one local
+neighbor, and the middle vertices `U,V` are saturated by the consecutive local
+edges.  Therefore no nonconsecutive local adjacency `A--V`, `A--D`, or `U--D`
+can occur.
+
+The proof only needs the left endpoint saturation together with the two middle
+degree-two facts; the right endpoint hypotheses are included so that the lemma
+matches the Figure 8 successor invariant exactly. -/
+theorem DegreeEquals.cross_four_no_skip {α : Type*} [DecidableEq α]
+    {G : _root_.SimpleGraph α} {A U V D L R : α}
+    (hAU : G.Adj A U) (hUV : G.Adj U V) (hVD : G.Adj V D)
+    (hU : DegreeEquals G U 2) (hV : DegreeEquals G V 2)
+    (hA : DegreeEquals G A 2) (_hD : DegreeEquals G D 2)
+    (hLA : G.Adj A L) (_hDR : G.Adj D R)
+    (hLU : L ≠ U) (_hRV : R ≠ V)
+    (hAU_ne : A ≠ U) (hAD : A ≠ D) (hUD : U ≠ D)
+    (hAV : A ≠ V) (hDV : D ≠ V) (hLD : L ≠ D) :
+    ¬ G.Adj A V ∧ ¬ G.Adj A D ∧ ¬ G.Adj U D :=
+  DegreeEquals.cross_four_no_skip_left hAU hUV hVD hU hV hA hLA
+    hLU hAU_ne hAD hUD hAV hDV hLD
+
+/-- A degree-two vertex has a second neighbor distinct from any given
+neighbor. -/
+theorem DegreeEquals.two_exists_ne_adj {V : Type*} [DecidableEq V]
+    {G : _root_.SimpleGraph V} {v a : V}
+    (h : DegreeEquals G v 2) (ha : G.Adj v a) :
+    ∃ b : V, b ≠ a ∧ G.Adj v b := by
+  classical
+  rcases h with ⟨N, hN, hcard⟩
+  have haN : a ∈ N := (hN a).2 ha
+  by_contra hnone
+  have hsubset : N ⊆ ({a} : Finset V) := by
+    intro b hb
+    by_cases hba : b = a
+    · simp [hba]
+    · have hbAdj : G.Adj v b := (hN b).1 hb
+      exact False.elim (hnone ⟨b, hba, hbAdj⟩)
+  have hcard_le : N.card ≤ 1 := by
+    calc
+      N.card ≤ ({a} : Finset V).card := Finset.card_le_card hsubset
+      _ = 1 := by simp
+  omega
+
 /-- The finset-neighborhood formulation follows from mathlib's `degree` when
 the adjacency relation is decidable. -/
 theorem maxDegreeAtMost_of_degree_le
