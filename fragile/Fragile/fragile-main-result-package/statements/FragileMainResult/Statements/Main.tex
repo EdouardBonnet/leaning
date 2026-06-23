@@ -1,0 +1,14 @@
+The statement package records the graph-theoretic vocabulary used in the
+formalization of the main result.  A graph is \(m\)-colorable when it has a
+mathlib coloring by the finite palette \(\mathrm{Fin}\,m\).  A set of vertices
+is a separator when deleting it leaves two vertices in different connected
+components, and a graph is three-connected when it has at least four vertices
+and no separator of size at most two.
+
+An \(m\)-fragile graph is one whose three-connected subgraphs are all
+\((m-1)\)-colorable.  The predicate \(\mathrm{T3Conditions}\) is the conjunction
+of the four coloring-extension conclusions C1--C4 from Theorem 3 of the paper.
+
+The public axioms state Theorem 3, its direct colorability corollary, Theorem 2
+in both contrapositive and chromatic-number form, and the final corollary that
+graphs with no three-connected subgraph are four-colorable.
