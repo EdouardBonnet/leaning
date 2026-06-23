@@ -17,6 +17,9 @@ BibEntries:
       year = {2025},
       doi = {10.37236/13181}
     }
+submissionIssueNumber: 7
+submissionIssueUrl: "https://github.com/clemenskuske/Lean-Meta-Library/issues/7"
+Commit: "ffae201a9b2ea3fbf3912e514b92f5e07a632426"
 StatementSubmissions:
   rootFolder: statements
   statements:
