@@ -6,6 +6,9 @@ LicenseFile: LICENSE
 SubmissionName: Twin-Width Can Be Exponential in Treewidth
 SubmissionSlug: twin-width-treewidth-exponential
 BibEntries: []
+submissionIssueNumber: 9
+submissionIssueUrl: "https://github.com/clemenskuske/Lean-Meta-Library/issues/9"
+Commit: "441aa1d79669d204761f8d87bbb71fea536c79ea"
 StatementSubmissions:
   rootFolder: statements
   statements:
