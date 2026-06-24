@@ -6,6 +6,9 @@ LicenseFile: LICENSE
 SubmissionName: Functional Equivalence of Twin-Width and Mixed Minor Number
 SubmissionSlug: twin-width-mixed-minor-number-equivalence
 BibEntries: []
+submissionIssueNumber: 8
+submissionIssueUrl: "https://github.com/clemenskuske/Lean-Meta-Library/issues/8"
+Commit: "0a24c47865ce9e556c6290310ee8e2b40bd75d46"
 StatementSubmissions:
   rootFolder: statements
   statements:
