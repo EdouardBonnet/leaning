@@ -1,0 +1,56 @@
+manifestVersion: "1"
+leanVersion: v4.30.0
+mathlibVersion: c5ea00351c28e24afc9f0f84379aa41082b1188f
+AbstractPath: abstract.tex
+LicenseFile: LICENSE
+SubmissionName: Functional Equivalence of Twin-Width and Mixed Minor Number
+SubmissionSlug: twin-width-mixed-minor-number-equivalence
+BibEntries: []
+StatementSubmissions:
+  rootFolder: statements
+  statements:
+    - Name: TwinWidthMixedMinorNumberEquivalence.Statements.Main.GraphParam
+      Type: Definition
+      Title: Graph parameter
+      SemanticDependencies: []
+    - Name: TwinWidthMixedMinorNumberEquivalence.Statements.Main.FunctionallyEquivalent
+      Type: Definition
+      Title: Functional equivalence
+      SemanticDependencies: []
+    - Name: TwinWidthMixedMinorNumberEquivalence.Statements.Main.twinWidth
+      Type: Axiom
+      Title: Twin-width graph parameter
+      SemanticDependencies: []
+    - Name: TwinWidthMixedMinorNumberEquivalence.Statements.Main.mixedMinorNumber
+      Type: Axiom
+      Title: Mixed minor number graph parameter
+      SemanticDependencies: []
+    - Name: TwinWidthMixedMinorNumberEquivalence.Statements.Main.twin_width_bounded_by_mixed_minor_number
+      Type: Axiom
+      Title: Twin-width is bounded by mixed minor number
+      SemanticDependencies: []
+    - Name: TwinWidthMixedMinorNumberEquivalence.Statements.Main.mixed_minor_number_le_twin_width_linear
+      Type: Axiom
+      Title: Mixed minor number is linearly bounded by twin-width
+      SemanticDependencies: []
+    - Name: TwinWidthMixedMinorNumberEquivalence.Statements.Main.twin_width_functionally_equivalent_mixed_minor_number
+      Type: Axiom
+      Title: Twin-width and mixed minor number are functionally equivalent
+      SemanticDependencies: []
+ProofSubmissions:
+  rootFolder: proofs
+  proofs:
+    - Name: TwinWidthMixedMinorNumberEquivalence.Proofs.Main.twinWidth
+      AxiomReference: TwinWidthMixedMinorNumberEquivalence.Statements.Main.twinWidth
+      Title: Proof object for the twin-width graph parameter
+    - Name: TwinWidthMixedMinorNumberEquivalence.Proofs.Main.mixedMinorNumber
+      AxiomReference: TwinWidthMixedMinorNumberEquivalence.Statements.Main.mixedMinorNumber
+      Title: Proof object for the mixed minor number graph parameter
+    - Name: TwinWidthMixedMinorNumberEquivalence.Proofs.Main.twin_width_functionally_equivalent_mixed_minor_number
+      AxiomReference: TwinWidthMixedMinorNumberEquivalence.Statements.Main.twin_width_functionally_equivalent_mixed_minor_number
+      Title: Proof of functional equivalence from the two directional bounds
+      ProofObligations:
+        - TwinWidthMixedMinorNumberEquivalence.Statements.Main.twinWidth
+        - TwinWidthMixedMinorNumberEquivalence.Statements.Main.mixedMinorNumber
+        - TwinWidthMixedMinorNumberEquivalence.Statements.Main.twin_width_bounded_by_mixed_minor_number
+        - TwinWidthMixedMinorNumberEquivalence.Statements.Main.mixed_minor_number_le_twin_width_linear
