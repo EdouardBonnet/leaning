@@ -1,8 +1,8 @@
-
-
-
-
-
+/-
+Copyright (c) 2026. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: TwinWidth contributors
+-/
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Finset.Union
@@ -10,38 +10,38 @@ import Mathlib.Data.Fin.SuccPred
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Fintype.Card
 
+/-!
+# Divisions of finite intervals
 
-
-
-
-
-
-
-
+This file contains the finite interval divisions used by the mixed-minor side of
+the twin-width/mixed-minor equivalence.  A `Division n k` is represented by its
+parts, together with the properties needed downstream: nonempty parts,
+disjointness, covering, and order-convexity.
+-/
 
 namespace TwinWidth
 
+/-- A `k`-division of `Fin n` is a partition into `k` nonempty convex parts.
 
-
-
-
-
-
-
-
+The intended use is a partition of the linearly ordered rows or columns of a
+matrix into consecutive intervals.  The fields expose exactly the API used by
+mixed cells; the concrete representation is deliberately neutral so that a
+cut-point implementation can replace it later without changing downstream
+statements.
+-/
 structure Division (n k : ℕ) where
-  
+  /-- The `i`-th part of the division. -/
   part : Fin k → Finset (Fin n)
-  
+  /-- Every part is nonempty. -/
   part_nonempty : ∀ i, (part i).Nonempty
-  
+  /-- Distinct parts are disjoint. -/
   part_disjoint : ∀ ⦃i j⦄, i ≠ j → Disjoint (part i) (part j)
-  
+  /-- The parts cover the whole finite interval. -/
   part_cover : ∀ x : Fin n, ∃ i, x ∈ part i
-  
+  /-- Parts are convex in the natural order on `Fin n`. -/
   part_convex :
     ∀ i ⦃a b c : Fin n⦄, a ∈ part i → c ∈ part i → a ≤ b → b ≤ c → b ∈ part i
-  
+  /-- Earlier-indexed parts are strictly before later-indexed parts. -/
   part_ordered :
     ∀ ⦃i j : Fin k⦄, i < j →
       ∀ ⦃a b : Fin n⦄, a ∈ part i → b ∈ part j → a < b
@@ -70,7 +70,7 @@ theorem part_ordered' ⦃i j : Fin k⦄ (hij : i < j)
     a < b :=
   D.part_ordered hij ha hb
 
-
+/-- Distinct indices of a division have distinct parts. -/
 theorem part_injective : Function.Injective D.part := by
   intro i j hij_parts
   by_contra hij
@@ -78,7 +78,7 @@ theorem part_injective : Function.Injective D.part := by
   have hxj : x ∈ D.part j := by simpa [hij_parts] using hx
   exact Finset.disjoint_left.mp (D.part_disjoint hij) hx hxj
 
-
+/-- A division of `Fin n` into `k` nonempty parts has at most `n` parts. -/
 theorem card_parts_le (D : Division n k) : k ≤ n := by
   classical
   let f : Fin k → Fin n := fun i => Classical.choose (D.part_nonempty i)
@@ -92,11 +92,11 @@ theorem card_parts_le (D : Division n k) : k ≤ n := by
     exact Finset.disjoint_left.mp (D.part_disjoint hne) hi hj
   simpa using Fintype.card_le_of_injective f hf
 
+/-- Build a division as the fibers of an order-preserving surjection.
 
-
-
-
-
+This constructor is useful for index coarsenings: if consecutive source
+indices are sent to the same target index, the fibers are nonempty consecutive
+blocks and therefore form a `Division`. -/
 noncomputable def ofMonotoneSurjective {n k : ℕ} (f : Fin n → Fin k)
     (hmono : ∀ ⦃a b : Fin n⦄, a ≤ b → f a ≤ f b)
     (hsurj : ∀ j : Fin k, ∃ a : Fin n, f a = j) :
@@ -143,11 +143,11 @@ noncomputable def ofMonotoneSurjective {n k : ℕ} (f : Fin n → Fin k)
     a ∈ (ofMonotoneSurjective f hmono hsurj).part j ↔ f a = j := by
   simp [ofMonotoneSurjective]
 
-
+/-- The first element of a division part. -/
 noncomputable def first (i : Fin k) : Fin n :=
   (D.part i).min' (D.part_nonempty i)
 
-
+/-- The last element of a division part. -/
 noncomputable def last (i : Fin k) : Fin n :=
   (D.part i).max' (D.part_nonempty i)
 
@@ -157,7 +157,7 @@ theorem first_mem (i : Fin k) : D.first i ∈ D.part i :=
 theorem last_mem (i : Fin k) : D.last i ∈ D.part i :=
   Finset.max'_mem _ _
 
-
+/-- Equal division parts have the same first element. -/
 theorem first_eq_of_part_eq {D E : Division n k} {i j : Fin k}
     (hpart : D.part i = E.part j) :
     D.first i = E.first j := by
@@ -166,7 +166,7 @@ theorem first_eq_of_part_eq {D E : Division n k} {i j : Fin k}
   · exact Finset.min'_le _ _ (by simpa [hpart] using E.first_mem j)
   · exact Finset.min'_le _ _ (by simpa [hpart] using D.first_mem i)
 
-
+/-- Reindex the parts of a division along an equality of the number of parts. -/
 noncomputable def castIndex {l : ℕ} (h : k = l) (D : Division n k) :
     Division n l where
   part i := D.part ((finCongr h).symm i)
@@ -192,7 +192,7 @@ noncomputable def castIndex {l : ℕ} (h : k = l) (D : Division n k) :
       exact Fin.mk_lt_mk.mp hij
     exact D.part_ordered hij' ha hb
 
-
+/-- Reindexing a division does not change its finite set of parts. -/
 @[simp] theorem parts_castIndex {n k l : ℕ} (h : k = l) (D : Division n k) :
     ((Finset.univ : Finset (Fin l)).map ⟨(Division.castIndex h D).part,
       (Division.castIndex h D).part_injective⟩) =
@@ -211,7 +211,7 @@ noncomputable def castIndex {l : ℕ} (h : k = l) (D : Division n k) :
     refine Finset.mem_map.mpr ⟨finCongr h a, Finset.mem_univ _, ?_⟩
     simpa [Division.castIndex] using haR
 
-
+/-- The singleton division of `Fin n` into `n` consecutive singleton parts. -/
 def singleton (n : ℕ) : Division n n where
   part i := {i}
   part_nonempty i := ⟨i, by simp⟩
@@ -237,8 +237,8 @@ def singleton (n : ℕ) : Division n n where
     subst b
     exact hij
 
-
-
+/-- Number of pairs in a nontrivial finite interval.  For an interval of size
+`l ≥ 2`, this is positive and equals `⌊l / 2⌋`. -/
 def pairCount (l : ℕ) : ℕ :=
   l / 2
 
@@ -246,8 +246,8 @@ theorem pairCount_pos {l : ℕ} (hl : 2 ≤ l) : 0 < pairCount l := by
   unfold pairCount
   exact Nat.div_pos hl (by decide : 0 < 2)
 
-
-
+/-- The left paired coarsening map: `0,1 ↦ 0`, `2,3 ↦ 1`, and so on, with the
+last target index absorbing a possible leftover source index. -/
 def pairLeftIndex {l : ℕ} (hl : 2 ≤ l) (a : Fin l) : Fin (pairCount l) :=
   ⟨min (a.1 / 2) (pairCount l - 1), by
     have hq : 0 < pairCount l := pairCount_pos hl
@@ -277,15 +277,15 @@ theorem pairLeftIndex_surjective {l : ℕ} (hl : 2 ≤ l) :
     have hjle' : j.1 ≤ l / 2 - 1 := by simpa [pairCount] using hjle
     simp [pairLeftIndex, pairCount, hjle']
 
-
+/-- The left paired division of the index interval. -/
 noncomputable def pairLeftIndexDivision (l : ℕ) (hl : 2 ≤ l) :
     Division l (pairCount l) :=
   ofMonotoneSurjective (pairLeftIndex hl)
     (fun _ _ hab => pairLeftIndex_mono hl hab)
     (pairLeftIndex_surjective hl)
 
-
-
+/-- The cut index represented by a part of the left paired division.  The
+`j`-th paired part always contains source indices `2*j` and `2*j+1`. -/
 def pairLeftCutIndex {l : ℕ} (hl : 2 ≤ l) (j : Fin (pairCount l)) : Fin (l - 1) :=
   ⟨2 * j.1, by
     have hj : j.1 < l / 2 := j.2
@@ -357,9 +357,9 @@ theorem pairLeftIndex_val_bounds {l : ℕ} (hl : 2 ≤ l)
       omega
   exact ⟨hleft, hright⟩
 
-
-
-
+/-- The right paired coarsening map: the first source index is isolated, then
+`1,2 ↦ 1`, `3,4 ↦ 2`, and so on, with the last target index absorbing any
+leftover tail. -/
 def pairRightIndex {l : ℕ} (hl : 2 ≤ l) (a : Fin l) : Fin (pairCount l) :=
   ⟨min ((a.1 + 1) / 2) (pairCount l - 1), by
     have hq : 0 < pairCount l := pairCount_pos hl
@@ -400,7 +400,7 @@ theorem pairRightIndex_surjective {l : ℕ} (hl : 2 ≤ l) :
         exact Nat.mul_div_right j.1 (by decide : 0 < 2)
       simp [pairRightIndex, pairCount, hval, hjle']
 
-
+/-- The right paired division of the index interval. -/
 noncomputable def pairRightIndexDivision (l : ℕ) (hl : 2 ≤ l) :
     Division l (pairCount l) :=
   ofMonotoneSurjective (pairRightIndex hl)
@@ -447,9 +447,9 @@ theorem pairRightIndex_val_bounds {l : ℕ} (hl : 2 ≤ l)
       omega
   exact ⟨hleft, hright⟩
 
-
-
-
+/-- Every adjacent pair of source indices is grouped by at least one of the two
+paired coarsenings.  Even cuts are grouped by the left pairing and odd cuts by
+the shifted right pairing. -/
 theorem pairIndex_adjacent_same {l : ℕ} (hl : 2 ≤ l) (i : Fin (l - 1)) :
     pairLeftIndex hl ((finCongr (by omega : l - 1 + 1 = l)) i.castSucc) =
         pairLeftIndex hl ((finCongr (by omega : l - 1 + 1 = l)) i.succ) ∨
@@ -482,7 +482,7 @@ theorem pairIndex_adjacent_same {l : ℕ} (hl : 2 ≤ l) (i : Fin (l - 1)) :
         min ((i.1 + 1 + 1) / 2) (pairCount l - 1)
     rw [show i.1 + 1 + 1 = i.1 + 2 by omega, hdiv]
 
-
+/-- Adjacent-pair coverage in the common `k + 1` source-size form. -/
 theorem pairIndex_adjacent_same_succ {k : ℕ} (hk : 0 < k) (i : Fin k) :
     pairLeftIndex (l := k + 1) (by omega) i.castSucc =
         pairLeftIndex (l := k + 1) (by omega) i.succ ∨
@@ -515,11 +515,11 @@ theorem pairIndex_adjacent_same_succ {k : ℕ} (hk : 0 < k) (i : Fin k) :
       min ((i.1 + 1 + 1) / 2) (pairCount (k + 1) - 1)
     rw [show i.1 + 1 + 1 = i.1 + 2 by omega, hdiv]
 
-
+/-- The left endpoint of a cut index, viewed as a source index. -/
 def cutLeftIndex {l : ℕ} (j : Fin (l - 1)) : Fin l :=
   ⟨j.1, by omega⟩
 
-
+/-- The right endpoint of a cut index, viewed as a source index. -/
 def cutRightIndex {l : ℕ} (j : Fin (l - 1)) : Fin l :=
   ⟨j.1 + 1, by omega⟩
 
@@ -529,9 +529,9 @@ def cutRightIndex {l : ℕ} (j : Fin (l - 1)) : Fin l :=
 @[simp] theorem cutRightIndex_val {l : ℕ} (j : Fin (l - 1)) :
     (cutRightIndex j : Fin l).1 = j.1 + 1 := rfl
 
-
-
-
+/-- The paired target used by the Lemma 13 counting proof for an original
+zone/cut item.  Zones are assigned to the left pairing; a cut is assigned to
+whichever of the two pairings groups its two adjacent column parts. -/
 def pairedItemTarget {l : ℕ} (hl : 2 ≤ l) :
     Sum (Fin l) (Fin (l - 1)) → Sum (Fin (pairCount l)) (Fin (pairCount l))
   | Sum.inl j => Sum.inl (pairLeftIndex hl j)
@@ -543,9 +543,9 @@ def pairedItemTarget {l : ℕ} (hl : 2 ≤ l) :
       else
         Sum.inr (pairRightIndex hl (cutLeftIndex j))
 
-
-
-
+/-- A small local offset inside the paired target.  Together with
+`pairedItemTarget`, this is injective; the target fiber size is therefore
+bounded by `10`. -/
 def pairedItemCode {l : ℕ} (hl : 2 ≤ l) :
     Sum (Fin l) (Fin (l - 1)) → Fin 10
   | Sum.inl j =>
@@ -570,10 +570,10 @@ def pairedItemCode {l : ℕ} (hl : 2 ≤ l) :
           simp [j₀] at hb
           omega⟩
 
-
-
-
-
+/-- The paired target together with the local code determines the original
+zone/cut item.  This finite-fiber estimate is used in the Lemma 13 counting
+argument: at most ten original mixed items can be charged to one paired
+auxiliary entry. -/
 theorem pairedItemTarget_code_injective {l : ℕ} (hl : 2 ≤ l) :
     Function.Injective fun x : Sum (Fin l) (Fin (l - 1)) =>
       (pairedItemTarget hl x, pairedItemCode hl x) := by
@@ -770,7 +770,7 @@ theorem pairedItemTarget_code_injective {l : ℕ} (hl : 2 ≤ l) :
               apply congrArg Sum.inr
               exact Fin.ext hval
 
-
+/-- Cast the common `k + 1` item type to the generic `l`/`l - 1` item type. -/
 def pairedItemCastSucc {k : ℕ} :
     Sum (Fin (k + 1)) (Fin k) → Sum (Fin (k + 1)) (Fin ((k + 1) - 1))
   | Sum.inl j => Sum.inl j
@@ -799,13 +799,13 @@ theorem pairedItemCastSucc_injective {k : ℕ} :
             simpa [pairedItemCastSucc] using hxy
           exact (finCongr (by omega : k = (k + 1) - 1)).injective h
 
-
+/-- Paired target in the common `k + 1` source-size form. -/
 def pairedItemTargetSucc {k : ℕ} (hk : 0 < k) :
     Sum (Fin (k + 1)) (Fin k) →
       Sum (Fin (pairCount (k + 1))) (Fin (pairCount (k + 1))) :=
   fun x => pairedItemTarget (l := k + 1) (by omega) (pairedItemCastSucc x)
 
-
+/-- Local code in the common `k + 1` source-size form. -/
 def pairedItemCodeSucc {k : ℕ} (hk : 0 < k) :
     Sum (Fin (k + 1)) (Fin k) → Fin 10 :=
   fun x => pairedItemCode (l := k + 1) (by omega) (pairedItemCastSucc x)
@@ -861,11 +861,11 @@ theorem pairedItemTargetSucc_code_injective {k : ℕ} (hk : 0 < k) :
   exact pairedItemCastSucc_injective
     (pairedItemTarget_code_injective (l := k + 1) (by omega) h)
 
+/-- Index map that identifies the two consecutive indices `i` and `i+1`.
 
-
-
-
-
+It is the order-preserving surjection used to build the index division for a
+fusion.  Values up to `i` are kept unchanged; values after `i` are shifted down
+by one. -/
 def fuseIndex {k : ℕ} (i : Fin (k + 1)) (a : Fin (k + 2)) : Fin (k + 1) :=
   if h : a.1 ≤ i.1 then
     ⟨a.1, lt_of_le_of_lt h i.2⟩
@@ -880,8 +880,8 @@ theorem fuseIndex_mono {k : ℕ} (i : Fin (k + 1))
   by_cases ha : a.1 ≤ i.1 <;> by_cases hb : b.1 ≤ i.1 <;>
     simp [fuseIndex, ha, hb] <;> omega
 
-
-
+/-- The division of the index interval which groups exactly the two adjacent
+indices `i` and `i+1`, leaving all other indices as singleton parts. -/
 noncomputable def fusionIndexDivision {k : ℕ} (i : Fin (k + 1)) :
     Division (k + 2) (k + 1) where
   part j := (Finset.univ : Finset (Fin (k + 2))).filter fun a => fuseIndex i a = j
@@ -1003,8 +1003,8 @@ theorem fuseIndex_eq_of_gt_iff {k : ℕ}
       omega
     simp [fuseIndex, hnot]
 
-
-
+/-- The part family obtained by merging the consecutive parts `i` and `i+1`
+of a division with `k+2` parts. -/
 noncomputable def fusePart {k : ℕ} (D : Division n (k + 2))
     (i : Fin (k + 1)) (j : Fin (k + 1)) : Finset (Fin n) :=
   if j = i then
@@ -1019,13 +1019,13 @@ noncomputable def fusePart {k : ℕ} (D : Division n (k + 2))
     D.fusePart i i = D.part i.castSucc ∪ D.part i.succ := by
   simp [fusePart]
 
-
+/-- `E` is obtained from `D` by merging the consecutive parts `i` and `i+1`. -/
 def IsFusionAt {k : ℕ} (D : Division n (k + 2))
     (E : Division n (k + 1)) (i : Fin (k + 1)) : Prop :=
   ∀ j : Fin (k + 1), E.part j = D.fusePart i j
 
-
-
+/-- Coarsen a division by grouping consecutive indices according to another
+division of the index set. -/
 noncomputable def coarsen {t : ℕ} (D : Division n k) (I : Division k t) :
     Division n t where
   part a := (I.part a).biUnion fun i => D.part i
@@ -1085,7 +1085,7 @@ theorem part_subset_coarsen_part {t : ℕ} (D : Division n k) (I : Division k t)
   intro x hx
   exact Finset.mem_biUnion.mpr ⟨i, hi, hx⟩
 
-
+/-- Fuse the two consecutive parts `i` and `i+1` of a division. -/
 noncomputable def fuse {k : ℕ} (D : Division n (k + 2))
     (i : Fin (k + 1)) : Division n (k + 1) :=
   D.coarsen (fusionIndexDivision i)
@@ -1165,8 +1165,8 @@ theorem fuse_part_of_gt {k : ℕ} (D : Division n (k + 2))
   have hnlt : ¬ j < i := not_lt_of_ge (le_of_lt hij)
   simp [fusePart, hne, hnlt]
 
-
-
+/-- The first element of a fused part is the first element of the left old
+part. -/
 theorem first_fuse_self {k : ℕ} (D : Division n (k + 2))
     (i : Fin (k + 1)) :
     (D.fuse i).first i = D.first i.castSucc := by
@@ -1183,8 +1183,8 @@ theorem first_fuse_self {k : ℕ} (D : Division n (k + 2))
     · exact Finset.min'_le _ _ hx
     · exact le_of_lt (D.part_ordered (by simp) (D.first_mem i.castSucc) hx)
 
-
-
+/-- The last element of a fused part is the last element of the right old
+part. -/
 theorem last_fuse_self {k : ℕ} (D : Division n (k + 2))
     (i : Fin (k + 1)) :
     (D.fuse i).last i = D.last i.succ := by
@@ -1201,8 +1201,8 @@ theorem last_fuse_self {k : ℕ} (D : Division n (k + 2))
     · exact le_of_lt (D.part_ordered (by simp) hx (D.last_mem i.succ))
     · exact Finset.le_max' _ _ hx
 
-
-
+/-- The set of parts of a fused division is obtained by replacing the two
+fused source parts by their union. -/
 theorem parts_eq_insert_erase_of_isFusionAt {n k : ℕ}
     {D : Division n (k + 2)} {E : Division n (k + 1)} {i : Fin (k + 1)}
     (h : IsFusionAt D E i) :

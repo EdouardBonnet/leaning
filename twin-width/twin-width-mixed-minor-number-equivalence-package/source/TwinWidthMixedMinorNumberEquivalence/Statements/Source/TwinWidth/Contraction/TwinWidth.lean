@@ -1,24 +1,24 @@
-import TwinWidth.Contraction.Trigraph
+import TwinWidthMixedMinorNumberEquivalence.Statements.Source.TwinWidth.Contraction.Trigraph
 
+/-!
+# Twin-width of finite simple graphs
 
-
-
-
-
-
-
-
+Twin-width is defined using contraction sequences of trigraph states.  A state
+keeps the original vertex type fixed and tracks the current contracted vertices
+as bags.  The width of a sequence is the maximum red degree of any bag occurring
+in any intermediate state.
+-/
 
 namespace TwinWidth
 namespace SimpleGraph
 
-
+/-- The red degree of a current bag in a trigraph state. -/
 noncomputable def redDegree {V : Type*} [DecidableEq V]
     (T : TrigraphState V) (A : Finset V) : ℕ :=
   T.redDegree A
 
-
-
+/-- The initial trigraph state for a graph has singleton bags, black edges
+exactly where the graph has edges, and no red edges. -/
 def IsInitialState {V : Type*} [Fintype V] [DecidableEq V]
     (G : _root_.SimpleGraph V) (T : TrigraphState V) : Prop :=
   T.bags = TrigraphState.singletonBags V ∧
@@ -26,26 +26,26 @@ def IsInitialState {V : Type*} [Fintype V] [DecidableEq V]
       (T.blackAdj A B ↔ ∃ a ∈ A, ∃ b ∈ B, G.Adj a b)) ∧
     (∀ ⦃A B⦄, A ∈ T.bags → B ∈ T.bags → ¬ T.redAdj A B)
 
+/-- A final trigraph state has at most one bag.
 
-
-
-
-
+For nonempty graphs this means the usual single contracted bag.  The `≤ 1`
+convention also treats the empty graph as already fully contracted.
+-/
 def IsFinalState {V : Type*} (T : TrigraphState V) : Prop :=
   T.bags.card ≤ 1
 
-
-
+/-- The bag of previous-state vertices represented by a next-state bag after
+contracting `A` and `B`. -/
 def contractionPreimages {V : Type*} [DecidableEq V]
     (A B X : Finset V) : Finset (Finset V) :=
   if X = A ∪ B then {A, B} else {X}
 
+/-- Red adjacency after contracting `A` and `B`.
 
-
-
-
-
-
+For the merged bag, red edges are inherited red edges or disagreements between
+the two old black adjacencies.  Pairs of bags not involving the merged bag keep
+their old red status.
+-/
 def contractedRed {V : Type*} [DecidableEq V]
     (T : TrigraphState V) (A B X Y : Finset V) : Prop :=
   if X = Y then
@@ -57,11 +57,11 @@ def contractedRed {V : Type*} [DecidableEq V]
   else
     T.redAdj X Y
 
+/-- Black adjacency after contracting `A` and `B`.
 
-
-
-
-
+For the merged bag, a black edge to another bag remains only when both old
+adjacencies were black and no red edge is created.  Other pairs are unchanged.
+-/
 def contractedBlack {V : Type*} [DecidableEq V]
     (T : TrigraphState V) (A B X Y : Finset V) : Prop :=
   if X = Y then
@@ -73,7 +73,7 @@ def contractedBlack {V : Type*} [DecidableEq V]
   else
     T.blackAdj X Y
 
-
+/-- `U` is obtained from `T` by contracting two distinct bags. -/
 def IsContractionStep {V : Type*} [DecidableEq V]
     (T U : TrigraphState V) : Prop :=
   ∃ A ∈ T.bags, ∃ B ∈ T.bags, A ≠ B ∧
@@ -122,20 +122,20 @@ theorem IsContractionStep.bags_card_add_one
         have hpos : 0 < T.bags.card := Finset.card_pos.mpr ⟨A, hA⟩
         omega
 
-
+/-- A concrete contraction sequence of width at most `d`. -/
 structure ContractionSequence {V : Type*} [Fintype V] [DecidableEq V]
     (G : _root_.SimpleGraph V) (d : ℕ) where
-  
+  /-- Number of contraction steps. -/
   stepCount : ℕ
-  
+  /-- The trigraph state at each time. -/
   state : ℕ → TrigraphState V
-  
+  /-- The first state is the singleton-bag encoding of `G`. -/
   starts : IsInitialState G (state 0)
-  
+  /-- The last state consists of one bag. -/
   ends : IsFinalState (state stepCount)
-  
+  /-- Consecutive states are related by one bag contraction. -/
   step_contracts : ∀ i, i < stepCount → IsContractionStep (state i) (state (i + 1))
-  
+  /-- Every bag in every state has red degree at most `d`. -/
   redDegree_le : ∀ i, i ≤ stepCount → ∀ ⦃A⦄, A ∈ (state i).bags → redDegree (state i) A ≤ d
 
 namespace ContractionSequence
@@ -155,8 +155,8 @@ theorem start_bags_card
   rw [S.starts.1]
   exact TrigraphState.card_singletonBags V
 
-
-
+/-- After `i` contractions, the current number of bags plus `i` is the
+initial number of vertices. -/
 theorem bags_card_add_index
     {V : Type*} [Fintype V] [DecidableEq V]
     {G : _root_.SimpleGraph V} {d : ℕ}
@@ -174,8 +174,8 @@ theorem bags_card_add_index
         S.bags_card_add_one hlt
       omega
 
-
-
+/-- The final state of a contraction sequence on a nonempty vertex type has
+exactly one bag. -/
 theorem final_bags_card_eq_one
     {V : Type*} [Fintype V] [DecidableEq V] [Nonempty V]
     {G : _root_.SimpleGraph V} {d : ℕ}
@@ -188,8 +188,8 @@ theorem final_bags_card_eq_one
   have hle : (S.state S.stepCount).bags.card ≤ 1 := S.ends
   omega
 
-
-
+/-- A contraction sequence on a nonempty finite graph performs exactly
+`|V|-1` contractions. -/
 theorem stepCount_add_one_eq_card
     {V : Type*} [Fintype V] [DecidableEq V] [Nonempty V]
     {G : _root_.SimpleGraph V} {d : ℕ}
@@ -201,16 +201,16 @@ theorem stepCount_add_one_eq_card
 
 end ContractionSequence
 
-
-
+/-- `G` has twin-width at most `d` if it has a contraction sequence whose red
+degree never exceeds `d`. -/
 def HasTwinWidthAtMost {V : Type*} [Fintype V] [DecidableEq V]
     (G : _root_.SimpleGraph V) (d : ℕ) : Prop :=
   Nonempty (ContractionSequence G d)
 
-
-
-
-
+/-- The twin-width of a graph is the least width admitting a contraction
+sequence.  The fallback branch is unreachable once existence of contraction
+sequences is proved for all finite graphs; keeping it here makes the definition
+total without using axioms. -/
 noncomputable def twinWidth {V : Type*} [Fintype V] [DecidableEq V]
     (G : _root_.SimpleGraph V) : ℕ :=
   by

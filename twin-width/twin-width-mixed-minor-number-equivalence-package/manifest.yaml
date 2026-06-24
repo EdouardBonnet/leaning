@@ -8,34 +8,9 @@ SubmissionSlug: twin-width-mixed-minor-number-equivalence
 BibEntries: []
 submissionIssueNumber: 8
 submissionIssueUrl: "https://github.com/clemenskuske/Lean-Meta-Library/issues/8"
-Commit: "48fe9ce5ff8a4538efaa0bf1a18a4a5f8100a2ba"
 StatementSubmissions:
   rootFolder: statements
   statements:
-    - Name: TwinWidthMixedMinorNumberEquivalence.Statements.Main.GraphParam
-      Type: Definition
-      Title: Graph parameter
-      SemanticDependencies: []
-    - Name: TwinWidthMixedMinorNumberEquivalence.Statements.Main.FunctionallyEquivalent
-      Type: Definition
-      Title: Functional equivalence
-      SemanticDependencies: []
-    - Name: TwinWidthMixedMinorNumberEquivalence.Statements.Main.twinWidth
-      Type: Axiom
-      Title: Twin-width graph parameter
-      SemanticDependencies: []
-    - Name: TwinWidthMixedMinorNumberEquivalence.Statements.Main.mixedMinorNumber
-      Type: Axiom
-      Title: Mixed minor number graph parameter
-      SemanticDependencies: []
-    - Name: TwinWidthMixedMinorNumberEquivalence.Statements.Main.twin_width_bounded_by_mixed_minor_number
-      Type: Axiom
-      Title: Twin-width is bounded by mixed minor number
-      SemanticDependencies: []
-    - Name: TwinWidthMixedMinorNumberEquivalence.Statements.Main.mixed_minor_number_le_twin_width_linear
-      Type: Axiom
-      Title: Mixed minor number is linearly bounded by twin-width
-      SemanticDependencies: []
     - Name: TwinWidthMixedMinorNumberEquivalence.Statements.Main.twin_width_functionally_equivalent_mixed_minor_number
       Type: Axiom
       Title: Twin-width and mixed minor number are functionally equivalent
@@ -45,14 +20,5 @@ ProofSubmissions:
   proofs:
     - Name: TwinWidthMixedMinorNumberEquivalence.Proofs.Main.twin_width_functionally_equivalent_mixed_minor_number
       AxiomReference: TwinWidthMixedMinorNumberEquivalence.Statements.Main.twin_width_functionally_equivalent_mixed_minor_number
-      Title: Proof of functional equivalence from the two directional bounds
-      ProofObligations:
-        - TwinWidthMixedMinorNumberEquivalence.Statements.Main.twinWidth
-        - TwinWidthMixedMinorNumberEquivalence.Statements.Main.mixedMinorNumber
-        - TwinWidthMixedMinorNumberEquivalence.Statements.Main.twin_width_bounded_by_mixed_minor_number
-        - TwinWidthMixedMinorNumberEquivalence.Statements.Main.mixed_minor_number_le_twin_width_linear
-      AxiomDependencies:
-        - TwinWidthMixedMinorNumberEquivalence.Statements.Main.mixedMinorNumber
-        - TwinWidthMixedMinorNumberEquivalence.Statements.Main.mixed_minor_number_le_twin_width_linear
-        - TwinWidthMixedMinorNumberEquivalence.Statements.Main.twinWidth
-        - TwinWidthMixedMinorNumberEquivalence.Statements.Main.twin_width_bounded_by_mixed_minor_number
+      Title: Self-contained source proof of functional equivalence
+      ProofObligations: []

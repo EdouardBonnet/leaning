@@ -1,20 +1,20 @@
-import TwinWidth.Matrix.MixedMinor
+import TwinWidthMixedMinorNumberEquivalence.Statements.Source.TwinWidth.Matrix.MixedMinor
 
+/-!
+# Mixed number of a matrix
 
-
-
-
-
-
-
+The mixed number is the largest `k ≤ min n m` for which the matrix has a
+`k`-mixed minor.  The `k = 0` convention from `HasMixedMinor` ensures this
+maximum is always defined.
+-/
 
 namespace TwinWidth
 namespace Matrix
 
 variable {α : Type*}
 
-
-
+/-- The mixed number of a matrix: the largest order of a mixed minor,
+searched up to the smaller matrix dimension. -/
 noncomputable def matrixMixedNumber {n m : ℕ} (M : _root_.Matrix (Fin n) (Fin m) α) : ℕ :=
   by
     classical
@@ -46,7 +46,7 @@ theorem hasMixedMinor_matrixMixedNumber {n m : ℕ}
   Nat.eq_zero_of_le_zero (by
     simpa using matrixMixedNumber_le_min_card M)
 
-
+/-- The successor of the mixed number is mixed-free. -/
 theorem not_hasMixedMinor_succ_matrixMixedNumber {n m : ℕ}
     (M : _root_.Matrix (Fin n) (Fin m) α) :
     ¬ HasMixedMinor M (matrixMixedNumber M + 1) := by

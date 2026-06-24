@@ -8,18 +8,6 @@ require mathlib from git
 
 require TwinWidthMixedMinorNumberEquivalence.Statements from "../statements"
 
-lean_lib TwinWidth where
-  roots := #[
-    `TwinWidth.Contraction.Trigraph,
-    `TwinWidth.Contraction.TwinWidth,
-    `TwinWidth.Graph.MixedMinorNumber,
-    `TwinWidth.Matrix.Cell,
-    `TwinWidth.Matrix.MixedMinor,
-    `TwinWidth.Matrix.MixedNumber,
-    `TwinWidth.Matrix.OrderedAdjacency,
-    `TwinWidth.Order.Divisions
-  ]
-
 @[default_target]
 lean_lib TwinWidthMixedMinorNumberEquivalence.Proofs where
   roots := #[`TwinWidthMixedMinorNumberEquivalence.Proofs.Main]
