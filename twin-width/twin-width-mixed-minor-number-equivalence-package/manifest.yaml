@@ -7,8 +7,8 @@ SubmissionName: Functional Equivalence of Twin-Width and Mixed Minor Number
 SubmissionSlug: twin-width-mixed-minor-number-equivalence
 BibEntries: []
 submissionIssueNumber: 8
-submissionIssueUrl: https://github.com/clemenskuske/Lean-Meta-Library/issues/8
-Commit: 0a24c47865ce9e556c6290310ee8e2b40bd75d46
+submissionIssueUrl: "https://github.com/clemenskuske/Lean-Meta-Library/issues/8"
+Commit: "48fe9ce5ff8a4538efaa0bf1a18a4a5f8100a2ba"
 StatementSubmissions:
   rootFolder: statements
   statements:
