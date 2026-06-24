@@ -1,0 +1,46 @@
+manifestVersion: "1"
+leanVersion: v4.30.0
+mathlibVersion: c5ea00351c28e24afc9f0f84379aa41082b1188f
+AbstractPath: abstract.tex
+LicenseFile: LICENSE
+SubmissionName: Twin-Width Can Be Exponential in Treewidth
+SubmissionSlug: twin-width-treewidth-exponential
+BibEntries: []
+StatementSubmissions:
+  rootFolder: statements
+  statements:
+    - Name: TwinWidthTreewidthExponential.Statements.Main.GraphParam
+      Type: Definition
+      Title: Graph parameter
+      SemanticDependencies:
+        - TwinWidthMixedMinorNumberEquivalence.Statements.Main.GraphParam
+    - Name: TwinWidthTreewidthExponential.Statements.Main.twinWidth
+      Type: Definition
+      Title: Twin-width graph parameter imported from the mixed-minor-number submission
+      SemanticDependencies:
+        - TwinWidthMixedMinorNumberEquivalence.Statements.Main.twinWidth
+    - Name: TwinWidthTreewidthExponential.Statements.Main.treewidth
+      Type: Axiom
+      Title: Treewidth graph parameter
+      SemanticDependencies:
+        - TwinWidthMixedMinorNumberEquivalence.Statements.Main.GraphParam
+    - Name: TwinWidthTreewidthExponential.Statements.Main.bonnet_depres_exponential_gap
+      Type: Axiom
+      Title: Bonnet-Depres exponential twin-width gap
+      SemanticDependencies:
+        - TwinWidthMixedMinorNumberEquivalence.Statements.Main.twinWidth
+    - Name: TwinWidthTreewidthExponential.Statements.Main.twin_width_can_be_exponential_in_treewidth
+      Type: Axiom
+      Title: Twin-width can be exponential in treewidth
+      SemanticDependencies:
+        - TwinWidthMixedMinorNumberEquivalence.Statements.Main.twinWidth
+ProofSubmissions:
+  rootFolder: proofs
+  proofs:
+    - Name: TwinWidthTreewidthExponential.Proofs.Main.twin_width_can_be_exponential_in_treewidth
+      AxiomReference: TwinWidthTreewidthExponential.Statements.Main.twin_width_can_be_exponential_in_treewidth
+      Title: Proof of the final exponential gap from the Bonnet-Depres gap statement
+      ProofObligations:
+        - TwinWidthMixedMinorNumberEquivalence.Statements.Main.twinWidth
+        - TwinWidthTreewidthExponential.Statements.Main.treewidth
+        - TwinWidthTreewidthExponential.Statements.Main.bonnet_depres_exponential_gap
