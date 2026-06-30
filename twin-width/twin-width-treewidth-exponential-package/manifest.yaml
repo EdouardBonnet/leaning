@@ -15,35 +15,23 @@ StatementSubmissions:
     - Name: TwinWidthTreewidthExponential.Statements.Main.GraphParam
       Type: Definition
       Title: Graph parameter
-      SemanticDependencies:
-        - TwinWidthMixedMinorNumberEquivalence.Statements.Main.GraphParam
+      SemanticDependencies: []
     - Name: TwinWidthTreewidthExponential.Statements.Main.twinWidth
       Type: Definition
-      Title: Twin-width graph parameter imported from the mixed-minor-number submission
-      SemanticDependencies:
-        - TwinWidthMixedMinorNumberEquivalence.Statements.Main.twinWidth
+      Title: Twin-width graph parameter
+      SemanticDependencies: []
     - Name: TwinWidthTreewidthExponential.Statements.Main.treewidth
-      Type: Axiom
+      Type: Definition
       Title: Treewidth graph parameter
-      SemanticDependencies:
-        - TwinWidthMixedMinorNumberEquivalence.Statements.Main.GraphParam
-    - Name: TwinWidthTreewidthExponential.Statements.Main.bonnet_depres_exponential_gap
-      Type: Axiom
-      Title: Bonnet-Depres exponential twin-width gap
-      SemanticDependencies:
-        - TwinWidthMixedMinorNumberEquivalence.Statements.Main.twinWidth
+      SemanticDependencies: []
     - Name: TwinWidthTreewidthExponential.Statements.Main.twin_width_can_be_exponential_in_treewidth
       Type: Axiom
       Title: Twin-width can be exponential in treewidth
-      SemanticDependencies:
-        - TwinWidthMixedMinorNumberEquivalence.Statements.Main.twinWidth
+      SemanticDependencies: []
 ProofSubmissions:
   rootFolder: proofs
   proofs:
     - Name: TwinWidthTreewidthExponential.Proofs.Main.twin_width_can_be_exponential_in_treewidth
       AxiomReference: TwinWidthTreewidthExponential.Statements.Main.twin_width_can_be_exponential_in_treewidth
-      Title: Proof of the final exponential gap from the Bonnet-Depres gap statement
-      ProofObligations:
-        - TwinWidthMixedMinorNumberEquivalence.Statements.Main.twinWidth
-        - TwinWidthTreewidthExponential.Statements.Main.treewidth
-        - TwinWidthTreewidthExponential.Statements.Main.bonnet_depres_exponential_gap
+      Title: Self-contained source proof of the Bonnet-Depres exponential gap
+      ProofObligations: []
