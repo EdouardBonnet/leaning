@@ -6,6 +6,9 @@ LicenseFile: LICENSE
 SubmissionName: Twin-Width Can Be Exponential in Treewidth (Transparent Self-Contained)
 SubmissionSlug: twin-width-treewidth-exponential-transparent
 BibEntries: []
+submissionIssueNumber: 11
+submissionIssueUrl: "https://github.com/clemenskuske/Lean-Meta-Library/issues/11"
+Commit: "643a17466aed6bc219e2ccd176988b385f2e08c3"
 StatementSubmissions:
   rootFolder: statements
   statements:
