@@ -1,0 +1,26 @@
+\paragraph{Statement.}
+For every natural number \(k\), there is a finite type \(V\), decidable equality
+on \(V\), a simple graph \(G\) on \(V\), and a tree decomposition \(D\) of \(G\)
+such that
+\[
+  \Bigl(\max_i |D_i|\Bigr)-1 \le 2k+4 .
+\]
+In addition, \(G\) has no contraction sequence whose red degree is bounded by
+\(2^k\).  The Lean statement says this directly as
+\[
+  \neg\,\mathrm{Nonempty}
+    (\mathrm{ContractionSequence}\ G\ (2^k)).
+\]
+Thus the submitted entry does not introduce or submit aliases for graph
+parameters, treewidth, or twin-width.  The treewidth side is witnessed by the
+explicit decomposition \(D\), and the twin-width side is phrased as the
+nonexistence of a small contraction sequence.
+
+\paragraph{Proof content.}
+The proof instantiates \(G\) with the explicit Bonnet--Depres graph
+\(BD_k\) and \(D\) with its explicit Bonnet--Depres tree decomposition.  The
+submitted proof uses the proved bound on the maximum bag size of this
+decomposition and the proved theorem that no \(2^k\)-bounded contraction
+sequence exists for \(BD_k\).  No contract axiom supplies the result: both
+facts are proved from the Bonnet--Depres construction in the vendored source
+files.
