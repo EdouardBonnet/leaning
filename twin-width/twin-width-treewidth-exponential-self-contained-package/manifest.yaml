@@ -12,18 +12,6 @@ Commit: "c693fa413f48ae37ca43963e291441d368131d45"
 StatementSubmissions:
   rootFolder: statements
   statements:
-    - Name: TwinWidthTreewidthExponentialSelfContained.Statements.Main.GraphParam
-      Type: Definition
-      Title: Graph parameter
-      SemanticDependencies: []
-    - Name: TwinWidthTreewidthExponentialSelfContained.Statements.Main.twinWidth
-      Type: Definition
-      Title: Twin-width graph parameter
-      SemanticDependencies: []
-    - Name: TwinWidthTreewidthExponentialSelfContained.Statements.Main.treewidth
-      Type: Definition
-      Title: Treewidth graph parameter
-      SemanticDependencies: []
     - Name: TwinWidthTreewidthExponentialSelfContained.Statements.Main.twin_width_can_be_exponential_in_treewidth
       Type: Axiom
       Title: Twin-width can be exponential in treewidth

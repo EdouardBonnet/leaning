@@ -1,8 +1,30 @@
-\paragraph{Graph parameters.}
-We use the same finite-graph-parameter interface and concrete twin-width definition as the twin-width versus mixed-minor-number submission.  Treewidth is defined by finite tree decompositions.
+\paragraph{Expanded statement.}
+For every natural number \(k\), there is a finite type \(V\), decidable
+equality on \(V\), and a simple graph \(G\) on \(V\) such that
+\[
+  \operatorname{tw}(G) \le 2k+4
+  \qquad\text{and}\qquad
+  2^k < \operatorname{tww}(G).
+\]
+The Lean statement does not submit aliases for the graph parameters.  It
+expands treewidth directly as the natural-number minimum, implemented by
+\(\texttt{Nat.find}\), of all widths \(w\) for which \(G\) has a finite tree
+decomposition whose largest bag has size at most \(w+1\).  Equivalently, a
+witness is a tree decomposition \(D\) with
+\[
+  \Bigl(\max_i |D_i|\Bigr)-1 \le w .
+\]
 
-\paragraph{Bonnet--Depres gap.}
-The Bonnet--Depres construction gives, for every natural number $k$, a finite simple graph $G$ with treewidth at most $2k+4$ and twin-width strictly greater than $2^k$.
+The Lean statement also expands twin-width directly as the natural-number
+minimum, again implemented by \(\texttt{Nat.find}\), of all red-degree bounds \(d\) for
+which \(G\) has a contraction sequence of width at most \(d\).  Thus the
+second inequality says that every contraction sequence of the graph has width
+strictly greater than \(2^k\).
 
-\paragraph{Main result.}
-Twin-width can be exponential in treewidth: for every $k$, there is a finite simple graph $G$ satisfying $\operatorname{tw}(G) \le 2k+4$ and $\operatorname{tww}(G) > 2^k$.
+\paragraph{Proof content.}
+The proof instantiates \(G\) with the explicit Bonnet--Depres graph
+\(BD_k\).  The submitted proof then uses the proved tree-decomposition bound
+\(\operatorname{tw}(BD_k) \le 2k+4\) and the proved lower bound
+\(\operatorname{tww}(BD_k) > 2^k\).  No contract axiom supplies the result:
+the lower bound is proved from the Bonnet--Depres construction in the vendored
+source files.
