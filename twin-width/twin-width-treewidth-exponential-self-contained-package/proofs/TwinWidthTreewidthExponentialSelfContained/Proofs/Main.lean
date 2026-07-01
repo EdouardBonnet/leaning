@@ -7,6 +7,22 @@ theorem twin_width_can_be_exponential_in_treewidth
     (k : Nat) :
     ∃ (V : Type) (_ : Fintype V) (_ : DecidableEq V)
       (G : SimpleGraph V),
+      TwinWidthTreewidthExponentialSelfContained.Statements.Main.treewidth (V := V) G ≤ 2 * k + 4 ∧
+        2 ^ k < TwinWidthTreewidthExponentialSelfContained.Statements.Main.twinWidth (V := V) G := by
+  refine
+    ⟨TwinWidth.SimpleGraph.BonnetDepresVertex k, inferInstance, inferInstance,
+      TwinWidth.SimpleGraph.bonnetDepresGraph k, ?_, ?_⟩
+  · simpa [
+      TwinWidthTreewidthExponentialSelfContained.Statements.Main.treewidth
+    ] using TwinWidth.SimpleGraph.bonnetDepres_treewidth_le k
+  · simpa [
+      TwinWidthTreewidthExponentialSelfContained.Statements.Main.twinWidth
+    ] using TwinWidth.SimpleGraph.BonnetDepres.bonnetDepres_two_pow_lt_twinWidth k
+
+theorem twin_width_can_be_exponential_in_treewidth_expanded
+    (k : Nat) :
+    ∃ (V : Type) (_ : Fintype V) (_ : DecidableEq V)
+      (G : SimpleGraph V),
       (by
         classical
         exact

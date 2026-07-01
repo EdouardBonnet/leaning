@@ -12,9 +12,25 @@ Commit: "da0451a85445ad81a2f547bb40d64135b7b81db1"
 StatementSubmissions:
   rootFolder: statements
   statements:
+    - Name: TwinWidthTreewidthExponentialSelfContained.Statements.Main.GraphParam
+      Type: Definition
+      Title: Graph parameter
+      SemanticDependencies: []
+    - Name: TwinWidthTreewidthExponentialSelfContained.Statements.Main.twinWidth
+      Type: Definition
+      Title: Twin-width graph parameter
+      SemanticDependencies: []
+    - Name: TwinWidthTreewidthExponentialSelfContained.Statements.Main.treewidth
+      Type: Definition
+      Title: Treewidth graph parameter
+      SemanticDependencies: []
     - Name: TwinWidthTreewidthExponentialSelfContained.Statements.Main.twin_width_can_be_exponential_in_treewidth
       Type: Axiom
       Title: Twin-width can be exponential in treewidth
+      SemanticDependencies: []
+    - Name: TwinWidthTreewidthExponentialSelfContained.Statements.Main.twin_width_can_be_exponential_in_treewidth_expanded
+      Type: Axiom
+      Title: Twin-width can be exponential in treewidth, expanded form
       SemanticDependencies: []
 ProofSubmissions:
   rootFolder: proofs
@@ -22,4 +38,8 @@ ProofSubmissions:
     - Name: TwinWidthTreewidthExponentialSelfContained.Proofs.Main.twin_width_can_be_exponential_in_treewidth
       AxiomReference: TwinWidthTreewidthExponentialSelfContained.Statements.Main.twin_width_can_be_exponential_in_treewidth
       Title: Self-contained source proof of the Bonnet-Depres exponential gap
+      ProofObligations: []
+    - Name: TwinWidthTreewidthExponentialSelfContained.Proofs.Main.twin_width_can_be_exponential_in_treewidth_expanded
+      AxiomReference: TwinWidthTreewidthExponentialSelfContained.Statements.Main.twin_width_can_be_exponential_in_treewidth_expanded
+      Title: Self-contained source proof of the expanded Bonnet-Depres exponential gap
       ProofObligations: []

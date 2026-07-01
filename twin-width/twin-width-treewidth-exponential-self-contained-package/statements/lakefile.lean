@@ -11,6 +11,7 @@ lean_lib TwinWidthTreewidthExponentialSelfContained.Statements.Source where
   roots := #[
     `TwinWidthTreewidthExponentialSelfContained.Statements.Source.TwinWidth.Contraction.Trigraph,
     `TwinWidthTreewidthExponentialSelfContained.Statements.Source.TwinWidth.Contraction.TwinWidth,
+    `TwinWidthTreewidthExponentialSelfContained.Statements.Source.TwinWidth.Equivalence.FunctionalEquivalence,
     `TwinWidthTreewidthExponentialSelfContained.Statements.Source.TwinWidth.Graph.BonnetDepres,
     `TwinWidthTreewidthExponentialSelfContained.Statements.Source.TwinWidth.Graph.BonnetDepresLower,
     `TwinWidthTreewidthExponentialSelfContained.Statements.Source.TwinWidth.Graph.BonnetDepresLowerBasic,

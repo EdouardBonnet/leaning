@@ -1,16 +1,30 @@
-\paragraph{Expanded statement.}
-For every natural number \(k\), there is a finite type \(V\), decidable
-equality on \(V\), and a simple graph \(G\) on \(V\) such that
+\paragraph{Compatibility entries.}
+The entries \(\texttt{GraphParam}\), \(\texttt{twinWidth}\), and
+\(\texttt{treewidth}\) are retained for compatibility with the already-imported
+surface of this submission.  They are aliases for the graph-parameter type
+\[
+  \forall V,\; [\mathrm{Fintype}\ V] \to [\mathrm{DecidableEq}\ V] \to
+    \mathrm{SimpleGraph}\ V \to \mathbb{N},
+\]
+the concrete twin-width parameter from the vendored source, and the concrete
+treewidth parameter from the vendored source.
+
+The compatibility theorem states that for every natural number \(k\), there is
+a finite type \(V\), decidable equality on \(V\), and a simple graph \(G\) on
+\(V\) such that
 \[
   \operatorname{tw}(G) \le 2k+4
   \qquad\text{and}\qquad
   2^k < \operatorname{tww}(G).
 \]
-The Lean statement does not submit aliases for the graph parameters.  It
-expands treewidth directly as the natural-number minimum, implemented by
-\(\texttt{Nat.find}\), of all widths \(w\) for which \(G\) has a finite tree
-decomposition whose largest bag has size at most \(w+1\).  Equivalently, a
-witness is a tree decomposition \(D\) with
+
+\paragraph{Expanded statement.}
+The new expanded theorem states the same Bonnet--Depres separation but spells
+out both graph parameters in the Lean statement itself.  It expands treewidth
+directly as the natural-number minimum, implemented by \(\texttt{Nat.find}\),
+of all widths \(w\) for which \(G\) has a finite tree decomposition whose
+largest bag has size at most \(w+1\).  Equivalently, a witness is a tree
+decomposition \(D\) with
 \[
   \Bigl(\max_i |D_i|\Bigr)-1 \le w .
 \]
@@ -25,6 +39,7 @@ strictly greater than \(2^k\).
 The proof instantiates \(G\) with the explicit Bonnet--Depres graph
 \(BD_k\).  The submitted proof then uses the proved tree-decomposition bound
 \(\operatorname{tw}(BD_k) \le 2k+4\) and the proved lower bound
-\(\operatorname{tww}(BD_k) > 2^k\).  No contract axiom supplies the result:
-the lower bound is proved from the Bonnet--Depres construction in the vendored
-source files.
+\(\operatorname{tww}(BD_k) > 2^k\).  Both the compatibility theorem and the
+expanded theorem are proved directly from these source lemmas.  No contract
+axiom supplies either result: the lower bound is proved from the
+Bonnet--Depres construction in the vendored source files.
