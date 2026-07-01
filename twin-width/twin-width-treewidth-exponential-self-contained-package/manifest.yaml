@@ -1,0 +1,34 @@
+manifestVersion: "1"
+leanVersion: v4.30.0
+mathlibVersion: c5ea00351c28e24afc9f0f84379aa41082b1188f
+AbstractPath: abstract.tex
+LicenseFile: LICENSE
+SubmissionName: Twin-Width Can Be Exponential in Treewidth (Self-Contained)
+SubmissionSlug: twin-width-treewidth-exponential-self-contained
+BibEntries: []
+StatementSubmissions:
+  rootFolder: statements
+  statements:
+    - Name: TwinWidthTreewidthExponentialSelfContained.Statements.Main.GraphParam
+      Type: Definition
+      Title: Graph parameter
+      SemanticDependencies: []
+    - Name: TwinWidthTreewidthExponentialSelfContained.Statements.Main.twinWidth
+      Type: Definition
+      Title: Twin-width graph parameter
+      SemanticDependencies: []
+    - Name: TwinWidthTreewidthExponentialSelfContained.Statements.Main.treewidth
+      Type: Definition
+      Title: Treewidth graph parameter
+      SemanticDependencies: []
+    - Name: TwinWidthTreewidthExponentialSelfContained.Statements.Main.twin_width_can_be_exponential_in_treewidth
+      Type: Axiom
+      Title: Twin-width can be exponential in treewidth
+      SemanticDependencies: []
+ProofSubmissions:
+  rootFolder: proofs
+  proofs:
+    - Name: TwinWidthTreewidthExponentialSelfContained.Proofs.Main.twin_width_can_be_exponential_in_treewidth
+      AxiomReference: TwinWidthTreewidthExponentialSelfContained.Statements.Main.twin_width_can_be_exponential_in_treewidth
+      Title: Self-contained source proof of the Bonnet-Depres exponential gap
+      ProofObligations: []
