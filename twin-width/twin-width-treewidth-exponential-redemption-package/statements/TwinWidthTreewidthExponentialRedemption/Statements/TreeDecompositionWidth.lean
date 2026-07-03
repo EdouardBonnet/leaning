@@ -2,21 +2,55 @@ import Mathlib.Combinatorics.SimpleGraph.Acyclic
 
 namespace TwinWidthTreewidthExponentialRedemption.Statements.TreeDecompositionWidth
 
-/-- A graph has a tree decomposition of width at most `width`, unpacked as a
-finite tree of bags satisfying vertex coverage, edge coverage, connectedness
-of the bag indices for each vertex, and the usual maximum-bag-size bound. -/
-def HasTreeDecompositionWidthAtMost {V : Type} [Fintype V] [DecidableEq V]
-    (G : SimpleGraph V) (width : ℕ) : Prop :=
-  ∃ Node : Type,
-  ∃ nodeFintype : Fintype Node,
-  ∃ _nodeDecidableEq : DecidableEq Node,
-  ∃ tree : SimpleGraph Node,
+/-- The type of tree decompositions of a graph.  The data are a finite node
+type, a tree on that node type, and a bag at each node, together with vertex
+coverage, edge coverage, and connectedness of the nodes whose bags contain a
+fixed graph vertex. -/
+def TreeDecomposition {V : Type} [DecidableEq V]
+    (G : SimpleGraph V) : Type 1 :=
+  Σ Node : Type,
+  Σ _nodeFintype : Fintype Node,
+  Σ _nodeDecidableEq : DecidableEq Node,
+  Σ tree : SimpleGraph Node,
+  Σ bag : Node → Finset V,
+    PLift (
     tree.IsTree ∧
-    ∃ bag : Node → Finset V,
-      (∀ v : V, ∃ i : Node, v ∈ bag i) ∧
-      (∀ ⦃u v : V⦄, G.Adj u v → ∃ i : Node, u ∈ bag i ∧ v ∈ bag i) ∧
-      (∀ v : V, (tree.induce {i : Node | v ∈ bag i}).Connected) ∧
-      (letI : Fintype Node := nodeFintype;
-        (Finset.univ.sup fun i : Node => (bag i).card) - 1) ≤ width
+    (∀ v : V, ∃ i : Node, v ∈ bag i) ∧
+    (∀ ⦃u v : V⦄, G.Adj u v → ∃ i : Node, u ∈ bag i ∧ v ∈ bag i) ∧
+    (∀ v : V, (tree.induce {i : Node | v ∈ bag i}).Connected))
+
+/-- The node type of a tree decomposition. -/
+def nodeType {V : Type} [DecidableEq V] {G : SimpleGraph V}
+    (D : TreeDecomposition G) : Type :=
+  Sigma.fst D
+
+/-- The finiteness witness for the node type of a tree decomposition. -/
+@[reducible]
+def nodeFintype {V : Type} [DecidableEq V] {G : SimpleGraph V}
+    (D : TreeDecomposition G) : Fintype (nodeType D) :=
+  Sigma.fst (Sigma.snd D)
+
+/-- The decidable-equality witness for the node type of a tree decomposition. -/
+@[reducible]
+def nodeDecidableEq {V : Type} [DecidableEq V] {G : SimpleGraph V}
+    (D : TreeDecomposition G) : DecidableEq (nodeType D) :=
+  Sigma.fst (Sigma.snd (Sigma.snd D))
+
+/-- The decomposition tree. -/
+def tree {V : Type} [DecidableEq V] {G : SimpleGraph V}
+    (D : TreeDecomposition G) : SimpleGraph (nodeType D) :=
+  Sigma.fst (Sigma.snd (Sigma.snd (Sigma.snd D)))
+
+/-- The bag assigned to each decomposition node. -/
+def bag {V : Type} [DecidableEq V] {G : SimpleGraph V}
+    (D : TreeDecomposition G) : nodeType D → Finset V :=
+  Sigma.fst (Sigma.snd (Sigma.snd (Sigma.snd (Sigma.snd D))))
+
+/-- The width of a tree decomposition: maximum bag size minus one. -/
+noncomputable def treeDecompositionWidth
+    {V : Type} [DecidableEq V] {G : SimpleGraph V}
+    (D : TreeDecomposition G) : ℕ :=
+  letI : Fintype (nodeType D) := nodeFintype D
+  (Finset.univ.sup fun i : nodeType D => (bag D i).card) - 1
 
 end TwinWidthTreewidthExponentialRedemption.Statements.TreeDecompositionWidth

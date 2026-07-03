@@ -3,22 +3,24 @@ import TwinWidthTreewidthExponentialRedemption.Statements.ContractedRed
 
 namespace TwinWidthTreewidthExponentialRedemption.Statements.ContractionStep
 
-/-- One step of a contraction sequence, unpacked as the replacement of two
-distinct current bags by their union and the induced black/red adjacencies. -/
-def IsContractionStep {V : Type} [DecidableEq V]
-    (bags : Finset (Finset V))
-    (blackAdj redAdj : Finset V → Finset V → Prop)
-    (nextBags : Finset (Finset V))
-    (nextBlackAdj nextRedAdj : Finset V → Finset V → Prop) : Prop :=
-  ∃ A ∈ bags, ∃ B ∈ bags, A ≠ B ∧
-    nextBags = insert (A ∪ B) ((bags.erase A).erase B) ∧
-    (∀ ⦃X Y⦄, X ∈ nextBags → Y ∈ nextBags →
-      (nextRedAdj X Y ↔
-        TwinWidthTreewidthExponentialRedemption.Statements.ContractedRed.contractedRed
-          blackAdj redAdj A B X Y)) ∧
-    (∀ ⦃X Y⦄, X ∈ nextBags → Y ∈ nextBags →
-      (nextBlackAdj X Y ↔
-        TwinWidthTreewidthExponentialRedemption.Statements.ContractedBlack.contractedBlack
-          blackAdj redAdj A B X Y))
+open TwinWidthTreewidthExponentialRedemption.Statements.ContractedBlack
+open TwinWidthTreewidthExponentialRedemption.Statements.ContractedRed
+open TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState
+
+/-- The type of witnesses that one trigraph state is obtained from another by
+contracting two distinct current bags. -/
+def Step {V : Type} [DecidableEq V]
+    (T U : State V) : Type :=
+  Σ left : Finset V,
+  Σ right : Finset V,
+    PLift (
+    left ∈ bags T ∧
+    right ∈ bags T ∧
+    left ≠ right ∧
+    bags U = insert (left ∪ right) (((bags T).erase left).erase right) ∧
+    (∀ ⦃X Y⦄, X ∈ bags U → Y ∈ bags U →
+      (redAdj U X Y ↔ contractedRed T left right X Y)) ∧
+    (∀ ⦃X Y⦄, X ∈ bags U → Y ∈ bags U →
+      (blackAdj U X Y ↔ contractedBlack T left right X Y)))
 
 end TwinWidthTreewidthExponentialRedemption.Statements.ContractionStep

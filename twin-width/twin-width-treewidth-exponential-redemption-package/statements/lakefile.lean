@@ -15,6 +15,7 @@ lean_lib TwinWidthTreewidthExponentialRedemption.Statements where
     `TwinWidthTreewidthExponentialRedemption.Statements.ContractionStep,
     `TwinWidthTreewidthExponentialRedemption.Statements.FinalTrigraphState,
     `TwinWidthTreewidthExponentialRedemption.Statements.InitialTrigraphState,
+    `TwinWidthTreewidthExponentialRedemption.Statements.LeastNatural,
     `TwinWidthTreewidthExponentialRedemption.Statements.Main,
     `TwinWidthTreewidthExponentialRedemption.Statements.RedDegree,
     `TwinWidthTreewidthExponentialRedemption.Statements.SingletonBags,

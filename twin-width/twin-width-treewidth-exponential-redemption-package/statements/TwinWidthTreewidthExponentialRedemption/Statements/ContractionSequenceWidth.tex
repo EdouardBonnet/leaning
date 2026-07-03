@@ -1,6 +1,10 @@
-\(\texttt{HasContractionSequenceWidthAtMost}(G,d)\) says that there is a finite
-sequence of trigraph states starting from the singleton-bag trigraph of \(G\),
-ending with at most one bag, advancing by one contraction step at each time, and
-with red degree at most \(d\) for every bag in every state up to the final
-state.
-
+\(\operatorname{ContractionSequence}(G,d)\) is the type of bounded contraction
+sequences of the graph \(G\).  An element consists of a finite time horizon,
+a trigraph state at each time, a witness that time \(0\) is the initial
+singleton-bag state of \(G\), a witness that the final time has at most one bag,
+a contraction-step witness between every successive pair of states, and the
+bound
+\[
+  \operatorname{redDegree}(T_i,A)\le d
+\]
+for every time \(i\) up to the final time and every current bag \(A\).

@@ -1,5 +1,11 @@
-\(\texttt{IsInitialTrigraphState}(G,B,E_{\mathrm{black}},E_{\mathrm{red}})\)
-says that \(B=\{\{v\}:v\in V(G)\}\), black adjacency between two bags means
-there is an edge of \(G\) between a vertex in the first bag and a vertex in the
-second bag, and there are no red adjacencies.
+\(\operatorname{InitialState}(G)\) is the subtype of trigraph states whose bags
+are the singleton bags
+\[
+  \{\{v\}:v\in V(G)\},
+\]
+whose black adjacency between two bags means that there is an edge of \(G\)
+between a vertex in the first bag and a vertex in the second bag, and whose red
+adjacency relation is empty.
 
+For \(I:\operatorname{InitialState}(G)\), \(\operatorname{state}(I)\) is its
+underlying trigraph state.

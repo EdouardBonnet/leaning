@@ -1,9 +1,14 @@
-\(\texttt{HasTreeDecompositionWidthAtMost}(G,w)\) says that there is a finite
-tree \(T\) and bags \(X_t\subseteq V(G)\) for \(t\in V(T)\) such that every
+\(\operatorname{TreeDecomposition}(G)\) is the type of tree decompositions of
+the graph \(G\).  An element consists of a finite node type, a tree \(T\) on
+that node type, and bags \(X_t\subseteq V(G)\) for its nodes, such that every
 vertex of \(G\) appears in some bag, every edge of \(G\) has both endpoints in
-some bag, the set of tree nodes whose bags contain any fixed vertex is
-connected in \(T\), and
+some bag, and the set of tree nodes whose bags contain any fixed vertex is
+connected in \(T\).  For such a decomposition \(D\),
+\(\operatorname{treeDecompositionWidth}(D)\) is
 \[
-  \max_t |X_t|-1 \le w .
+  \max_t |X_t|-1 .
 \]
-
+The auxiliary definitions \(\operatorname{nodeType}(D)\),
+\(\operatorname{nodeFintype}(D)\), \(\operatorname{nodeDecidableEq}(D)\),
+\(\operatorname{tree}(D)\), and \(\operatorname{bag}(D)\) return the displayed
+components of \(D\).

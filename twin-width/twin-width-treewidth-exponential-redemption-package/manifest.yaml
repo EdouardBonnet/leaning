@@ -12,65 +12,137 @@ Commit: "f7d7a52cb577e2174b452c9bc90cf6e93d5ede66"
 StatementSubmissions:
   rootFolder: statements
   statements:
+    - Name: TwinWidthTreewidthExponentialRedemption.Statements.LeastNatural.leastNat
+      Type: Definition
+      Title: Least natural number satisfying a predicate
+      SemanticDependencies: []
     - Name: TwinWidthTreewidthExponentialRedemption.Statements.SingletonBags.singletonBags
       Type: Definition
       Title: Singleton bag partition
       SemanticDependencies: []
-    - Name: TwinWidthTreewidthExponentialRedemption.Statements.RedDegree.redDegree
-      Type: Definition
-      Title: Red degree in a trigraph state
-      SemanticDependencies: []
-    - Name: TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState.IsTrigraphState
+    - Name: TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState.State
       Type: Definition
       Title: Trigraph state
       SemanticDependencies: []
-    - Name: TwinWidthTreewidthExponentialRedemption.Statements.InitialTrigraphState.IsInitialTrigraphState
+    - Name: TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState.bags
+      Type: Definition
+      Title: Bags of a trigraph state
+      SemanticDependencies: []
+    - Name: TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState.blackAdj
+      Type: Definition
+      Title: Black adjacency of a trigraph state
+      SemanticDependencies: []
+    - Name: TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState.redAdj
+      Type: Definition
+      Title: Red adjacency of a trigraph state
+      SemanticDependencies: []
+    - Name: TwinWidthTreewidthExponentialRedemption.Statements.RedDegree.redDegree
+      Type: Definition
+      Title: Red degree in a trigraph state
+      SemanticDependencies:
+        - TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState.State
+        - TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState.bags
+        - TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState.redAdj
+    - Name: TwinWidthTreewidthExponentialRedemption.Statements.InitialTrigraphState.InitialState
       Type: Definition
       Title: Initial trigraph state of a graph
       SemanticDependencies:
         - TwinWidthTreewidthExponentialRedemption.Statements.SingletonBags.singletonBags
-    - Name: TwinWidthTreewidthExponentialRedemption.Statements.FinalTrigraphState.IsFinalTrigraphState
+        - TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState.State
+        - TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState.bags
+        - TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState.blackAdj
+        - TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState.redAdj
+    - Name: TwinWidthTreewidthExponentialRedemption.Statements.InitialTrigraphState.state
+      Type: Definition
+      Title: Underlying state of an initial trigraph state
+      SemanticDependencies: []
+    - Name: TwinWidthTreewidthExponentialRedemption.Statements.FinalTrigraphState.FinalState
       Type: Definition
       Title: Final trigraph state
+      SemanticDependencies:
+        - TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState.State
+        - TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState.bags
+    - Name: TwinWidthTreewidthExponentialRedemption.Statements.FinalTrigraphState.state
+      Type: Definition
+      Title: Underlying state of a final trigraph state
       SemanticDependencies: []
     - Name: TwinWidthTreewidthExponentialRedemption.Statements.ContractedRed.contractedRed
       Type: Definition
       Title: Red adjacency after contraction
-      SemanticDependencies: []
+      SemanticDependencies:
+        - TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState.State
+        - TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState.blackAdj
+        - TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState.redAdj
     - Name: TwinWidthTreewidthExponentialRedemption.Statements.ContractedBlack.contractedBlack
       Type: Definition
       Title: Black adjacency after contraction
       SemanticDependencies:
+        - TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState.State
+        - TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState.blackAdj
         - TwinWidthTreewidthExponentialRedemption.Statements.ContractedRed.contractedRed
-    - Name: TwinWidthTreewidthExponentialRedemption.Statements.ContractionStep.IsContractionStep
+    - Name: TwinWidthTreewidthExponentialRedemption.Statements.ContractionStep.Step
       Type: Definition
       Title: One contraction step
       SemanticDependencies:
+        - TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState.State
+        - TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState.bags
+        - TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState.blackAdj
+        - TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState.redAdj
         - TwinWidthTreewidthExponentialRedemption.Statements.ContractedRed.contractedRed
         - TwinWidthTreewidthExponentialRedemption.Statements.ContractedBlack.contractedBlack
-    - Name: TwinWidthTreewidthExponentialRedemption.Statements.ContractionSequenceWidth.HasContractionSequenceWidthAtMost
+    - Name: TwinWidthTreewidthExponentialRedemption.Statements.ContractionSequenceWidth.ContractionSequence
       Type: Definition
       Title: Bounded-width contraction sequence
       SemanticDependencies:
         - TwinWidthTreewidthExponentialRedemption.Statements.RedDegree.redDegree
-        - TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState.IsTrigraphState
-        - TwinWidthTreewidthExponentialRedemption.Statements.InitialTrigraphState.IsInitialTrigraphState
-        - TwinWidthTreewidthExponentialRedemption.Statements.FinalTrigraphState.IsFinalTrigraphState
-        - TwinWidthTreewidthExponentialRedemption.Statements.ContractionStep.IsContractionStep
-    - Name: TwinWidthTreewidthExponentialRedemption.Statements.TreeDecompositionWidth.HasTreeDecompositionWidthAtMost
+        - TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState.State
+        - TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState.bags
+        - TwinWidthTreewidthExponentialRedemption.Statements.InitialTrigraphState.InitialState
+        - TwinWidthTreewidthExponentialRedemption.Statements.InitialTrigraphState.state
+        - TwinWidthTreewidthExponentialRedemption.Statements.FinalTrigraphState.FinalState
+        - TwinWidthTreewidthExponentialRedemption.Statements.FinalTrigraphState.state
+        - TwinWidthTreewidthExponentialRedemption.Statements.ContractionStep.Step
+    - Name: TwinWidthTreewidthExponentialRedemption.Statements.TreeDecompositionWidth.TreeDecomposition
       Type: Definition
-      Title: Bounded-width tree decomposition
+      Title: Tree decomposition
+      SemanticDependencies: []
+    - Name: TwinWidthTreewidthExponentialRedemption.Statements.TreeDecompositionWidth.nodeType
+      Type: Definition
+      Title: Node type of a tree decomposition
+      SemanticDependencies: []
+    - Name: TwinWidthTreewidthExponentialRedemption.Statements.TreeDecompositionWidth.nodeFintype
+      Type: Definition
+      Title: Finiteness of the node type of a tree decomposition
+      SemanticDependencies: []
+    - Name: TwinWidthTreewidthExponentialRedemption.Statements.TreeDecompositionWidth.nodeDecidableEq
+      Type: Definition
+      Title: Decidable equality on the node type of a tree decomposition
+      SemanticDependencies: []
+    - Name: TwinWidthTreewidthExponentialRedemption.Statements.TreeDecompositionWidth.tree
+      Type: Definition
+      Title: Tree of a tree decomposition
+      SemanticDependencies: []
+    - Name: TwinWidthTreewidthExponentialRedemption.Statements.TreeDecompositionWidth.bag
+      Type: Definition
+      Title: Bags of a tree decomposition
+      SemanticDependencies: []
+    - Name: TwinWidthTreewidthExponentialRedemption.Statements.TreeDecompositionWidth.treeDecompositionWidth
+      Type: Definition
+      Title: Width of a tree decomposition
       SemanticDependencies: []
     - Name: TwinWidthTreewidthExponentialRedemption.Statements.Treewidth.treewidth
       Type: Definition
       Title: Treewidth
       SemanticDependencies:
-        - TwinWidthTreewidthExponentialRedemption.Statements.TreeDecompositionWidth.HasTreeDecompositionWidthAtMost
+        - TwinWidthTreewidthExponentialRedemption.Statements.LeastNatural.leastNat
+        - TwinWidthTreewidthExponentialRedemption.Statements.TreeDecompositionWidth.TreeDecomposition
+        - TwinWidthTreewidthExponentialRedemption.Statements.TreeDecompositionWidth.treeDecompositionWidth
     - Name: TwinWidthTreewidthExponentialRedemption.Statements.TwinWidth.twinWidth
       Type: Definition
       Title: Twin-width
       SemanticDependencies:
-        - TwinWidthTreewidthExponentialRedemption.Statements.ContractionSequenceWidth.HasContractionSequenceWidthAtMost
+        - TwinWidthTreewidthExponentialRedemption.Statements.LeastNatural.leastNat
+        - TwinWidthTreewidthExponentialRedemption.Statements.ContractionSequenceWidth.ContractionSequence
     - Name: TwinWidthTreewidthExponentialRedemption.Statements.Main.twin_width_can_be_exponential_in_treewidth
       Type: Axiom
       Title: Twin-width can be exponential in treewidth

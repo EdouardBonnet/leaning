@@ -1,6 +1,5 @@
-Given a finite set \(B\) of current bags and a red adjacency relation \(R\) on
-bags, \(\texttt{redDegree}(B,R,A)\) is
+For a trigraph state \(T\) and a current bag \(A\),
+\(\operatorname{redDegree}(T,A)\) is
 \[
-  |\{C\in B : R(A,C)\}|.
+  |\{C\in\operatorname{bags}(T) : \operatorname{redAdj}(T,A,C)\}|.
 \]
-

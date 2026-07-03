@@ -1,19 +1,22 @@
 import Mathlib.Data.Finset.Basic
+import TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState
 
 namespace TwinWidthTreewidthExponentialRedemption.Statements.ContractedRed
 
-/-- Red adjacency after contracting two bags `A` and `B`. -/
+open TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState
+
+/-- Red adjacency after contracting two bags `A` and `B` in a trigraph state. -/
 def contractedRed {V : Type} [DecidableEq V]
-    (blackAdj redAdj : Finset V → Finset V → Prop)
-    (A B X Y : Finset V) : Prop :=
+    (T : State V) (A B X Y : Finset V) : Prop :=
   if X = Y then
     False
   else if X = A ∪ B then
-    redAdj A Y ∨ redAdj B Y ∨ blackAdj A Y ≠ blackAdj B Y
+    redAdj T A Y ∨ redAdj T B Y ∨
+      blackAdj T A Y ≠ blackAdj T B Y
   else if Y = A ∪ B then
-    redAdj X A ∨ redAdj X B ∨ blackAdj X A ≠ blackAdj X B
+    redAdj T X A ∨ redAdj T X B ∨
+      blackAdj T X A ≠ blackAdj T X B
   else
-    redAdj X Y
+    redAdj T X Y
 
 end TwinWidthTreewidthExponentialRedemption.Statements.ContractedRed
-

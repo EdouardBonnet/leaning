@@ -1,8 +1,11 @@
-\(\texttt{IsContractionStep}\) says that one transition replaces two distinct
-current bags \(A,B\) by \(A\cup B\):
+\(\operatorname{Step}(T,U)\) is the type of witnesses that the trigraph state
+\(U\) is obtained from the trigraph state \(T\) by one contraction.  Such a
+witness chooses two distinct current bags \(A,B\) of \(T\) and states that they
+are replaced by \(A\cup B\):
 \[
-  B_{\mathrm{next}}=\{A\cup B\}\cup (B_{\mathrm{old}}\setminus\{A,B\}),
+  \operatorname{bags}(U)=\{A\cup B\}\cup
+    (\operatorname{bags}(T)\setminus\{A,B\}),
 \]
-and that the next red and black adjacencies are exactly the relations defined
-by \(\texttt{contractedRed}\) and \(\texttt{contractedBlack}\).
-
+and that the red and black adjacencies of \(U\) are exactly the relations
+defined by \(\operatorname{contractedRed}(T,A,B,-,-)\) and
+\(\operatorname{contractedBlack}(T,A,B,-,-)\).

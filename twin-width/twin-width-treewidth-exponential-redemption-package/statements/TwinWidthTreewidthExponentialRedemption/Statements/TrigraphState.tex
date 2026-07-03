@@ -1,5 +1,10 @@
-\(\texttt{IsTrigraphState}(B,E_{\mathrm{black}},E_{\mathrm{red}})\) says that
-\(B\) is a partition of the vertex type into nonempty finite bags, the black and
-red relations are symmetric on bags, neither relation has a loop, and no pair of
-bags is both black-adjacent and red-adjacent.
+\(\operatorname{State}(V)\) is the type of trigraph states on the original
+vertex type \(V\).  An element stores a finite family of current bags, a black
+adjacency relation on bags, and a red adjacency relation on bags.  The stored
+invariants say that the bags are nonempty, pairwise disjoint, and cover \(V\);
+both adjacency relations are symmetric on current bags and loopless; and no
+pair of current bags is both black-adjacent and red-adjacent.
 
+The accompanying definitions \(\operatorname{bags}(T)\),
+\(\operatorname{blackAdj}(T)\), and \(\operatorname{redAdj}(T)\) return the
+three data components of a state \(T:\operatorname{State}(V)\).

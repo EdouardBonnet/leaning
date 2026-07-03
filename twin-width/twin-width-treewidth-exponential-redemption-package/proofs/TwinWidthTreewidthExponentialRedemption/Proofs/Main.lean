@@ -3,163 +3,271 @@ import TwinWidthTreewidthExponentialRedemption.Statements.Main
 
 namespace TwinWidthTreewidthExponentialRedemption.Proofs.Main
 
+open TwinWidthTreewidthExponentialRedemption.Statements
 
-theorem hasTreeDecompositionWidthAtMost_of_source
+noncomputable section
+
+def submittedTreeDecompositionOfSource
+    {V : Type} [DecidableEq V] {G : SimpleGraph V}
+    (D : TwinWidth.SimpleGraph.TreeDecomposition G) :
+    TreeDecompositionWidth.TreeDecomposition G :=
+  ⟨D.Node, D.nodeFintype, D.nodeDecidableEq, D.tree, D.bag,
+    ⟨D.isTree, D.vertex_mem_bag, D.edge_mem_bag, D.bag_indices_connected⟩⟩
+
+theorem submittedTreeDecompositionWidth_eq_source
+    {V : Type} [DecidableEq V] {G : SimpleGraph V}
+    (D : TwinWidth.SimpleGraph.TreeDecomposition G) :
+    TreeDecompositionWidth.treeDecompositionWidth
+        (submittedTreeDecompositionOfSource D) = D.width := by
+  rfl
+
+theorem treewidth_le_of_treeDecomposition
+    {V : Type} [Fintype V] [DecidableEq V] {G : SimpleGraph V} {width : ℕ}
+    (D : TreeDecompositionWidth.TreeDecomposition G)
+    (hwidth : TreeDecompositionWidth.treeDecompositionWidth D ≤ width) :
+    Treewidth.treewidth G ≤ width := by
+  classical
+  let P : ℕ → Prop := fun e =>
+    ∃ D : TreeDecompositionWidth.TreeDecomposition G,
+      TreeDecompositionWidth.treeDecompositionWidth D ≤ e
+  have hex : ∃ e, P e := ⟨width, D, hwidth⟩
+  change LeastNatural.leastNat P ≤ width
+  rw [LeastNatural.leastNat, dif_pos hex]
+  exact Nat.find_min' hex ⟨D, hwidth⟩
+
+theorem treewidth_le_of_source
     {V : Type} [Fintype V] [DecidableEq V] {G : SimpleGraph V} {width : ℕ}
     (D : TwinWidth.SimpleGraph.TreeDecomposition G)
     (hwidth : D.width ≤ width) :
-    TwinWidthTreewidthExponentialRedemption.Statements.TreeDecompositionWidth.HasTreeDecompositionWidthAtMost G width := by
-  refine ⟨D.Node, D.nodeFintype, D.nodeDecidableEq, D.tree, D.isTree, D.bag,
-    D.vertex_mem_bag, ?_, D.bag_indices_connected, ?_⟩
-  · intro u v huv
-    exact D.edge_mem_bag huv
-  · simpa [TwinWidth.SimpleGraph.TreeDecomposition.width] using hwidth
+    Treewidth.treewidth G ≤ width := by
+  exact treewidth_le_of_treeDecomposition
+    (submittedTreeDecompositionOfSource D)
+    (by simpa [submittedTreeDecompositionWidth_eq_source D] using hwidth)
 
-theorem treewidth_le_of_hasTreeDecompositionWidthAtMost
-    {V : Type} [Fintype V] [DecidableEq V] {G : SimpleGraph V} {width : ℕ}
-    (h : TwinWidthTreewidthExponentialRedemption.Statements.TreeDecompositionWidth.HasTreeDecompositionWidthAtMost G width) :
-    TwinWidthTreewidthExponentialRedemption.Statements.Treewidth.treewidth G ≤ width := by
-  classical
-  have hex : ∃ e, TwinWidthTreewidthExponentialRedemption.Statements.TreeDecompositionWidth.HasTreeDecompositionWidthAtMost G e := ⟨width, h⟩
-  rw [TwinWidthTreewidthExponentialRedemption.Statements.Treewidth.treewidth, dif_pos hex]
-  exact Nat.find_min' hex h
-
-theorem isTrigraphState_of_source {V : Type} [DecidableEq V]
+def submittedStateOfSource {V : Type} [DecidableEq V]
     (T : TwinWidth.TrigraphState V) :
-    TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState.IsTrigraphState T.bags T.blackAdj T.redAdj := by
-  exact
+    TrigraphState.State V :=
+  ⟨T.bags, T.blackAdj, T.redAdj,
     ⟨T.bag_nonempty, T.bag_disjoint, T.bag_cover, T.black_symm, T.red_symm,
-      T.black_irrefl, T.red_irrefl, T.black_red_disjoint⟩
+      T.black_irrefl, T.red_irrefl, T.black_red_disjoint⟩⟩
 
-def sourceTrigraphStateOfSubmitted {V : Type} [DecidableEq V]
-    (bags : Finset (Finset V))
-    (blackAdj redAdj : Finset V → Finset V → Prop)
-    (h : TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState.IsTrigraphState bags blackAdj redAdj) :
+def sourceStateOfSubmitted {V : Type} [DecidableEq V]
+    (T : TrigraphState.State V) :
     TwinWidth.TrigraphState V where
-  bags := bags
-  bag_nonempty := h.1
-  bag_disjoint := h.2.1
-  bag_cover := h.2.2.1
-  blackAdj := blackAdj
-  redAdj := redAdj
-  black_symm := h.2.2.2.1
-  red_symm := h.2.2.2.2.1
-  black_irrefl := h.2.2.2.2.2.1
-  red_irrefl := h.2.2.2.2.2.2.1
-  black_red_disjoint := h.2.2.2.2.2.2.2
+  bags := TrigraphState.bags T
+  blackAdj := TrigraphState.blackAdj T
+  redAdj := TrigraphState.redAdj T
+  bag_nonempty := by
+    rcases T with ⟨bags, blackAdj, redAdj, h⟩
+    exact h.down.1
+  bag_disjoint := by
+    rcases T with ⟨bags, blackAdj, redAdj, h⟩
+    exact h.down.2.1
+  bag_cover := by
+    rcases T with ⟨bags, blackAdj, redAdj, h⟩
+    exact h.down.2.2.1
+  black_symm := by
+    rcases T with ⟨bags, blackAdj, redAdj, h⟩
+    exact h.down.2.2.2.1
+  red_symm := by
+    rcases T with ⟨bags, blackAdj, redAdj, h⟩
+    exact h.down.2.2.2.2.1
+  black_irrefl := by
+    rcases T with ⟨bags, blackAdj, redAdj, h⟩
+    exact h.down.2.2.2.2.2.1
+  red_irrefl := by
+    rcases T with ⟨bags, blackAdj, redAdj, h⟩
+    exact h.down.2.2.2.2.2.2.1
+  black_red_disjoint := by
+    rcases T with ⟨bags, blackAdj, redAdj, h⟩
+    exact h.down.2.2.2.2.2.2.2
 
-theorem hasContractionSequenceWidthAtMost_of_source
+def submittedInitialStateOfSource
+    {V : Type} [Fintype V] [DecidableEq V] {G : SimpleGraph V}
+    (T : TwinWidth.TrigraphState V)
+    (h : TwinWidth.SimpleGraph.IsInitialState G T) :
+    InitialTrigraphState.InitialState G :=
+  ⟨submittedStateOfSource T, ⟨by
+    refine ⟨?_, ?_, ?_⟩
+    ·
+      simpa [submittedStateOfSource, SingletonBags.singletonBags,
+        TwinWidth.TrigraphState.singletonBags] using h.1
+    ·
+      intro A B hA hB
+      simpa [submittedStateOfSource] using h.2.1 hA hB
+    ·
+      intro A B hA hB
+      simpa [submittedStateOfSource] using h.2.2 hA hB⟩⟩
+
+def submittedFinalStateOfSource {V : Type} [DecidableEq V]
+    (T : TwinWidth.TrigraphState V)
+    (h : TwinWidth.SimpleGraph.IsFinalState T) :
+    FinalTrigraphState.FinalState V :=
+  ⟨submittedStateOfSource T, ⟨by
+    simpa [submittedStateOfSource] using h⟩⟩
+
+def submittedStepOfSource {V : Type} [DecidableEq V]
+    {T U : TwinWidth.TrigraphState V}
+    (h : TwinWidth.SimpleGraph.IsContractionStep T U) :
+    ContractionStep.Step (submittedStateOfSource T) (submittedStateOfSource U) := by
+  classical
+  let A : Finset V := Classical.choose h
+  have hApack := Classical.choose_spec h
+  let B : Finset V := Classical.choose hApack.2
+  have hBpack := Classical.choose_spec hApack.2
+  have hA : A ∈ T.bags := hApack.1
+  have hB : B ∈ T.bags := hBpack.1
+  have hAB : A ≠ B := hBpack.2.1
+  have hbags : U.bags = insert (A ∪ B) ((T.bags.erase A).erase B) := hBpack.2.2.1
+  have hred :
+      ∀ ⦃X Y⦄, X ∈ U.bags → Y ∈ U.bags →
+        (U.redAdj X Y ↔ TwinWidth.SimpleGraph.contractedRed T A B X Y) :=
+    hBpack.2.2.2.1
+  have hblack :
+      ∀ ⦃X Y⦄, X ∈ U.bags → Y ∈ U.bags →
+        (U.blackAdj X Y ↔ TwinWidth.SimpleGraph.contractedBlack T A B X Y) :=
+    hBpack.2.2.2.2
+  refine ⟨A, B, ⟨?_, ?_, hAB, ?_, ?_, ?_⟩⟩
+  · simpa [submittedStateOfSource] using hA
+  · simpa [submittedStateOfSource] using hB
+  · simpa [submittedStateOfSource] using hbags
+  · intro X Y hX hY
+    simpa [submittedStateOfSource, ContractedRed.contractedRed,
+      TwinWidth.SimpleGraph.contractedRed] using hred hX hY
+  · intro X Y hX hY
+    simpa [submittedStateOfSource, ContractedRed.contractedRed,
+      ContractedBlack.contractedBlack, TwinWidth.SimpleGraph.contractedRed,
+      TwinWidth.SimpleGraph.contractedBlack] using hblack hX hY
+
+def submittedContractionSequenceOfSource
     {V : Type} [Fintype V] [DecidableEq V] {G : SimpleGraph V} {d : ℕ}
     (S : TwinWidth.SimpleGraph.ContractionSequence G d) :
-    TwinWidthTreewidthExponentialRedemption.Statements.ContractionSequenceWidth.HasContractionSequenceWidthAtMost G d := by
-  refine ⟨S.stepCount, fun i => (S.state i).bags, fun i => (S.state i).blackAdj,
-    fun i => (S.state i).redAdj, ?_, ?_, ?_, ?_, ?_⟩
-  · intro i
-    exact isTrigraphState_of_source (S.state i)
-  · rcases S.starts with ⟨hbags, hblack, hred⟩
-    refine ⟨?_, hblack, hred⟩
-    simpa [TwinWidthTreewidthExponentialRedemption.Statements.SingletonBags.singletonBags, TwinWidth.TrigraphState.singletonBags] using hbags
-  · exact S.ends
-  · intro i hi
-    simpa [TwinWidthTreewidthExponentialRedemption.Statements.ContractionStep.IsContractionStep, TwinWidthTreewidthExponentialRedemption.Statements.ContractedRed.contractedRed,
-      TwinWidthTreewidthExponentialRedemption.Statements.ContractedBlack.contractedBlack, TwinWidth.SimpleGraph.IsContractionStep,
-      TwinWidth.SimpleGraph.contractedRed, TwinWidth.SimpleGraph.contractedBlack]
-      using S.step_contracts i hi
-  · intro i hi A hA
-    simpa [TwinWidthTreewidthExponentialRedemption.Statements.RedDegree.redDegree, TwinWidth.SimpleGraph.redDegree,
-      TwinWidth.TrigraphState.redDegree] using S.redDegree_le i hi hA
+    ContractionSequenceWidth.ContractionSequence G d :=
+  ⟨S.stepCount, fun i => submittedStateOfSource (S.state i),
+    submittedInitialStateOfSource (S.state 0) S.starts,
+    submittedFinalStateOfSource (S.state S.stepCount) S.ends,
+    ⟨rfl⟩, ⟨rfl⟩,
+    (fun i hi => submittedStepOfSource (S.step_contracts i hi)),
+    ⟨by
+      intro i hi A hA
+      simpa [submittedStateOfSource, RedDegree.redDegree,
+        TwinWidth.SimpleGraph.redDegree, TwinWidth.TrigraphState.redDegree]
+        using S.redDegree_le i hi hA⟩⟩
 
 theorem source_contractionSequence_of_submitted
     {V : Type} [Fintype V] [DecidableEq V] {G : SimpleGraph V} {d : ℕ}
-    (h : TwinWidthTreewidthExponentialRedemption.Statements.ContractionSequenceWidth.HasContractionSequenceWidthAtMost G d) :
+    (h : Nonempty (ContractionSequenceWidth.ContractionSequence G d)) :
     TwinWidth.SimpleGraph.HasTwinWidthAtMost G d := by
-  rcases h with ⟨stepCount, bags, blackAdj, redAdj, hstates, hstarts, hends, hsteps, hred⟩
-  let state : ℕ → TwinWidth.TrigraphState V :=
-    fun i => sourceTrigraphStateOfSubmitted (bags i) (blackAdj i) (redAdj i) (hstates i)
+  rcases h with ⟨S⟩
+  rcases S with ⟨stepCount, state, start, final, hstart, hfinal, hsteps, hred⟩
+  let sourceState : ℕ → TwinWidth.TrigraphState V :=
+    fun i => sourceStateOfSubmitted (state i)
   refine ⟨?_⟩
   refine
     { stepCount := stepCount
-      state := state
+      state := sourceState
       starts := ?_
       ends := ?_
       step_contracts := ?_
       redDegree_le := ?_ }
-  · rcases hstarts with ⟨hbags, hblack, hred0⟩
+  · change TwinWidth.SimpleGraph.IsInitialState G
+      (sourceStateOfSubmitted (state 0))
+    rw [hstart.down]
+    have hstartProp := start.2.down
     refine ⟨?_, ?_, ?_⟩
-    · simpa [state, sourceTrigraphStateOfSubmitted, TwinWidthTreewidthExponentialRedemption.Statements.SingletonBags.singletonBags,
-        TwinWidth.TrigraphState.singletonBags] using hbags
+    · simpa [sourceState, sourceStateOfSubmitted,
+        SingletonBags.singletonBags, TwinWidth.TrigraphState.singletonBags]
+        using hstartProp.1
     · intro A B hA hB
-      simpa [state, sourceTrigraphStateOfSubmitted] using hblack hA hB
+      simpa [sourceState, sourceStateOfSubmitted]
+        using hstartProp.2.1 hA hB
     · intro A B hA hB
-      simpa [state, sourceTrigraphStateOfSubmitted] using hred0 hA hB
-  · simpa [state, sourceTrigraphStateOfSubmitted] using hends
+      simpa [sourceState, sourceStateOfSubmitted]
+        using hstartProp.2.2 hA hB
+  · change TwinWidth.SimpleGraph.IsFinalState
+      (sourceStateOfSubmitted (state stepCount))
+    rw [hfinal.down]
+    simpa [sourceState, sourceStateOfSubmitted] using final.2.down
   · intro i hi
-    simpa [state, sourceTrigraphStateOfSubmitted, TwinWidthTreewidthExponentialRedemption.Statements.ContractionStep.IsContractionStep,
-      TwinWidthTreewidthExponentialRedemption.Statements.ContractedRed.contractedRed, TwinWidthTreewidthExponentialRedemption.Statements.ContractedBlack.contractedBlack,
-      TwinWidth.SimpleGraph.IsContractionStep, TwinWidth.SimpleGraph.contractedRed,
-      TwinWidth.SimpleGraph.contractedBlack] using hsteps i hi
+    rcases hsteps i hi with ⟨A, B, hstepLift⟩
+    rcases hstepLift.down with ⟨hA, hB, hAB, hbags, hredStep, hblackStep⟩
+    refine ⟨A, ?_, B, ?_, hAB, ?_, ?_, ?_⟩
+    · simpa [sourceState, sourceStateOfSubmitted] using hA
+    · simpa [sourceState, sourceStateOfSubmitted] using hB
+    · simpa [sourceState, sourceStateOfSubmitted] using hbags
+    · intro X Y hX hY
+      simpa [sourceState, sourceStateOfSubmitted, ContractedRed.contractedRed,
+        TwinWidth.SimpleGraph.contractedRed] using hredStep hX hY
+    · intro X Y hX hY
+      simpa [sourceState, sourceStateOfSubmitted, ContractedRed.contractedRed,
+        ContractedBlack.contractedBlack, TwinWidth.SimpleGraph.contractedRed,
+        TwinWidth.SimpleGraph.contractedBlack] using hblackStep hX hY
   · intro i hi A hA
-    simpa [state, sourceTrigraphStateOfSubmitted, TwinWidthTreewidthExponentialRedemption.Statements.RedDegree.redDegree,
-      TwinWidth.SimpleGraph.redDegree, TwinWidth.TrigraphState.redDegree] using hred i hi hA
+    simpa [sourceState, sourceStateOfSubmitted, RedDegree.redDegree,
+      TwinWidth.SimpleGraph.redDegree, TwinWidth.TrigraphState.redDegree]
+      using hred.down i hi hA
 
-theorem hasContractionSequenceWidthAtMost_mono
+theorem contractionSequence_mono
     {V : Type} [Fintype V] [DecidableEq V] {G : SimpleGraph V} {d e : ℕ}
-    (h : TwinWidthTreewidthExponentialRedemption.Statements.ContractionSequenceWidth.HasContractionSequenceWidthAtMost G d) (hde : d ≤ e) :
-    TwinWidthTreewidthExponentialRedemption.Statements.ContractionSequenceWidth.HasContractionSequenceWidthAtMost G e := by
-  rcases h with ⟨stepCount, bags, blackAdj, redAdj, hstates, hstarts, hends, hsteps, hred⟩
-  refine ⟨stepCount, bags, blackAdj, redAdj, hstates, hstarts, hends, hsteps, ?_⟩
+    (h : Nonempty (ContractionSequenceWidth.ContractionSequence G d)) (hde : d ≤ e) :
+    Nonempty (ContractionSequenceWidth.ContractionSequence G e) := by
+  rcases h with ⟨S⟩
+  rcases S with ⟨stepCount, state, start, final, hstart, hfinal, hsteps, hred⟩
+  refine ⟨⟨stepCount, state, start, final, hstart, hfinal, hsteps, ?_⟩⟩
+  refine ⟨?_⟩
   intro i hi A hA
-  exact le_trans (hred i hi hA) hde
+  exact le_trans (hred.down i hi hA) hde
 
-theorem hasContractionSequenceWidthAtMost_twinWidth
+theorem contractionSequence_twinWidth
     {V : Type} [Fintype V] [DecidableEq V] (G : SimpleGraph V)
-    (hex : ∃ d, TwinWidthTreewidthExponentialRedemption.Statements.ContractionSequenceWidth.HasContractionSequenceWidthAtMost G d) :
-    TwinWidthTreewidthExponentialRedemption.Statements.ContractionSequenceWidth.HasContractionSequenceWidthAtMost G (TwinWidthTreewidthExponentialRedemption.Statements.TwinWidth.twinWidth G) := by
+    (hex : ∃ d, Nonempty (ContractionSequenceWidth.ContractionSequence G d)) :
+    Nonempty (ContractionSequenceWidth.ContractionSequence G (TwinWidth.twinWidth G)) := by
   classical
-  rw [TwinWidthTreewidthExponentialRedemption.Statements.TwinWidth.twinWidth, dif_pos hex]
+  rw [TwinWidth.twinWidth, LeastNatural.leastNat, dif_pos hex]
   exact Nat.find_spec hex
 
-theorem lt_twinWidth_of_not_hasContractionSequenceWidthAtMost
+theorem lt_twinWidth_of_not_contractionSequence
     {V : Type} [Fintype V] [DecidableEq V] {G : SimpleGraph V} {d : ℕ}
-    (hnot : ¬ TwinWidthTreewidthExponentialRedemption.Statements.ContractionSequenceWidth.HasContractionSequenceWidthAtMost G d)
-    (hex : ∃ e, TwinWidthTreewidthExponentialRedemption.Statements.ContractionSequenceWidth.HasContractionSequenceWidthAtMost G e) :
-    d < TwinWidthTreewidthExponentialRedemption.Statements.TwinWidth.twinWidth G := by
+    (hnot : ¬ Nonempty (ContractionSequenceWidth.ContractionSequence G d))
+    (hex : ∃ e, Nonempty (ContractionSequenceWidth.ContractionSequence G e)) :
+    d < TwinWidth.twinWidth G := by
   by_contra hle
   exact hnot
-    (hasContractionSequenceWidthAtMost_mono
-      (hasContractionSequenceWidthAtMost_twinWidth G hex) (Nat.le_of_not_gt hle))
+    (contractionSequence_mono
+      (contractionSequence_twinWidth G hex) (Nat.le_of_not_gt hle))
 
 theorem twin_width_can_be_exponential_in_treewidth
     (k : Nat) :
     ∃ (V : Type) (_ : Fintype V) (_ : DecidableEq V)
       (G : SimpleGraph V),
-      TwinWidthTreewidthExponentialRedemption.Statements.Treewidth.treewidth G ≤ 2 * k + 4 ∧ 2 ^ k < TwinWidthTreewidthExponentialRedemption.Statements.TwinWidth.twinWidth G := by
+      Treewidth.treewidth G ≤ 2 * k + 4 ∧ 2 ^ k < TwinWidth.twinWidth G := by
   refine
     ⟨TwinWidth.SimpleGraph.BonnetDepresVertex k, inferInstance, inferInstance,
       TwinWidth.SimpleGraph.bonnetDepresGraph k, ?_, ?_⟩
   · simpa [
       TwinWidth.SimpleGraph.bonnetDepresApexCount
-    ] using treewidth_le_of_hasTreeDecompositionWidthAtMost
-      (hasTreeDecompositionWidthAtMost_of_source
-        (TwinWidth.SimpleGraph.bonnetDepresTreeDecomposition k)
-        (TwinWidth.SimpleGraph.bonnetDepresTreeDecomposition_width_le k))
+    ] using treewidth_le_of_source
+      (TwinWidth.SimpleGraph.bonnetDepresTreeDecomposition k)
+      (TwinWidth.SimpleGraph.bonnetDepresTreeDecomposition_width_le k)
   · have hsource :
         ¬ TwinWidth.SimpleGraph.HasTwinWidthAtMost
           (TwinWidth.SimpleGraph.bonnetDepresGraph k) (2 ^ k) :=
       TwinWidth.SimpleGraph.BonnetDepres.bonnetDepres_not_hasTwinWidthAtMost_two_pow k
     have hsubmitted :
-        ¬ TwinWidthTreewidthExponentialRedemption.Statements.ContractionSequenceWidth.HasContractionSequenceWidthAtMost
-          (TwinWidth.SimpleGraph.bonnetDepresGraph k) (2 ^ k) := by
+        ¬ Nonempty (ContractionSequenceWidth.ContractionSequence
+          (TwinWidth.SimpleGraph.bonnetDepresGraph k) (2 ^ k)) := by
       intro h
       exact hsource (source_contractionSequence_of_submitted h)
     have hex :
-        ∃ e, TwinWidthTreewidthExponentialRedemption.Statements.ContractionSequenceWidth.HasContractionSequenceWidthAtMost
-          (TwinWidth.SimpleGraph.bonnetDepresGraph k) e := by
+        ∃ e, Nonempty (ContractionSequenceWidth.ContractionSequence
+          (TwinWidth.SimpleGraph.bonnetDepresGraph k) e) := by
       refine ⟨Fintype.card (TwinWidth.SimpleGraph.BonnetDepresVertex k), ?_⟩
-      exact hasContractionSequenceWidthAtMost_of_source
+      exact ⟨submittedContractionSequenceOfSource
         (Classical.choice
           (TwinWidth.SimpleGraph.hasTwinWidthAtMost_card
-            (TwinWidth.SimpleGraph.bonnetDepresGraph k)))
-    exact lt_twinWidth_of_not_hasContractionSequenceWidthAtMost hsubmitted hex
+            (TwinWidth.SimpleGraph.bonnetDepresGraph k)))⟩
+    exact lt_twinWidth_of_not_contractionSequence hsubmitted hex
+
+end
 
 end TwinWidthTreewidthExponentialRedemption.Proofs.Main
