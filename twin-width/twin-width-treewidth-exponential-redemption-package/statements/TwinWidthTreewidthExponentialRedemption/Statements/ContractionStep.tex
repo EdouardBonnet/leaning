@@ -1,0 +1,8 @@
+\(\texttt{IsContractionStep}\) says that one transition replaces two distinct
+current bags \(A,B\) by \(A\cup B\):
+\[
+  B_{\mathrm{next}}=\{A\cup B\}\cup (B_{\mathrm{old}}\setminus\{A,B\}),
+\]
+and that the next red and black adjacencies are exactly the relations defined
+by \(\texttt{contractedRed}\) and \(\texttt{contractedBlack}\).
+

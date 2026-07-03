@@ -1,0 +1,5 @@
+\(\texttt{treewidth}(G)\) is the least natural number \(w\) such that
+\(\texttt{HasTreeDecompositionWidthAtMost}(G,w)\).  In Lean this least value is
+implemented with \(\texttt{Nat.find}\), with fallback value \(0\) in the empty
+search branch.
+

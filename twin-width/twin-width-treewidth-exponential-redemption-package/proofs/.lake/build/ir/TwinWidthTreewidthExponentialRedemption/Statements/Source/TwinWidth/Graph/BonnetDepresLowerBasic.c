@@ -1,0 +1,1300 @@
+// Lean compiler output
+// Module: TwinWidthTreewidthExponentialRedemption.Statements.Source.TwinWidth.Graph.BonnetDepresLowerBasic
+// Imports: public import Init public meta import Init public import TwinWidthTreewidthExponentialRedemption.Statements.Source.TwinWidth.Graph.BonnetDepres public import TwinWidthTreewidthExponentialRedemption.Statements.Source.TwinWidth.Graph.Partition public import Batteries.Data.Fin.OfBits public import Mathlib.Combinatorics.Pigeonhole
+#include <lean/lean.h>
+#if defined(__clang__)
+#pragma clang diagnostic ignored "-Wunused-parameter"
+#pragma clang diagnostic ignored "-Wunused-label"
+#elif defined(__GNUC__) && !defined(__CLANG__)
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wunused-label"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#endif
+#ifdef __cplusplus
+extern "C" {
+#endif
+uint8_t lean_nat_dec_eq(lean_object*, lean_object*);
+lean_object* l_List_finRange(lean_object*);
+uint8_t lp_mathlib_Fintype_decidablePiFintype___redArg(lean_object*, lean_object*, lean_object*, lean_object*);
+lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_bonnetDepresDepth(lean_object*);
+lean_object* lean_nat_add(lean_object*, lean_object*);
+lean_object* l_instDecidableEqFin___boxed(lean_object*, lean_object*, lean_object*);
+uint8_t lp_mathlib_Sigma_instDecidableEqSigma___redArg(lean_object*, lean_object*, lean_object*, lean_object*);
+lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_bonnetDepresApexCount(lean_object*);
+uint8_t l_instDecidableEqSum_decEq___redArg(lean_object*, lean_object*, lean_object*, lean_object*);
+uint8_t l_List_decidablePerm___redArg(lean_object*, lean_object*, lean_object*);
+lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_bonnetDepresBranch(lean_object*);
+lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_FullTreeNode_root(lean_object*, lean_object*);
+lean_object* lean_nat_sub(lean_object*, lean_object*);
+lean_object* lean_nat_mul(lean_object*, lean_object*);
+lean_object* l_Bool_toNat(uint8_t);
+lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_FullTreeNode_child___redArg(lean_object*, lean_object*);
+lean_object* lp_mathlib_Multiset_map___redArg(lean_object*, lean_object*);
+lean_object* lp_mathlib_Multiset_bind___redArg(lean_object*, lean_object*);
+lean_object* lp_mathlib_Multiset_rec___redArg(lean_object*, lean_object*, lean_object*);
+lean_object* lp_mathlib_Finset_map___redArg(lean_object*, lean_object*);
+lean_object* lp_mathlib_Multiset_filter___redArg(lean_object*, lean_object*);
+lean_object* lp_mathlib_Multiset_pmap___redArg(lean_object*, lean_object*);
+lean_object* lp_mathlib_Finset_image___redArg(lean_object*, lean_object*, lean_object*);
+lean_object* lean_nat_pow(lean_object*, lean_object*);
+lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_FullTreeNode_child___boxed(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_otherApex___redArg(lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_otherApex___redArg___boxed(lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_otherApex(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_otherApex___boxed(lean_object*, lean_object*);
+LEAN_EXPORT uint8_t lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_singletonApexNeighborhood___redArg(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_singletonApexNeighborhood___redArg___boxed(lean_object*, lean_object*);
+LEAN_EXPORT uint8_t lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_singletonApexNeighborhood(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_singletonApexNeighborhood___boxed(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Fin_foldr_loop___at___00TwinWidth_SimpleGraph_BonnetDepres_labelOfNeighborhood_spec__0___redArg(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_labelOfNeighborhood(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_labelOfNeighborhood___boxed(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Fin_foldr_loop___at___00TwinWidth_SimpleGraph_BonnetDepres_labelOfNeighborhood_spec__0(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Fin_foldr_loop___at___00TwinWidth_SimpleGraph_BonnetDepres_labelOfNeighborhood_spec__0___boxed(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_rootChildWithNeighborhood(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_rootChildWithNeighborhood___boxed(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs___private_TwinWidthTreewidthExponentialRedemption_Statements_Source_TwinWidth_Graph_BonnetDepresLowerBasic_0__TwinWidth_SimpleGraph_bonnetDepresGraph_match__1_splitter___redArg(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs___private_TwinWidthTreewidthExponentialRedemption_Statements_Source_TwinWidth_Graph_BonnetDepresLowerBasic_0__TwinWidth_SimpleGraph_bonnetDepresGraph_match__1_splitter(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs___private_TwinWidthTreewidthExponentialRedemption_Statements_Source_TwinWidth_Graph_BonnetDepresLowerBasic_0__TwinWidth_SimpleGraph_bonnetDepresGraph_match__1_splitter___boxed(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT uint8_t lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__0(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__0___boxed(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT uint8_t lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__1(lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__1___boxed(lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT uint8_t lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__2(lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__2___boxed(lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT uint8_t lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__3(lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__3___boxed(lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__4(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__4___boxed(lean_object*, lean_object*);
+LEAN_EXPORT uint8_t lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__5(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__5___boxed(lean_object*, lean_object*, lean_object*);
+static const lean_ctor_object lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__6___closed__0_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_ctor_object) + sizeof(void*)*2 + 0, .m_other = 2, .m_tag = 1}, .m_objs = {((lean_object*)(((size_t)(0) << 1) | 1)),((lean_object*)(((size_t)(0) << 1) | 1))}};
+static const lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__6___closed__0 = (const lean_object*)&lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__6___closed__0_value;
+static const lean_ctor_object lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__6___closed__1_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_ctor_object) + sizeof(void*)*2 + 0, .m_other = 2, .m_tag = 1}, .m_objs = {((lean_object*)(((size_t)(1) << 1) | 1)),((lean_object*)&lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__6___closed__0_value)}};
+static const lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__6___closed__1 = (const lean_object*)&lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__6___closed__1_value;
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__6(lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__6___boxed(lean_object*);
+LEAN_EXPORT uint8_t lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__7(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__7___boxed(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0___redArg___lam__0(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_Pi_cons___at___00Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1_spec__2___redArg(lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_Pi_cons___at___00Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1_spec__2___redArg___boxed(lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg___lam__0(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg___lam__0___boxed(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg___lam__1(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg___lam__2(lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg___lam__2___boxed(lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg___lam__3(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg___lam__3___boxed(lean_object*, lean_object*);
+static const lean_closure_object lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg___closed__0_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_closure_object) + sizeof(void*)*0, .m_other = 0, .m_tag = 245}, .m_fun = (void*)lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg___lam__3___boxed, .m_arity = 2, .m_num_fixed = 0, .m_objs = {} };
+static const lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg___closed__0 = (const lean_object*)&lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg___closed__0_value;
+static const lean_ctor_object lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg___closed__1_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_ctor_object) + sizeof(void*)*2 + 0, .m_other = 2, .m_tag = 1}, .m_objs = {((lean_object*)&lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg___closed__0_value),((lean_object*)(((size_t)(0) << 1) | 1))}};
+static const lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg___closed__1 = (const lean_object*)&lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg___closed__1_value;
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg___boxed(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0___redArg___lam__0(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0___redArg(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0___redArg___boxed(lean_object*, lean_object*, lean_object*);
+static const lean_closure_object lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0___redArg___closed__0_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_closure_object) + sizeof(void*)*0, .m_other = 0, .m_tag = 245}, .m_fun = (void*)lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0___redArg___lam__0, .m_arity = 2, .m_num_fixed = 0, .m_objs = {} };
+static const lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0___redArg___closed__0 = (const lean_object*)&lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0___redArg___closed__0_value;
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0___redArg(lean_object*, lean_object*);
+static const lean_closure_object lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___closed__0_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_closure_object) + sizeof(void*)*0, .m_other = 0, .m_tag = 245}, .m_fun = (void*)lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__0___boxed, .m_arity = 3, .m_num_fixed = 0, .m_objs = {} };
+static const lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___closed__0 = (const lean_object*)&lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___closed__0_value;
+static const lean_closure_object lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___closed__1_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_closure_object) + sizeof(void*)*1, .m_other = 0, .m_tag = 245}, .m_fun = (void*)lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__1___boxed, .m_arity = 4, .m_num_fixed = 1, .m_objs = {((lean_object*)&lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___closed__0_value)} };
+static const lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___closed__1 = (const lean_object*)&lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___closed__1_value;
+static const lean_closure_object lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___closed__2_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_closure_object) + sizeof(void*)*0, .m_other = 0, .m_tag = 245}, .m_fun = (void*)lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__6___boxed, .m_arity = 1, .m_num_fixed = 0, .m_objs = {} };
+static const lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___closed__2 = (const lean_object*)&lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___closed__2_value;
+static const lean_closure_object lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___closed__3_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_closure_object) + sizeof(void*)*0, .m_other = 0, .m_tag = 245}, .m_fun = (void*)lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__7___boxed, .m_arity = 3, .m_num_fixed = 0, .m_objs = {} };
+static const lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___closed__3 = (const lean_object*)&lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___closed__3_value;
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0(lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0___boxed(lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_Pi_cons___at___00Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1_spec__2(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_Pi_cons___at___00Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1_spec__2___boxed(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1(lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___boxed(lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT uint8_t lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildBags___lam__4(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildBags___lam__4___boxed(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildBags___lam__0(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildBags___lam__0___boxed(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildBags(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_rootChildBag(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_rootChildBag___boxed(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_rootChildBags(lean_object*);
+LEAN_EXPORT uint8_t lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_apexBitRootChildBags___lam__6(lean_object*, uint8_t, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_apexBitRootChildBags___lam__6___boxed(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_apexBitRootChildBags(lean_object*, lean_object*, uint8_t);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_apexBitRootChildBags___boxed(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_childWithSingletonApexNeighborhood___redArg(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_childWithSingletonApexNeighborhood(lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_childSet___redArg(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_childSet(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_childVertexSet___redArg___lam__4(lean_object*);
+static const lean_closure_object lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_childVertexSet___redArg___closed__0_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_closure_object) + sizeof(void*)*0, .m_other = 0, .m_tag = 245}, .m_fun = (void*)lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_childVertexSet___redArg___lam__4, .m_arity = 1, .m_num_fixed = 0, .m_objs = {} };
+static const lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_childVertexSet___redArg___closed__0 = (const lean_object*)&lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_childVertexSet___redArg___closed__0_value;
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_childVertexSet___redArg(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_childVertexSet(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_manyChildrenThreshold(lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_manyChildrenThreshold___boxed(lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_manySideBranchesThreshold(lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_manySideBranchesThreshold___boxed(lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_manyInternalBagsThreshold(lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_manyInternalBagsThreshold___boxed(lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_otherApex___redArg(lean_object* v_x_1_){
+_start:
+{
+lean_object* v___x_2_; uint8_t v___x_3_; 
+v___x_2_ = lean_unsigned_to_nat(0u);
+v___x_3_ = lean_nat_dec_eq(v_x_1_, v___x_2_);
+if (v___x_3_ == 0)
+{
+return v___x_2_;
+}
+else
+{
+lean_object* v___x_4_; 
+v___x_4_ = lean_unsigned_to_nat(1u);
+return v___x_4_;
+}
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_otherApex___redArg___boxed(lean_object* v_x_5_){
+_start:
+{
+lean_object* v_res_6_; 
+v_res_6_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_otherApex___redArg(v_x_5_);
+lean_dec(v_x_5_);
+return v_res_6_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_otherApex(lean_object* v_k_7_, lean_object* v_x_8_){
+_start:
+{
+lean_object* v___x_9_; 
+v___x_9_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_otherApex___redArg(v_x_8_);
+return v___x_9_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_otherApex___boxed(lean_object* v_k_10_, lean_object* v_x_11_){
+_start:
+{
+lean_object* v_res_12_; 
+v_res_12_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_otherApex(v_k_10_, v_x_11_);
+lean_dec(v_x_11_);
+lean_dec(v_k_10_);
+return v_res_12_;
+}
+}
+LEAN_EXPORT uint8_t lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_singletonApexNeighborhood___redArg(lean_object* v_y_13_, lean_object* v_z_14_){
+_start:
+{
+uint8_t v___x_15_; 
+v___x_15_ = lean_nat_dec_eq(v_z_14_, v_y_13_);
+return v___x_15_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_singletonApexNeighborhood___redArg___boxed(lean_object* v_y_16_, lean_object* v_z_17_){
+_start:
+{
+uint8_t v_res_18_; lean_object* v_r_19_; 
+v_res_18_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_singletonApexNeighborhood___redArg(v_y_16_, v_z_17_);
+lean_dec(v_z_17_);
+lean_dec(v_y_16_);
+v_r_19_ = lean_box(v_res_18_);
+return v_r_19_;
+}
+}
+LEAN_EXPORT uint8_t lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_singletonApexNeighborhood(lean_object* v_k_20_, lean_object* v_y_21_, lean_object* v_z_22_){
+_start:
+{
+uint8_t v___x_23_; 
+v___x_23_ = lean_nat_dec_eq(v_z_22_, v_y_21_);
+return v___x_23_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_singletonApexNeighborhood___boxed(lean_object* v_k_24_, lean_object* v_y_25_, lean_object* v_z_26_){
+_start:
+{
+uint8_t v_res_27_; lean_object* v_r_28_; 
+v_res_27_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_singletonApexNeighborhood(v_k_24_, v_y_25_, v_z_26_);
+lean_dec(v_z_26_);
+lean_dec(v_y_25_);
+lean_dec(v_k_24_);
+v_r_28_ = lean_box(v_res_27_);
+return v_r_28_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Fin_foldr_loop___at___00TwinWidth_SimpleGraph_BonnetDepres_labelOfNeighborhood_spec__0___redArg(lean_object* v_f_29_, lean_object* v_i_30_, lean_object* v_a_31_){
+_start:
+{
+lean_object* v_zero_32_; uint8_t v_isZero_33_; 
+v_zero_32_ = lean_unsigned_to_nat(0u);
+v_isZero_33_ = lean_nat_dec_eq(v_i_30_, v_zero_32_);
+if (v_isZero_33_ == 1)
+{
+lean_dec(v_i_30_);
+lean_dec_ref(v_f_29_);
+return v_a_31_;
+}
+else
+{
+lean_object* v_one_34_; lean_object* v_n_35_; lean_object* v___x_36_; lean_object* v___x_37_; lean_object* v___x_38_; uint8_t v___x_39_; lean_object* v___x_40_; lean_object* v___x_41_; 
+v_one_34_ = lean_unsigned_to_nat(1u);
+v_n_35_ = lean_nat_sub(v_i_30_, v_one_34_);
+lean_dec(v_i_30_);
+v___x_36_ = lean_unsigned_to_nat(2u);
+v___x_37_ = lean_nat_mul(v___x_36_, v_a_31_);
+lean_dec(v_a_31_);
+lean_inc_ref(v_f_29_);
+lean_inc(v_n_35_);
+v___x_38_ = lean_apply_1(v_f_29_, v_n_35_);
+v___x_39_ = lean_unbox(v___x_38_);
+v___x_40_ = l_Bool_toNat(v___x_39_);
+v___x_41_ = lean_nat_add(v___x_37_, v___x_40_);
+lean_dec(v___x_40_);
+lean_dec(v___x_37_);
+v_i_30_ = v_n_35_;
+v_a_31_ = v___x_41_;
+goto _start;
+}
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_labelOfNeighborhood(lean_object* v_k_43_, lean_object* v_f_44_){
+_start:
+{
+lean_object* v___x_45_; lean_object* v___x_46_; lean_object* v___x_47_; 
+v___x_45_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_bonnetDepresApexCount(v_k_43_);
+v___x_46_ = lean_unsigned_to_nat(0u);
+v___x_47_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Fin_foldr_loop___at___00TwinWidth_SimpleGraph_BonnetDepres_labelOfNeighborhood_spec__0___redArg(v_f_44_, v___x_45_, v___x_46_);
+return v___x_47_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_labelOfNeighborhood___boxed(lean_object* v_k_48_, lean_object* v_f_49_){
+_start:
+{
+lean_object* v_res_50_; 
+v_res_50_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_labelOfNeighborhood(v_k_48_, v_f_49_);
+lean_dec(v_k_48_);
+return v_res_50_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Fin_foldr_loop___at___00TwinWidth_SimpleGraph_BonnetDepres_labelOfNeighborhood_spec__0(lean_object* v_f_51_, lean_object* v_n_52_, lean_object* v_i_53_, lean_object* v_a_54_, lean_object* v_a_55_){
+_start:
+{
+lean_object* v___x_56_; 
+v___x_56_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Fin_foldr_loop___at___00TwinWidth_SimpleGraph_BonnetDepres_labelOfNeighborhood_spec__0___redArg(v_f_51_, v_i_53_, v_a_55_);
+return v___x_56_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Fin_foldr_loop___at___00TwinWidth_SimpleGraph_BonnetDepres_labelOfNeighborhood_spec__0___boxed(lean_object* v_f_57_, lean_object* v_n_58_, lean_object* v_i_59_, lean_object* v_a_60_, lean_object* v_a_61_){
+_start:
+{
+lean_object* v_res_62_; 
+v_res_62_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Fin_foldr_loop___at___00TwinWidth_SimpleGraph_BonnetDepres_labelOfNeighborhood_spec__0(v_f_57_, v_n_58_, v_i_59_, v_a_60_, v_a_61_);
+lean_dec(v_n_58_);
+return v_res_62_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_rootChildWithNeighborhood(lean_object* v_k_63_, lean_object* v_f_64_){
+_start:
+{
+lean_object* v___x_65_; lean_object* v___x_66_; lean_object* v___x_67_; lean_object* v___x_68_; lean_object* v___x_69_; 
+v___x_65_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_bonnetDepresBranch(v_k_63_);
+v___x_66_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_bonnetDepresDepth(v_k_63_);
+v___x_67_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_FullTreeNode_root(v___x_65_, v___x_66_);
+lean_dec(v___x_66_);
+lean_dec(v___x_65_);
+v___x_68_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_labelOfNeighborhood(v_k_63_, v_f_64_);
+v___x_69_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_FullTreeNode_child___redArg(v___x_67_, v___x_68_);
+return v___x_69_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_rootChildWithNeighborhood___boxed(lean_object* v_k_70_, lean_object* v_f_71_){
+_start:
+{
+lean_object* v_res_72_; 
+v_res_72_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_rootChildWithNeighborhood(v_k_70_, v_f_71_);
+lean_dec(v_k_70_);
+return v_res_72_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs___private_TwinWidthTreewidthExponentialRedemption_Statements_Source_TwinWidth_Graph_BonnetDepresLowerBasic_0__TwinWidth_SimpleGraph_bonnetDepresGraph_match__1_splitter___redArg(lean_object* v_a_73_, lean_object* v_b_74_, lean_object* v_h__1_75_, lean_object* v_h__2_76_, lean_object* v_h__3_77_, lean_object* v_h__4_78_){
+_start:
+{
+if (lean_obj_tag(v_a_73_) == 0)
+{
+lean_dec(v_h__4_78_);
+lean_dec(v_h__3_77_);
+if (lean_obj_tag(v_b_74_) == 0)
+{
+lean_object* v_val_79_; lean_object* v_val_80_; lean_object* v___x_81_; 
+lean_dec(v_h__2_76_);
+v_val_79_ = lean_ctor_get(v_a_73_, 0);
+lean_inc(v_val_79_);
+lean_dec_ref(v_a_73_);
+v_val_80_ = lean_ctor_get(v_b_74_, 0);
+lean_inc(v_val_80_);
+lean_dec_ref(v_b_74_);
+v___x_81_ = lean_apply_2(v_h__1_75_, v_val_79_, v_val_80_);
+return v___x_81_;
+}
+else
+{
+lean_object* v_val_82_; lean_object* v_val_83_; lean_object* v___x_84_; 
+lean_dec(v_h__1_75_);
+v_val_82_ = lean_ctor_get(v_a_73_, 0);
+lean_inc(v_val_82_);
+lean_dec_ref(v_a_73_);
+v_val_83_ = lean_ctor_get(v_b_74_, 0);
+lean_inc(v_val_83_);
+lean_dec_ref(v_b_74_);
+v___x_84_ = lean_apply_2(v_h__2_76_, v_val_82_, v_val_83_);
+return v___x_84_;
+}
+}
+else
+{
+lean_dec(v_h__2_76_);
+lean_dec(v_h__1_75_);
+if (lean_obj_tag(v_b_74_) == 0)
+{
+lean_object* v_val_85_; lean_object* v_val_86_; lean_object* v___x_87_; 
+lean_dec(v_h__4_78_);
+v_val_85_ = lean_ctor_get(v_a_73_, 0);
+lean_inc(v_val_85_);
+lean_dec_ref(v_a_73_);
+v_val_86_ = lean_ctor_get(v_b_74_, 0);
+lean_inc(v_val_86_);
+lean_dec_ref(v_b_74_);
+v___x_87_ = lean_apply_2(v_h__3_77_, v_val_85_, v_val_86_);
+return v___x_87_;
+}
+else
+{
+lean_object* v_val_88_; lean_object* v_val_89_; lean_object* v___x_90_; 
+lean_dec(v_h__3_77_);
+v_val_88_ = lean_ctor_get(v_a_73_, 0);
+lean_inc(v_val_88_);
+lean_dec_ref(v_a_73_);
+v_val_89_ = lean_ctor_get(v_b_74_, 0);
+lean_inc(v_val_89_);
+lean_dec_ref(v_b_74_);
+v___x_90_ = lean_apply_2(v_h__4_78_, v_val_88_, v_val_89_);
+return v___x_90_;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs___private_TwinWidthTreewidthExponentialRedemption_Statements_Source_TwinWidth_Graph_BonnetDepresLowerBasic_0__TwinWidth_SimpleGraph_bonnetDepresGraph_match__1_splitter(lean_object* v_k_91_, lean_object* v_motive_92_, lean_object* v_a_93_, lean_object* v_b_94_, lean_object* v_h__1_95_, lean_object* v_h__2_96_, lean_object* v_h__3_97_, lean_object* v_h__4_98_){
+_start:
+{
+if (lean_obj_tag(v_a_93_) == 0)
+{
+lean_dec(v_h__4_98_);
+lean_dec(v_h__3_97_);
+if (lean_obj_tag(v_b_94_) == 0)
+{
+lean_object* v_val_99_; lean_object* v_val_100_; lean_object* v___x_101_; 
+lean_dec(v_h__2_96_);
+v_val_99_ = lean_ctor_get(v_a_93_, 0);
+lean_inc(v_val_99_);
+lean_dec_ref(v_a_93_);
+v_val_100_ = lean_ctor_get(v_b_94_, 0);
+lean_inc(v_val_100_);
+lean_dec_ref(v_b_94_);
+v___x_101_ = lean_apply_2(v_h__1_95_, v_val_99_, v_val_100_);
+return v___x_101_;
+}
+else
+{
+lean_object* v_val_102_; lean_object* v_val_103_; lean_object* v___x_104_; 
+lean_dec(v_h__1_95_);
+v_val_102_ = lean_ctor_get(v_a_93_, 0);
+lean_inc(v_val_102_);
+lean_dec_ref(v_a_93_);
+v_val_103_ = lean_ctor_get(v_b_94_, 0);
+lean_inc(v_val_103_);
+lean_dec_ref(v_b_94_);
+v___x_104_ = lean_apply_2(v_h__2_96_, v_val_102_, v_val_103_);
+return v___x_104_;
+}
+}
+else
+{
+lean_dec(v_h__2_96_);
+lean_dec(v_h__1_95_);
+if (lean_obj_tag(v_b_94_) == 0)
+{
+lean_object* v_val_105_; lean_object* v_val_106_; lean_object* v___x_107_; 
+lean_dec(v_h__4_98_);
+v_val_105_ = lean_ctor_get(v_a_93_, 0);
+lean_inc(v_val_105_);
+lean_dec_ref(v_a_93_);
+v_val_106_ = lean_ctor_get(v_b_94_, 0);
+lean_inc(v_val_106_);
+lean_dec_ref(v_b_94_);
+v___x_107_ = lean_apply_2(v_h__3_97_, v_val_105_, v_val_106_);
+return v___x_107_;
+}
+else
+{
+lean_object* v_val_108_; lean_object* v_val_109_; lean_object* v___x_110_; 
+lean_dec(v_h__3_97_);
+v_val_108_ = lean_ctor_get(v_a_93_, 0);
+lean_inc(v_val_108_);
+lean_dec_ref(v_a_93_);
+v_val_109_ = lean_ctor_get(v_b_94_, 0);
+lean_inc(v_val_109_);
+lean_dec_ref(v_b_94_);
+v___x_110_ = lean_apply_2(v_h__4_98_, v_val_108_, v_val_109_);
+return v___x_110_;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs___private_TwinWidthTreewidthExponentialRedemption_Statements_Source_TwinWidth_Graph_BonnetDepresLowerBasic_0__TwinWidth_SimpleGraph_bonnetDepresGraph_match__1_splitter___boxed(lean_object* v_k_111_, lean_object* v_motive_112_, lean_object* v_a_113_, lean_object* v_b_114_, lean_object* v_h__1_115_, lean_object* v_h__2_116_, lean_object* v_h__3_117_, lean_object* v_h__4_118_){
+_start:
+{
+lean_object* v_res_119_; 
+v_res_119_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs___private_TwinWidthTreewidthExponentialRedemption_Statements_Source_TwinWidth_Graph_BonnetDepresLowerBasic_0__TwinWidth_SimpleGraph_bonnetDepresGraph_match__1_splitter(v_k_111_, v_motive_112_, v_a_113_, v_b_114_, v_h__1_115_, v_h__2_116_, v_h__3_117_, v_h__4_118_);
+lean_dec(v_k_111_);
+return v_res_119_;
+}
+}
+LEAN_EXPORT uint8_t lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__0(lean_object* v_a_120_, lean_object* v___y_121_, lean_object* v___y_122_){
+_start:
+{
+uint8_t v___x_123_; 
+v___x_123_ = lean_nat_dec_eq(v___y_121_, v___y_122_);
+return v___x_123_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__0___boxed(lean_object* v_a_124_, lean_object* v___y_125_, lean_object* v___y_126_){
+_start:
+{
+uint8_t v_res_127_; lean_object* v_r_128_; 
+v_res_127_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__0(v_a_124_, v___y_125_, v___y_126_);
+lean_dec(v___y_126_);
+lean_dec(v___y_125_);
+lean_dec(v_a_124_);
+v_r_128_ = lean_box(v_res_127_);
+return v_r_128_;
+}
+}
+LEAN_EXPORT uint8_t lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__1(lean_object* v___f_129_, lean_object* v_a_130_, lean_object* v_a_131_, lean_object* v_b_132_){
+_start:
+{
+lean_object* v___x_133_; uint8_t v___x_134_; 
+v___x_133_ = l_List_finRange(v_a_130_);
+v___x_134_ = lp_mathlib_Fintype_decidablePiFintype___redArg(v___f_129_, v___x_133_, v_a_131_, v_b_132_);
+return v___x_134_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__1___boxed(lean_object* v___f_135_, lean_object* v_a_136_, lean_object* v_a_137_, lean_object* v_b_138_){
+_start:
+{
+uint8_t v_res_139_; lean_object* v_r_140_; 
+v_res_139_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__1(v___f_135_, v_a_136_, v_a_137_, v_b_138_);
+v_r_140_ = lean_box(v_res_139_);
+return v_r_140_;
+}
+}
+LEAN_EXPORT uint8_t lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__2(lean_object* v_k_141_, lean_object* v___f_142_, lean_object* v_a_143_, lean_object* v_b_144_){
+_start:
+{
+lean_object* v___x_145_; lean_object* v___x_146_; lean_object* v___x_147_; lean_object* v___x_148_; uint8_t v___x_149_; 
+v___x_145_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_bonnetDepresDepth(v_k_141_);
+v___x_146_ = lean_unsigned_to_nat(1u);
+v___x_147_ = lean_nat_add(v___x_145_, v___x_146_);
+lean_dec(v___x_145_);
+v___x_148_ = lean_alloc_closure((void*)(l_instDecidableEqFin___boxed), 3, 1);
+lean_closure_set(v___x_148_, 0, v___x_147_);
+v___x_149_ = lp_mathlib_Sigma_instDecidableEqSigma___redArg(v___x_148_, v___f_142_, v_a_143_, v_b_144_);
+return v___x_149_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__2___boxed(lean_object* v_k_150_, lean_object* v___f_151_, lean_object* v_a_152_, lean_object* v_b_153_){
+_start:
+{
+uint8_t v_res_154_; lean_object* v_r_155_; 
+v_res_154_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__2(v_k_150_, v___f_151_, v_a_152_, v_b_153_);
+lean_dec(v_k_150_);
+v_r_155_ = lean_box(v_res_154_);
+return v_r_155_;
+}
+}
+LEAN_EXPORT uint8_t lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__3(lean_object* v_k_156_, lean_object* v___f_157_, lean_object* v_a_158_, lean_object* v_b_159_){
+_start:
+{
+lean_object* v___x_160_; lean_object* v___x_161_; uint8_t v___x_162_; 
+v___x_160_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_bonnetDepresApexCount(v_k_156_);
+v___x_161_ = lean_alloc_closure((void*)(l_instDecidableEqFin___boxed), 3, 1);
+lean_closure_set(v___x_161_, 0, v___x_160_);
+v___x_162_ = l_instDecidableEqSum_decEq___redArg(v___x_161_, v___f_157_, v_a_158_, v_b_159_);
+return v___x_162_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__3___boxed(lean_object* v_k_163_, lean_object* v___f_164_, lean_object* v_a_165_, lean_object* v_b_166_){
+_start:
+{
+uint8_t v_res_167_; lean_object* v_r_168_; 
+v_res_167_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__3(v_k_163_, v___f_164_, v_a_165_, v_b_166_);
+lean_dec(v_k_163_);
+v_r_168_ = lean_box(v_res_167_);
+return v_r_168_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__4(lean_object* v_k_169_, lean_object* v_f_170_){
+_start:
+{
+lean_object* v___x_171_; lean_object* v___x_172_; 
+v___x_171_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_rootChildWithNeighborhood(v_k_169_, v_f_170_);
+v___x_172_ = lean_alloc_ctor(1, 1, 0);
+lean_ctor_set(v___x_172_, 0, v___x_171_);
+return v___x_172_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__4___boxed(lean_object* v_k_173_, lean_object* v_f_174_){
+_start:
+{
+lean_object* v_res_175_; 
+v_res_175_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__4(v_k_173_, v_f_174_);
+lean_dec(v_k_173_);
+return v_res_175_;
+}
+}
+LEAN_EXPORT uint8_t lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__5(lean_object* v_x_176_, lean_object* v_y_177_, lean_object* v_a_178_){
+_start:
+{
+lean_object* v___x_179_; uint8_t v___x_180_; 
+lean_inc_ref(v_a_178_);
+v___x_179_ = lean_apply_1(v_a_178_, v_x_176_);
+v___x_180_ = lean_unbox(v___x_179_);
+if (v___x_180_ == 0)
+{
+uint8_t v___x_181_; 
+lean_dec_ref(v_a_178_);
+lean_dec(v_y_177_);
+v___x_181_ = lean_unbox(v___x_179_);
+return v___x_181_;
+}
+else
+{
+lean_object* v___x_182_; uint8_t v___x_183_; 
+v___x_182_ = lean_apply_1(v_a_178_, v_y_177_);
+v___x_183_ = lean_unbox(v___x_182_);
+if (v___x_183_ == 0)
+{
+uint8_t v___x_184_; 
+v___x_184_ = lean_unbox(v___x_179_);
+return v___x_184_;
+}
+else
+{
+uint8_t v___x_185_; 
+v___x_185_ = 0;
+return v___x_185_;
+}
+}
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__5___boxed(lean_object* v_x_186_, lean_object* v_y_187_, lean_object* v_a_188_){
+_start:
+{
+uint8_t v_res_189_; lean_object* v_r_190_; 
+v_res_189_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__5(v_x_186_, v_y_187_, v_a_188_);
+v_r_190_ = lean_box(v_res_189_);
+return v_r_190_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__6(lean_object* v_x_199_){
+_start:
+{
+lean_object* v___x_200_; 
+v___x_200_ = ((lean_object*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__6___closed__1));
+return v___x_200_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__6___boxed(lean_object* v_x_201_){
+_start:
+{
+lean_object* v_res_202_; 
+v_res_202_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__6(v_x_201_);
+lean_dec(v_x_201_);
+return v_res_202_;
+}
+}
+LEAN_EXPORT uint8_t lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__7(lean_object* v_val_203_, lean_object* v_property_204_, lean_object* v___y_205_){
+_start:
+{
+lean_object* v___x_206_; uint8_t v___x_207_; 
+v___x_206_ = lean_apply_1(v_val_203_, v___y_205_);
+v___x_207_ = lean_unbox(v___x_206_);
+return v___x_207_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__7___boxed(lean_object* v_val_208_, lean_object* v_property_209_, lean_object* v___y_210_){
+_start:
+{
+uint8_t v_res_211_; lean_object* v_r_212_; 
+v_res_211_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__7(v_val_208_, v_property_209_, v___y_210_);
+v_r_212_ = lean_box(v_res_211_);
+return v_r_212_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0___redArg___lam__0(lean_object* v_f_213_, lean_object* v_a_214_){
+_start:
+{
+lean_object* v___x_215_; 
+v___x_215_ = lean_apply_2(v_f_213_, v_a_214_, lean_box(0));
+return v___x_215_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_Pi_cons___at___00Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1_spec__2___redArg(lean_object* v_a_216_, lean_object* v_b_217_, lean_object* v_f_218_, lean_object* v_a_x27_219_){
+_start:
+{
+uint8_t v___x_220_; 
+v___x_220_ = lean_nat_dec_eq(v_a_x27_219_, v_a_216_);
+if (v___x_220_ == 0)
+{
+lean_object* v___x_221_; 
+v___x_221_ = lean_apply_2(v_f_218_, v_a_x27_219_, lean_box(0));
+return v___x_221_;
+}
+else
+{
+lean_dec(v_a_x27_219_);
+lean_dec(v_f_218_);
+lean_inc(v_b_217_);
+return v_b_217_;
+}
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_Pi_cons___at___00Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1_spec__2___redArg___boxed(lean_object* v_a_222_, lean_object* v_b_223_, lean_object* v_f_224_, lean_object* v_a_x27_225_){
+_start:
+{
+lean_object* v_res_226_; 
+v_res_226_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_Pi_cons___at___00Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1_spec__2___redArg(v_a_222_, v_b_223_, v_f_224_, v_a_x27_225_);
+lean_dec(v_b_223_);
+lean_dec(v_a_222_);
+return v_res_226_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg___lam__0(lean_object* v_a_227_, lean_object* v_b_228_, lean_object* v___y_229_, lean_object* v___y_230_, lean_object* v___y_231_){
+_start:
+{
+lean_object* v___x_232_; 
+v___x_232_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_Pi_cons___at___00Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1_spec__2___redArg(v_a_227_, v_b_228_, v___y_229_, v___y_230_);
+return v___x_232_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg___lam__0___boxed(lean_object* v_a_233_, lean_object* v_b_234_, lean_object* v___y_235_, lean_object* v___y_236_, lean_object* v___y_237_){
+_start:
+{
+lean_object* v_res_238_; 
+v_res_238_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg___lam__0(v_a_233_, v_b_234_, v___y_235_, v___y_236_, v___y_237_);
+lean_dec(v_b_234_);
+lean_dec(v_a_233_);
+return v_res_238_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg___lam__1(lean_object* v_a_239_, lean_object* v_p_240_, lean_object* v_b_241_){
+_start:
+{
+lean_object* v___f_242_; lean_object* v___x_243_; 
+v___f_242_ = lean_alloc_closure((void*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg___lam__0___boxed), 5, 2);
+lean_closure_set(v___f_242_, 0, v_a_239_);
+lean_closure_set(v___f_242_, 1, v_b_241_);
+v___x_243_ = lp_mathlib_Multiset_map___redArg(v___f_242_, v_p_240_);
+return v___x_243_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg___lam__2(lean_object* v_t_244_, lean_object* v_a_245_, lean_object* v_m_246_, lean_object* v_p_247_){
+_start:
+{
+lean_object* v___f_248_; lean_object* v___x_249_; lean_object* v___x_250_; 
+lean_inc(v_a_245_);
+v___f_248_ = lean_alloc_closure((void*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg___lam__1), 3, 2);
+lean_closure_set(v___f_248_, 0, v_a_245_);
+lean_closure_set(v___f_248_, 1, v_p_247_);
+v___x_249_ = lean_apply_1(v_t_244_, v_a_245_);
+v___x_250_ = lp_mathlib_Multiset_bind___redArg(v___x_249_, v___f_248_);
+return v___x_250_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg___lam__2___boxed(lean_object* v_t_251_, lean_object* v_a_252_, lean_object* v_m_253_, lean_object* v_p_254_){
+_start:
+{
+lean_object* v_res_255_; 
+v_res_255_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg___lam__2(v_t_251_, v_a_252_, v_m_253_, v_p_254_);
+lean_dec(v_m_253_);
+return v_res_255_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg___lam__3(lean_object* v___y_256_, lean_object* v___y_257_){
+_start:
+{
+lean_internal_panic_unreachable();
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg___lam__3___boxed(lean_object* v___y_258_, lean_object* v___y_259_){
+_start:
+{
+lean_object* v_res_260_; 
+v_res_260_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg___lam__3(v___y_258_, v___y_259_);
+lean_dec(v___y_258_);
+return v_res_260_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg(lean_object* v___x_265_, lean_object* v_m_266_, lean_object* v_t_267_){
+_start:
+{
+lean_object* v___f_268_; lean_object* v___x_269_; lean_object* v___x_270_; 
+v___f_268_ = lean_alloc_closure((void*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg___lam__2___boxed), 4, 1);
+lean_closure_set(v___f_268_, 0, v_t_267_);
+v___x_269_ = ((lean_object*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg___closed__1));
+v___x_270_ = lp_mathlib_Multiset_rec___redArg(v___x_269_, v___f_268_, v_m_266_);
+return v___x_270_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg___boxed(lean_object* v___x_271_, lean_object* v_m_272_, lean_object* v_t_273_){
+_start:
+{
+lean_object* v_res_274_; 
+v_res_274_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg(v___x_271_, v_m_272_, v_t_273_);
+lean_dec(v___x_271_);
+return v_res_274_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0___redArg___lam__0(lean_object* v_t_275_, lean_object* v_a_276_){
+_start:
+{
+lean_object* v___x_277_; 
+v___x_277_ = lean_apply_1(v_t_275_, v_a_276_);
+return v___x_277_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0___redArg(lean_object* v___x_278_, lean_object* v_s_279_, lean_object* v_t_280_){
+_start:
+{
+lean_object* v___f_281_; lean_object* v___x_282_; 
+v___f_281_ = lean_alloc_closure((void*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0___redArg___lam__0), 2, 1);
+lean_closure_set(v___f_281_, 0, v_t_280_);
+v___x_282_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg(v___x_278_, v_s_279_, v___f_281_);
+return v___x_282_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0___redArg___boxed(lean_object* v___x_283_, lean_object* v_s_284_, lean_object* v_t_285_){
+_start:
+{
+lean_object* v_res_286_; 
+v_res_286_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0___redArg(v___x_283_, v_s_284_, v_t_285_);
+lean_dec(v___x_283_);
+return v_res_286_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0___redArg(lean_object* v___x_288_, lean_object* v_t_289_){
+_start:
+{
+lean_object* v___f_290_; lean_object* v___x_291_; lean_object* v___x_292_; lean_object* v___x_293_; 
+v___f_290_ = ((lean_object*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0___redArg___closed__0));
+lean_inc(v___x_288_);
+v___x_291_ = l_List_finRange(v___x_288_);
+v___x_292_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0___redArg(v___x_288_, v___x_291_, v_t_289_);
+lean_dec(v___x_288_);
+v___x_293_ = lp_mathlib_Finset_map___redArg(v___f_290_, v___x_292_);
+return v___x_293_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren(lean_object* v_k_299_, lean_object* v_x_300_, lean_object* v_y_301_){
+_start:
+{
+lean_object* v___f_302_; lean_object* v___f_303_; lean_object* v___f_304_; lean_object* v___f_305_; lean_object* v___f_306_; lean_object* v___f_307_; lean_object* v___f_308_; lean_object* v___x_309_; lean_object* v___x_310_; lean_object* v___x_311_; lean_object* v___x_312_; lean_object* v___x_313_; 
+v___f_302_ = ((lean_object*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___closed__1));
+lean_inc_n(v_k_299_, 3);
+v___f_303_ = lean_alloc_closure((void*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__2___boxed), 4, 2);
+lean_closure_set(v___f_303_, 0, v_k_299_);
+lean_closure_set(v___f_303_, 1, v___f_302_);
+v___f_304_ = lean_alloc_closure((void*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__3___boxed), 4, 2);
+lean_closure_set(v___f_304_, 0, v_k_299_);
+lean_closure_set(v___f_304_, 1, v___f_303_);
+v___f_305_ = lean_alloc_closure((void*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__4___boxed), 2, 1);
+lean_closure_set(v___f_305_, 0, v_k_299_);
+v___f_306_ = lean_alloc_closure((void*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__5___boxed), 3, 2);
+lean_closure_set(v___f_306_, 0, v_x_300_);
+lean_closure_set(v___f_306_, 1, v_y_301_);
+v___f_307_ = ((lean_object*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___closed__2));
+v___f_308_ = ((lean_object*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___closed__3));
+v___x_309_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_bonnetDepresApexCount(v_k_299_);
+lean_dec(v_k_299_);
+v___x_310_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0___redArg(v___x_309_, v___f_307_);
+v___x_311_ = lp_mathlib_Multiset_filter___redArg(v___f_306_, v___x_310_);
+v___x_312_ = lp_mathlib_Multiset_pmap___redArg(v___f_308_, v___x_311_);
+v___x_313_ = lp_mathlib_Finset_image___redArg(v___f_304_, v___f_305_, v___x_312_);
+return v___x_313_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0(lean_object* v___x_314_, lean_object* v_00_u03b4_315_, lean_object* v_t_316_){
+_start:
+{
+lean_object* v___x_317_; 
+v___x_317_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0___redArg(v___x_314_, v_t_316_);
+return v___x_317_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0(lean_object* v___x_318_, lean_object* v_00_u03b2_319_, lean_object* v_s_320_, lean_object* v_t_321_){
+_start:
+{
+lean_object* v___x_322_; 
+v___x_322_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0___redArg(v___x_318_, v_s_320_, v_t_321_);
+return v___x_322_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0___boxed(lean_object* v___x_323_, lean_object* v_00_u03b2_324_, lean_object* v_s_325_, lean_object* v_t_326_){
+_start:
+{
+lean_object* v_res_327_; 
+v_res_327_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0(v___x_323_, v_00_u03b2_324_, v_s_325_, v_t_326_);
+lean_dec(v___x_323_);
+return v_res_327_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_Pi_cons___at___00Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1_spec__2(lean_object* v___x_328_, lean_object* v_00_u03b4_329_, lean_object* v_m_330_, lean_object* v_a_331_, lean_object* v_b_332_, lean_object* v_f_333_, lean_object* v_a_x27_334_, lean_object* v_ha_x27_335_){
+_start:
+{
+lean_object* v___x_336_; 
+v___x_336_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_Pi_cons___at___00Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1_spec__2___redArg(v_a_331_, v_b_332_, v_f_333_, v_a_x27_334_);
+return v___x_336_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_Pi_cons___at___00Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1_spec__2___boxed(lean_object* v___x_337_, lean_object* v_00_u03b4_338_, lean_object* v_m_339_, lean_object* v_a_340_, lean_object* v_b_341_, lean_object* v_f_342_, lean_object* v_a_x27_343_, lean_object* v_ha_x27_344_){
+_start:
+{
+lean_object* v_res_345_; 
+v_res_345_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_Pi_cons___at___00Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1_spec__2(v___x_337_, v_00_u03b4_338_, v_m_339_, v_a_340_, v_b_341_, v_f_342_, v_a_x27_343_, v_ha_x27_344_);
+lean_dec(v_b_341_);
+lean_dec(v_a_340_);
+lean_dec(v_m_339_);
+lean_dec(v___x_337_);
+return v_res_345_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1(lean_object* v___x_346_, lean_object* v_00_u03b2_347_, lean_object* v_m_348_, lean_object* v_t_349_){
+_start:
+{
+lean_object* v___x_350_; 
+v___x_350_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___redArg(v___x_346_, v_m_348_, v_t_349_);
+return v___x_350_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1___boxed(lean_object* v___x_351_, lean_object* v_00_u03b2_352_, lean_object* v_m_353_, lean_object* v_t_354_){
+_start:
+{
+lean_object* v_res_355_; 
+v_res_355_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Multiset_pi___at___00Finset_pi___at___00Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0_spec__0_spec__1(v___x_351_, v_00_u03b2_352_, v_m_353_, v_t_354_);
+lean_dec(v___x_351_);
+return v_res_355_;
+}
+}
+LEAN_EXPORT uint8_t lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildBags___lam__4(lean_object* v___f_356_, lean_object* v_a_357_, lean_object* v_b_358_){
+_start:
+{
+uint8_t v___x_359_; 
+v___x_359_ = l_List_decidablePerm___redArg(v___f_356_, v_a_357_, v_b_358_);
+return v___x_359_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildBags___lam__4___boxed(lean_object* v___f_360_, lean_object* v_a_361_, lean_object* v_b_362_){
+_start:
+{
+uint8_t v_res_363_; lean_object* v_r_364_; 
+v_res_363_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildBags___lam__4(v___f_360_, v_a_361_, v_b_362_);
+v_r_364_ = lean_box(v_res_363_);
+return v_r_364_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildBags___lam__0(lean_object* v_k_365_, lean_object* v_f_366_){
+_start:
+{
+lean_object* v___x_367_; lean_object* v___x_368_; lean_object* v___x_369_; lean_object* v___x_370_; 
+v___x_367_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_rootChildWithNeighborhood(v_k_365_, v_f_366_);
+v___x_368_ = lean_alloc_ctor(1, 1, 0);
+lean_ctor_set(v___x_368_, 0, v___x_367_);
+v___x_369_ = lean_box(0);
+v___x_370_ = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(v___x_370_, 0, v___x_368_);
+lean_ctor_set(v___x_370_, 1, v___x_369_);
+return v___x_370_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildBags___lam__0___boxed(lean_object* v_k_371_, lean_object* v_f_372_){
+_start:
+{
+lean_object* v_res_373_; 
+v_res_373_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildBags___lam__0(v_k_371_, v_f_372_);
+lean_dec(v_k_371_);
+return v_res_373_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildBags(lean_object* v_k_374_, lean_object* v_x_375_, lean_object* v_y_376_){
+_start:
+{
+lean_object* v___f_377_; lean_object* v___f_378_; lean_object* v___f_379_; lean_object* v___f_380_; lean_object* v___f_381_; lean_object* v___f_382_; lean_object* v___f_383_; lean_object* v___f_384_; lean_object* v___x_385_; lean_object* v___x_386_; lean_object* v___x_387_; lean_object* v___x_388_; lean_object* v___x_389_; 
+v___f_377_ = ((lean_object*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___closed__1));
+lean_inc_n(v_k_374_, 3);
+v___f_378_ = lean_alloc_closure((void*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__2___boxed), 4, 2);
+lean_closure_set(v___f_378_, 0, v_k_374_);
+lean_closure_set(v___f_378_, 1, v___f_377_);
+v___f_379_ = lean_alloc_closure((void*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__3___boxed), 4, 2);
+lean_closure_set(v___f_379_, 0, v_k_374_);
+lean_closure_set(v___f_379_, 1, v___f_378_);
+v___f_380_ = lean_alloc_closure((void*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildBags___lam__4___boxed), 3, 1);
+lean_closure_set(v___f_380_, 0, v___f_379_);
+v___f_381_ = lean_alloc_closure((void*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildBags___lam__0___boxed), 2, 1);
+lean_closure_set(v___f_381_, 0, v_k_374_);
+v___f_382_ = lean_alloc_closure((void*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__5___boxed), 3, 2);
+lean_closure_set(v___f_382_, 0, v_x_375_);
+lean_closure_set(v___f_382_, 1, v_y_376_);
+v___f_383_ = ((lean_object*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___closed__2));
+v___f_384_ = ((lean_object*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___closed__3));
+v___x_385_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_bonnetDepresApexCount(v_k_374_);
+lean_dec(v_k_374_);
+v___x_386_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0___redArg(v___x_385_, v___f_383_);
+v___x_387_ = lp_mathlib_Multiset_filter___redArg(v___f_382_, v___x_386_);
+v___x_388_ = lp_mathlib_Multiset_pmap___redArg(v___f_384_, v___x_387_);
+v___x_389_ = lp_mathlib_Finset_image___redArg(v___f_380_, v___f_381_, v___x_388_);
+return v___x_389_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_rootChildBag(lean_object* v_k_390_, lean_object* v_f_391_){
+_start:
+{
+lean_object* v___x_392_; lean_object* v___x_393_; lean_object* v___x_394_; lean_object* v___x_395_; 
+v___x_392_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_rootChildWithNeighborhood(v_k_390_, v_f_391_);
+v___x_393_ = lean_alloc_ctor(1, 1, 0);
+lean_ctor_set(v___x_393_, 0, v___x_392_);
+v___x_394_ = lean_box(0);
+v___x_395_ = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(v___x_395_, 0, v___x_393_);
+lean_ctor_set(v___x_395_, 1, v___x_394_);
+return v___x_395_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_rootChildBag___boxed(lean_object* v_k_396_, lean_object* v_f_397_){
+_start:
+{
+lean_object* v_res_398_; 
+v_res_398_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_rootChildBag(v_k_396_, v_f_397_);
+lean_dec(v_k_396_);
+return v_res_398_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_rootChildBags(lean_object* v_k_399_){
+_start:
+{
+lean_object* v___f_400_; lean_object* v___f_401_; lean_object* v___f_402_; lean_object* v___f_403_; lean_object* v___f_404_; lean_object* v___x_405_; lean_object* v___x_406_; lean_object* v___x_407_; lean_object* v___x_408_; 
+v___f_400_ = ((lean_object*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___closed__1));
+lean_inc_n(v_k_399_, 3);
+v___f_401_ = lean_alloc_closure((void*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__2___boxed), 4, 2);
+lean_closure_set(v___f_401_, 0, v_k_399_);
+lean_closure_set(v___f_401_, 1, v___f_400_);
+v___f_402_ = lean_alloc_closure((void*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__3___boxed), 4, 2);
+lean_closure_set(v___f_402_, 0, v_k_399_);
+lean_closure_set(v___f_402_, 1, v___f_401_);
+v___f_403_ = lean_alloc_closure((void*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildBags___lam__4___boxed), 3, 1);
+lean_closure_set(v___f_403_, 0, v___f_402_);
+v___f_404_ = ((lean_object*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___closed__2));
+v___x_405_ = lean_alloc_closure((void*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_rootChildBag___boxed), 2, 1);
+lean_closure_set(v___x_405_, 0, v_k_399_);
+v___x_406_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_bonnetDepresApexCount(v_k_399_);
+lean_dec(v_k_399_);
+v___x_407_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0___redArg(v___x_406_, v___f_404_);
+v___x_408_ = lp_mathlib_Finset_image___redArg(v___f_403_, v___x_405_, v___x_407_);
+return v___x_408_;
+}
+}
+LEAN_EXPORT uint8_t lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_apexBitRootChildBags___lam__6(lean_object* v_x_409_, uint8_t v_b_410_, lean_object* v_a_411_){
+_start:
+{
+lean_object* v___x_412_; uint8_t v___x_413_; 
+v___x_412_ = lean_apply_1(v_a_411_, v_x_409_);
+v___x_413_ = lean_unbox(v___x_412_);
+if (v___x_413_ == 0)
+{
+if (v_b_410_ == 0)
+{
+uint8_t v___x_414_; 
+v___x_414_ = 1;
+return v___x_414_;
+}
+else
+{
+uint8_t v___x_415_; 
+v___x_415_ = lean_unbox(v___x_412_);
+return v___x_415_;
+}
+}
+else
+{
+return v_b_410_;
+}
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_apexBitRootChildBags___lam__6___boxed(lean_object* v_x_416_, lean_object* v_b_417_, lean_object* v_a_418_){
+_start:
+{
+uint8_t v_b_boxed_419_; uint8_t v_res_420_; lean_object* v_r_421_; 
+v_b_boxed_419_ = lean_unbox(v_b_417_);
+v_res_420_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_apexBitRootChildBags___lam__6(v_x_416_, v_b_boxed_419_, v_a_418_);
+v_r_421_ = lean_box(v_res_420_);
+return v_r_421_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_apexBitRootChildBags(lean_object* v_k_422_, lean_object* v_x_423_, uint8_t v_b_424_){
+_start:
+{
+lean_object* v___f_425_; lean_object* v___f_426_; lean_object* v___f_427_; lean_object* v___f_428_; lean_object* v___f_429_; lean_object* v___x_430_; lean_object* v___f_431_; lean_object* v___f_432_; lean_object* v___f_433_; lean_object* v___x_434_; lean_object* v___x_435_; lean_object* v___x_436_; lean_object* v___x_437_; lean_object* v___x_438_; 
+v___f_425_ = ((lean_object*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___closed__1));
+lean_inc_n(v_k_422_, 3);
+v___f_426_ = lean_alloc_closure((void*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__2___boxed), 4, 2);
+lean_closure_set(v___f_426_, 0, v_k_422_);
+lean_closure_set(v___f_426_, 1, v___f_425_);
+v___f_427_ = lean_alloc_closure((void*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__3___boxed), 4, 2);
+lean_closure_set(v___f_427_, 0, v_k_422_);
+lean_closure_set(v___f_427_, 1, v___f_426_);
+v___f_428_ = lean_alloc_closure((void*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildBags___lam__4___boxed), 3, 1);
+lean_closure_set(v___f_428_, 0, v___f_427_);
+v___f_429_ = lean_alloc_closure((void*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildBags___lam__0___boxed), 2, 1);
+lean_closure_set(v___f_429_, 0, v_k_422_);
+v___x_430_ = lean_box(v_b_424_);
+v___f_431_ = lean_alloc_closure((void*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_apexBitRootChildBags___lam__6___boxed), 3, 2);
+lean_closure_set(v___f_431_, 0, v_x_423_);
+lean_closure_set(v___f_431_, 1, v___x_430_);
+v___f_432_ = ((lean_object*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___closed__2));
+v___f_433_ = ((lean_object*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___closed__3));
+v___x_434_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_bonnetDepresApexCount(v_k_422_);
+lean_dec(v_k_422_);
+v___x_435_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_Fintype_piFinset___at___00TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren_spec__0___redArg(v___x_434_, v___f_432_);
+v___x_436_ = lp_mathlib_Multiset_filter___redArg(v___f_431_, v___x_435_);
+v___x_437_ = lp_mathlib_Multiset_pmap___redArg(v___f_433_, v___x_436_);
+v___x_438_ = lp_mathlib_Finset_image___redArg(v___f_428_, v___f_429_, v___x_437_);
+return v___x_438_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_apexBitRootChildBags___boxed(lean_object* v_k_439_, lean_object* v_x_440_, lean_object* v_b_441_){
+_start:
+{
+uint8_t v_b_boxed_442_; lean_object* v_res_443_; 
+v_b_boxed_442_ = lean_unbox(v_b_441_);
+v_res_443_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_apexBitRootChildBags(v_k_439_, v_x_440_, v_b_boxed_442_);
+return v_res_443_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_childWithSingletonApexNeighborhood___redArg(lean_object* v_k_444_, lean_object* v_u_445_, lean_object* v_y_446_){
+_start:
+{
+lean_object* v___x_447_; lean_object* v___x_448_; lean_object* v___x_449_; 
+lean_inc(v_k_444_);
+v___x_447_ = lean_alloc_closure((void*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_singletonApexNeighborhood___boxed), 3, 2);
+lean_closure_set(v___x_447_, 0, v_k_444_);
+lean_closure_set(v___x_447_, 1, v_y_446_);
+v___x_448_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_labelOfNeighborhood(v_k_444_, v___x_447_);
+lean_dec(v_k_444_);
+v___x_449_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_FullTreeNode_child___redArg(v_u_445_, v___x_448_);
+return v___x_449_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_childWithSingletonApexNeighborhood(lean_object* v_k_450_, lean_object* v_u_451_, lean_object* v_hlevel_452_, lean_object* v_y_453_){
+_start:
+{
+lean_object* v___x_454_; 
+v___x_454_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_childWithSingletonApexNeighborhood___redArg(v_k_450_, v_u_451_, v_y_453_);
+return v___x_454_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_childSet___redArg(lean_object* v_k_455_, lean_object* v_u_456_){
+_start:
+{
+lean_object* v___f_457_; lean_object* v___f_458_; lean_object* v___x_459_; lean_object* v___x_460_; lean_object* v___x_461_; lean_object* v___x_462_; lean_object* v___x_463_; 
+v___f_457_ = ((lean_object*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___closed__1));
+lean_inc(v_k_455_);
+v___f_458_ = lean_alloc_closure((void*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__2___boxed), 4, 2);
+lean_closure_set(v___f_458_, 0, v_k_455_);
+lean_closure_set(v___f_458_, 1, v___f_457_);
+v___x_459_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_bonnetDepresBranch(v_k_455_);
+v___x_460_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_bonnetDepresDepth(v_k_455_);
+lean_dec(v_k_455_);
+lean_inc(v___x_459_);
+v___x_461_ = lean_alloc_closure((void*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_FullTreeNode_child___boxed), 5, 4);
+lean_closure_set(v___x_461_, 0, v___x_459_);
+lean_closure_set(v___x_461_, 1, v___x_460_);
+lean_closure_set(v___x_461_, 2, v_u_456_);
+lean_closure_set(v___x_461_, 3, lean_box(0));
+v___x_462_ = l_List_finRange(v___x_459_);
+v___x_463_ = lp_mathlib_Finset_image___redArg(v___f_458_, v___x_461_, v___x_462_);
+return v___x_463_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_childSet(lean_object* v_k_464_, lean_object* v_u_465_, lean_object* v_hlevel_466_){
+_start:
+{
+lean_object* v___x_467_; 
+v___x_467_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_childSet___redArg(v_k_464_, v_u_465_);
+return v___x_467_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_childVertexSet___redArg___lam__4(lean_object* v_val_468_){
+_start:
+{
+lean_object* v___x_469_; 
+v___x_469_ = lean_alloc_ctor(1, 1, 0);
+lean_ctor_set(v___x_469_, 0, v_val_468_);
+return v___x_469_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_childVertexSet___redArg(lean_object* v_k_471_, lean_object* v_u_472_){
+_start:
+{
+lean_object* v___f_473_; lean_object* v___f_474_; lean_object* v___f_475_; lean_object* v___f_476_; lean_object* v___x_477_; lean_object* v___x_478_; 
+v___f_473_ = ((lean_object*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___closed__1));
+lean_inc_n(v_k_471_, 2);
+v___f_474_ = lean_alloc_closure((void*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__2___boxed), 4, 2);
+lean_closure_set(v___f_474_, 0, v_k_471_);
+lean_closure_set(v___f_474_, 1, v___f_473_);
+v___f_475_ = lean_alloc_closure((void*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_separatingRootChildren___lam__3___boxed), 4, 2);
+lean_closure_set(v___f_475_, 0, v_k_471_);
+lean_closure_set(v___f_475_, 1, v___f_474_);
+v___f_476_ = ((lean_object*)(lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_childVertexSet___redArg___closed__0));
+v___x_477_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_childSet___redArg(v_k_471_, v_u_472_);
+v___x_478_ = lp_mathlib_Finset_image___redArg(v___f_475_, v___f_476_, v___x_477_);
+return v___x_478_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_childVertexSet(lean_object* v_k_479_, lean_object* v_u_480_, lean_object* v_hlevel_481_){
+_start:
+{
+lean_object* v___x_482_; 
+v___x_482_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_childVertexSet___redArg(v_k_479_, v_u_480_);
+return v___x_482_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_manyChildrenThreshold(lean_object* v_k_483_){
+_start:
+{
+lean_object* v___x_484_; lean_object* v___x_485_; lean_object* v___x_486_; lean_object* v___x_487_; 
+v___x_484_ = lean_unsigned_to_nat(2u);
+v___x_485_ = lean_unsigned_to_nat(1u);
+v___x_486_ = lean_nat_add(v_k_483_, v___x_485_);
+v___x_487_ = lean_nat_pow(v___x_484_, v___x_486_);
+lean_dec(v___x_486_);
+return v___x_487_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_manyChildrenThreshold___boxed(lean_object* v_k_488_){
+_start:
+{
+lean_object* v_res_489_; 
+v_res_489_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_manyChildrenThreshold(v_k_488_);
+lean_dec(v_k_488_);
+return v_res_489_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_manySideBranchesThreshold(lean_object* v_k_490_){
+_start:
+{
+lean_object* v___x_491_; lean_object* v___x_492_; lean_object* v___x_493_; lean_object* v___x_494_; lean_object* v___x_495_; lean_object* v___x_496_; lean_object* v___x_497_; lean_object* v___x_498_; lean_object* v___x_499_; lean_object* v___x_500_; lean_object* v___x_501_; 
+v___x_491_ = lean_unsigned_to_nat(2u);
+v___x_492_ = lean_unsigned_to_nat(1u);
+v___x_493_ = lean_nat_add(v_k_490_, v___x_492_);
+v___x_494_ = lean_nat_add(v_k_490_, v___x_491_);
+v___x_495_ = lean_nat_pow(v___x_491_, v___x_494_);
+lean_dec(v___x_494_);
+v___x_496_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_manyChildrenThreshold(v_k_490_);
+v___x_497_ = lean_nat_add(v___x_496_, v___x_492_);
+lean_dec(v___x_496_);
+v___x_498_ = lean_nat_mul(v___x_495_, v___x_497_);
+lean_dec(v___x_497_);
+lean_dec(v___x_495_);
+v___x_499_ = lean_nat_add(v___x_491_, v___x_498_);
+lean_dec(v___x_498_);
+v___x_500_ = lean_nat_mul(v___x_493_, v___x_499_);
+lean_dec(v___x_499_);
+lean_dec(v___x_493_);
+v___x_501_ = lean_nat_pow(v___x_491_, v___x_500_);
+lean_dec(v___x_500_);
+return v___x_501_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_manySideBranchesThreshold___boxed(lean_object* v_k_502_){
+_start:
+{
+lean_object* v_res_503_; 
+v_res_503_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_manySideBranchesThreshold(v_k_502_);
+lean_dec(v_k_502_);
+return v_res_503_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_manyInternalBagsThreshold(lean_object* v_k_504_){
+_start:
+{
+lean_object* v___x_505_; lean_object* v___x_506_; lean_object* v___x_507_; lean_object* v___x_508_; lean_object* v___x_509_; lean_object* v___x_510_; lean_object* v___x_511_; lean_object* v___x_512_; 
+v___x_505_ = lean_unsigned_to_nat(1u);
+v___x_506_ = lean_unsigned_to_nat(2u);
+v___x_507_ = lean_nat_add(v_k_504_, v___x_506_);
+v___x_508_ = lean_nat_pow(v___x_506_, v___x_507_);
+lean_dec(v___x_507_);
+v___x_509_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_manyChildrenThreshold(v_k_504_);
+v___x_510_ = lean_nat_add(v___x_509_, v___x_505_);
+lean_dec(v___x_509_);
+v___x_511_ = lean_nat_mul(v___x_508_, v___x_510_);
+lean_dec(v___x_510_);
+lean_dec(v___x_508_);
+v___x_512_ = lean_nat_add(v___x_505_, v___x_511_);
+lean_dec(v___x_511_);
+return v___x_512_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_manyInternalBagsThreshold___boxed(lean_object* v_k_513_){
+_start:
+{
+lean_object* v_res_514_; 
+v_res_514_ = lp_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidth_SimpleGraph_BonnetDepres_manyInternalBagsThreshold(v_k_513_);
+lean_dec(v_k_513_);
+return v_res_514_;
+}
+}
+lean_object* initialize_Init(uint8_t builtin);
+lean_object* initialize_Init(uint8_t builtin);
+lean_object* initialize_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidthTreewidthExponentialRedemption_Statements_Source_TwinWidth_Graph_BonnetDepres(uint8_t builtin);
+lean_object* initialize_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidthTreewidthExponentialRedemption_Statements_Source_TwinWidth_Graph_Partition(uint8_t builtin);
+lean_object* initialize_batteries_Batteries_Data_Fin_OfBits(uint8_t builtin);
+lean_object* initialize_mathlib_Mathlib_Combinatorics_Pigeonhole(uint8_t builtin);
+static bool _G_initialized = false;
+LEAN_EXPORT lean_object* initialize_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidthTreewidthExponentialRedemption_Statements_Source_TwinWidth_Graph_BonnetDepresLowerBasic(uint8_t builtin) {
+lean_object * res;
+if (_G_initialized) return lean_io_result_mk_ok(lean_box(0));
+_G_initialized = true;
+res = initialize_Init(builtin);
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_Init(builtin);
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidthTreewidthExponentialRedemption_Statements_Source_TwinWidth_Graph_BonnetDepres(builtin);
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_TwinWidthTreewidthExponentialRedemption_x2eProofs_TwinWidthTreewidthExponentialRedemption_Statements_Source_TwinWidth_Graph_Partition(builtin);
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_batteries_Batteries_Data_Fin_OfBits(builtin);
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_mathlib_Mathlib_Combinatorics_Pigeonhole(builtin);
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+return lean_io_result_mk_ok(lean_box(0));
+}
+#ifdef __cplusplus
+}
+#endif

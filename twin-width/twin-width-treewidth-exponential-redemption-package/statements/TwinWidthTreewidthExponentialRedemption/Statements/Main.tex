@@ -1,0 +1,16 @@
+\paragraph{Statement.}
+For every \(k\in\mathbb{N}\), there is a finite type \(V\), decidable equality
+on \(V\), and a simple graph \(G\) on \(V\) such that
+\[
+  \texttt{treewidth}(G) \le 2k+4
+  \qquad\text{and}\qquad
+  2^k < \texttt{twinWidth}(G).
+\]
+
+\paragraph{Proof content.}
+The proof uses the explicit Bonnet--Depres graph \(BD_k\) from the submitted
+source files.  It translates the proved Bonnet--Depres tree decomposition into
+the submitted tree-decomposition-width predicate, and translates any submitted
+bounded contraction sequence back into the source contraction-sequence
+structure.  The source proof that \(BD_k\) has no \(2^k\)-bounded contraction
+sequence therefore proves the submitted lower bound on \(\texttt{twinWidth}\).
