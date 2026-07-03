@@ -1,0 +1,14 @@
+\(\mathrm{TreeDecomposition}(G)\) is the type of tree decompositions of
+the graph \(G\).  An element consists of a finite node type, a tree \(T\) on
+that node type, and bags \(X_t\subseteq V(G)\) for its nodes, such that every
+vertex of \(G\) appears in some bag, every edge of \(G\) has both endpoints in
+some bag, and the set of tree nodes whose bags contain any fixed vertex is
+connected in \(T\).  For such a decomposition \(D\),
+\(\mathrm{treeDecompositionWidth}(D)\) is
+\[
+  \max_t |X_t|-1 .
+\]
+The auxiliary definitions \(\mathrm{nodeType}(D)\),
+\(\mathrm{nodeFintype}(D)\), \(\mathrm{nodeDecidableEq}(D)\),
+\(\mathrm{tree}(D)\), and \(\mathrm{bag}(D)\) return the displayed
+components of \(D\).

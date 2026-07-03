@@ -1,0 +1,10 @@
+\(\mathrm{State}(V)\) is the type of trigraph states on the original
+vertex type \(V\).  An element stores a finite family of current bags, a black
+adjacency relation on bags, and a red adjacency relation on bags.  The stored
+invariants say that the bags are nonempty, pairwise disjoint, and cover \(V\);
+both adjacency relations are symmetric on current bags and loopless; and no
+pair of current bags is both black-adjacent and red-adjacent.
+
+The accompanying definitions \(\mathrm{bags}(T)\),
+\(\mathrm{blackAdj}(T)\), and \(\mathrm{redAdj}(T)\) return the
+three data components of a state \(T:\mathrm{State}(V)\).
