@@ -1,6 +1,6 @@
 // Lean compiler output
 // Module: TwinWidthTreewidthExponentialRedemption.Statements.ContractedRed
-// Imports: public import Init public meta import Init public import Mathlib.Data.Finset.Basic
+// Imports: public import Init public meta import Init public import Mathlib.Data.Finset.Basic public import TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState
 #include <lean/lean.h>
 #if defined(__clang__)
 #pragma clang diagnostic ignored "-Wunused-parameter"
@@ -16,6 +16,7 @@ extern "C" {
 lean_object* initialize_Init(uint8_t builtin);
 lean_object* initialize_Init(uint8_t builtin);
 lean_object* initialize_mathlib_Mathlib_Data_Finset_Basic(uint8_t builtin);
+lean_object* initialize_TwinWidthTreewidthExponentialRedemption_x2eStatements_TwinWidthTreewidthExponentialRedemption_Statements_TrigraphState(uint8_t builtin);
 static bool _G_initialized = false;
 LEAN_EXPORT lean_object* initialize_TwinWidthTreewidthExponentialRedemption_x2eStatements_TwinWidthTreewidthExponentialRedemption_Statements_ContractedRed(uint8_t builtin) {
 lean_object * res;
@@ -28,6 +29,9 @@ res = initialize_Init(builtin);
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
 res = initialize_mathlib_Mathlib_Data_Finset_Basic(builtin);
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_TwinWidthTreewidthExponentialRedemption_x2eStatements_TwinWidthTreewidthExponentialRedemption_Statements_TrigraphState(builtin);
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
 return lean_io_result_mk_ok(lean_box(0));

@@ -466,6 +466,106 @@ theorem exists_gridMinor_of_large_strong_pathOfSets_minor_of_localRoutingInput_a
     (ChekuriChuzhoy.corollary32Input_of_localRoutingInput_and_stitchingInput
       hlocal hstitch)
 
+/-- Path-of-sets-to-grid theorem using the cluster-faithful split
+Chekuri--Chuzhoy inputs: local routing in connected clusters plus row
+stitching. -/
+theorem exists_gridMinor_of_strong_pathOfSets_of_localRoutingClusterInput_and_stitchingInput
+    (hlocal : ChekuriChuzhoy.LocalRoutingClusterInput.{u})
+    (hstitch : ChekuriChuzhoy.StitchingInput.{u}) :
+    ∃ c : ℕ, 0 < c ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {g : ℕ},
+          2 ≤ g →
+            StrongPathOfSetsSystem G (g ^ 2) (g ^ 2) →
+              ∃ g' : ℕ, g ≤ c * g' ∧ ContainsGridMinor G g' :=
+  exists_gridMinor_of_strong_pathOfSets_of_corollary32Input
+    (ChekuriChuzhoy.corollary32Input_of_localRoutingClusterInput_and_stitchingInput
+      hlocal hstitch)
+
+/-- Minor-closed path-of-sets-to-grid theorem using the cluster-faithful split
+Chekuri--Chuzhoy inputs. -/
+theorem exists_gridMinor_of_strong_pathOfSets_minor_of_localRoutingClusterInput_and_stitchingInput
+    (hlocal : ChekuriChuzhoy.LocalRoutingClusterInput.{u})
+    (hstitch : ChekuriChuzhoy.StitchingInput.{u}) :
+    ∃ c : ℕ, 0 < c ∧
+      ∀ {W V : Type u} [Fintype W] [DecidableEq W]
+        (H : _root_.SimpleGraph W) (G : _root_.SimpleGraph V) {g : ℕ},
+          2 ≤ g →
+            IsMinor H G →
+              StrongPathOfSetsSystem H (g ^ 2) (g ^ 2) →
+                ∃ g' : ℕ, g ≤ c * g' ∧ ContainsGridMinor G g' :=
+  exists_gridMinor_of_strong_pathOfSets_minor_of_corollary32Input
+    (ChekuriChuzhoy.corollary32Input_of_localRoutingClusterInput_and_stitchingInput
+      hlocal hstitch)
+
+/-- Length-monotone path-of-sets-to-grid theorem using the cluster-faithful
+split Chekuri--Chuzhoy inputs. -/
+theorem exists_gridMinor_of_long_strong_pathOfSets_of_localRoutingClusterInput_and_stitchingInput
+    (hlocal : ChekuriChuzhoy.LocalRoutingClusterInput.{u})
+    (hstitch : ChekuriChuzhoy.StitchingInput.{u}) :
+    ∃ c : ℕ, 0 < c ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {ell g : ℕ},
+          2 ≤ g →
+            g ^ 2 ≤ ell →
+              StrongPathOfSetsSystem G ell (g ^ 2) →
+                ∃ g' : ℕ, g ≤ c * g' ∧ ContainsGridMinor G g' :=
+  exists_gridMinor_of_long_strong_pathOfSets_of_corollary32Input
+    (ChekuriChuzhoy.corollary32Input_of_localRoutingClusterInput_and_stitchingInput
+      hlocal hstitch)
+
+/-- Minor-closed length-monotone path-of-sets-to-grid theorem using the
+cluster-faithful split Chekuri--Chuzhoy inputs. -/
+theorem exists_gridMinor_of_long_strong_pathOfSets_minor_of_localRoutingClusterInput_and_stitchingInput
+    (hlocal : ChekuriChuzhoy.LocalRoutingClusterInput.{u})
+    (hstitch : ChekuriChuzhoy.StitchingInput.{u}) :
+    ∃ c : ℕ, 0 < c ∧
+      ∀ {W V : Type u} [Fintype W] [DecidableEq W]
+        (H : _root_.SimpleGraph W) (G : _root_.SimpleGraph V) {ell g : ℕ},
+          2 ≤ g →
+            g ^ 2 ≤ ell →
+              IsMinor H G →
+                StrongPathOfSetsSystem H ell (g ^ 2) →
+                  ∃ g' : ℕ, g ≤ c * g' ∧ ContainsGridMinor G g' :=
+  exists_gridMinor_of_long_strong_pathOfSets_minor_of_corollary32Input
+    (ChekuriChuzhoy.corollary32Input_of_localRoutingClusterInput_and_stitchingInput
+      hlocal hstitch)
+
+/-- Size-monotone path-of-sets-to-grid theorem using the cluster-faithful split
+Chekuri--Chuzhoy inputs. -/
+theorem exists_gridMinor_of_large_strong_pathOfSets_of_localRoutingClusterInput_and_stitchingInput
+    (hlocal : ChekuriChuzhoy.LocalRoutingClusterInput.{u})
+    (hstitch : ChekuriChuzhoy.StitchingInput.{u}) :
+    ∃ c : ℕ, 0 < c ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {ell w g : ℕ},
+          2 ≤ g →
+            g ^ 2 ≤ ell →
+              g ^ 2 ≤ w →
+                StrongPathOfSetsSystem G ell w →
+                  ∃ g' : ℕ, g ≤ c * g' ∧ ContainsGridMinor G g' :=
+  exists_gridMinor_of_large_strong_pathOfSets_of_corollary32Input
+    (ChekuriChuzhoy.corollary32Input_of_localRoutingClusterInput_and_stitchingInput
+      hlocal hstitch)
+
+/-- Minor-closed size-monotone path-of-sets-to-grid theorem using the
+cluster-faithful split Chekuri--Chuzhoy inputs. -/
+theorem exists_gridMinor_of_large_strong_pathOfSets_minor_of_localRoutingClusterInput_and_stitchingInput
+    (hlocal : ChekuriChuzhoy.LocalRoutingClusterInput.{u})
+    (hstitch : ChekuriChuzhoy.StitchingInput.{u}) :
+    ∃ c : ℕ, 0 < c ∧
+      ∀ {W V : Type u} [Fintype W] [DecidableEq W]
+        (H : _root_.SimpleGraph W) (G : _root_.SimpleGraph V) {ell w g : ℕ},
+          2 ≤ g →
+            g ^ 2 ≤ ell →
+              g ^ 2 ≤ w →
+                IsMinor H G →
+                  StrongPathOfSetsSystem H ell w →
+                    ∃ g' : ℕ, g ≤ c * g' ∧ ContainsGridMinor G g' :=
+  exists_gridMinor_of_large_strong_pathOfSets_minor_of_corollary32Input
+    (ChekuriChuzhoy.corollary32Input_of_localRoutingClusterInput_and_stitchingInput
+      hlocal hstitch)
+
 end PathOfSetsGrid
 end SimpleGraph
 end TwinWidth

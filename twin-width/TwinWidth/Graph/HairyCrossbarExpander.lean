@@ -304,6 +304,42 @@ theorem gridMinor_or_gridMinor_of_hairy_pathOfSets_with_scaled_strong_parameter_
       hlocal hstitch)
     hproviders
 
+/-- Cluster-faithful local-routing/stitching version of the
+scaled-strong-parameter handoff with the explicit Theorem 8.1 target-size
+provider. -/
+theorem gridMinor_or_gridMinor_of_hairy_pathOfSets_with_scaled_strong_parameter_of_unbundledCutMatching_and_targetProviders_of_localRoutingCluster_and_stitching
+    (hlocal : ChekuriChuzhoy.LocalRoutingClusterInput.{u})
+    (hstitch : ChekuriChuzhoy.StitchingInput.{u})
+    (hproviders :
+      ∃ cRound cScale : ℕ, 0 < cRound ∧ 0 < cScale ∧
+        _root_.TwinWidth.SimpleGraph.HairyCrossbarGrid.FixedRoundCutMatchingUnbundledProvider.{u}
+          cRound ∧
+          _root_.TwinWidth.SimpleGraph.HairyCrossbarGrid.FixedRoundExpanderTargetProvider
+            cRound cScale) :
+    ∃ cCross cGrid cStrong : ℕ,
+      0 < cCross ∧ 0 < cGrid ∧ 0 < cStrong ∧
+        ∀ {V : Type u} [Fintype V] [DecidableEq V]
+          (G : _root_.SimpleGraph V) {ell w g r : ℕ}
+          (_ : HairyPathOfSetsSystem G ell w),
+            2 ≤ g →
+              2 ≤ r →
+                CrossbarContract.IsPowerOfTwo g →
+                  MaxDegreeAtMost G 3 →
+                    cGrid * Nat.log 2 g ≤ ell →
+                      g ^ 2 ≤ w →
+                        2 ^ 22 * g ^ 9 * Nat.log 2 g ≤ w →
+                          cCross * r ^ 2 ≤ g ^ 2 →
+                            (∃ g' : ℕ,
+                              g ≤ cGrid * g' * (Nat.log 2 g) ^ 2 ∧
+                                ContainsGridMinor G g') ∨
+                              ∃ r' : ℕ,
+                                r ≤ cStrong * r' ∧
+                                  ContainsGridMinor G r' :=
+  gridMinor_or_gridMinor_of_hairy_pathOfSets_with_scaled_strong_parameter_of_unbundledCutMatching_and_targetProviders_of_corollary32Input
+    (ChekuriChuzhoy.corollary32Input_of_localRoutingClusterInput_and_stitchingInput
+      hlocal hstitch)
+    hproviders
+
 /-- Local-routing/stitching version after internalizing the Theorem 8.1
 target-size arithmetic. -/
 theorem gridMinor_or_gridMinor_of_hairy_pathOfSets_with_scaled_strong_parameter_of_unbundledCutMatching_of_localRouting_and_stitching
@@ -334,6 +370,39 @@ theorem gridMinor_or_gridMinor_of_hairy_pathOfSets_with_scaled_strong_parameter_
                                   ContainsGridMinor G r' :=
   gridMinor_or_gridMinor_of_hairy_pathOfSets_with_scaled_strong_parameter_of_unbundledCutMatching_of_corollary32Input
     (ChekuriChuzhoy.corollary32Input_of_localRoutingInput_and_stitchingInput
+      hlocal hstitch)
+    hprovider
+
+/-- Cluster-faithful local-routing/stitching version after internalizing the
+Theorem 8.1 target-size arithmetic. -/
+theorem gridMinor_or_gridMinor_of_hairy_pathOfSets_with_scaled_strong_parameter_of_unbundledCutMatching_of_localRoutingCluster_and_stitching
+    (hlocal : ChekuriChuzhoy.LocalRoutingClusterInput.{u})
+    (hstitch : ChekuriChuzhoy.StitchingInput.{u})
+    (hprovider :
+      ∃ cRound : ℕ, 0 < cRound ∧
+        _root_.TwinWidth.SimpleGraph.HairyCrossbarGrid.FixedRoundCutMatchingUnbundledProvider.{u}
+          cRound) :
+    ∃ cCross cGrid cStrong : ℕ,
+      0 < cCross ∧ 0 < cGrid ∧ 0 < cStrong ∧
+        ∀ {V : Type u} [Fintype V] [DecidableEq V]
+          (G : _root_.SimpleGraph V) {ell w g r : ℕ}
+          (_ : HairyPathOfSetsSystem G ell w),
+            2 ≤ g →
+              2 ≤ r →
+                CrossbarContract.IsPowerOfTwo g →
+                  MaxDegreeAtMost G 3 →
+                    cGrid * Nat.log 2 g ≤ ell →
+                      g ^ 2 ≤ w →
+                        2 ^ 22 * g ^ 9 * Nat.log 2 g ≤ w →
+                          cCross * r ^ 2 ≤ g ^ 2 →
+                            (∃ g' : ℕ,
+                              g ≤ cGrid * g' * (Nat.log 2 g) ^ 2 ∧
+                                ContainsGridMinor G g') ∨
+                              ∃ r' : ℕ,
+                                r ≤ cStrong * r' ∧
+                                  ContainsGridMinor G r' :=
+  gridMinor_or_gridMinor_of_hairy_pathOfSets_with_scaled_strong_parameter_of_unbundledCutMatching_of_corollary32Input
+    (ChekuriChuzhoy.corollary32Input_of_localRoutingClusterInput_and_stitchingInput
       hlocal hstitch)
     hprovider
 
@@ -543,6 +612,42 @@ theorem gridMinor_or_gridMinor_of_subgraph_hairy_pathOfSets_with_scaled_strong_p
       hlocal hstitch)
     hproviders
 
+/-- Supergraph cluster-faithful local-routing/stitching version with the
+explicit Theorem 8.1 target-size provider. -/
+theorem gridMinor_or_gridMinor_of_subgraph_hairy_pathOfSets_with_scaled_strong_parameter_of_unbundledCutMatching_and_targetProviders_of_localRoutingCluster_and_stitching
+    (hlocal : ChekuriChuzhoy.LocalRoutingClusterInput.{u})
+    (hstitch : ChekuriChuzhoy.StitchingInput.{u})
+    (hproviders :
+      ∃ cRound cScale : ℕ, 0 < cRound ∧ 0 < cScale ∧
+        _root_.TwinWidth.SimpleGraph.HairyCrossbarGrid.FixedRoundCutMatchingUnbundledProvider.{u}
+          cRound ∧
+          _root_.TwinWidth.SimpleGraph.HairyCrossbarGrid.FixedRoundExpanderTargetProvider
+            cRound cScale) :
+    ∃ cCross cGrid cStrong : ℕ,
+      0 < cCross ∧ 0 < cGrid ∧ 0 < cStrong ∧
+        ∀ {V : Type u} [Fintype V] [DecidableEq V]
+          (G H : _root_.SimpleGraph V) {ell w g r : ℕ}
+          (_ : HairyPathOfSetsSystem H ell w),
+            H ≤ G →
+              2 ≤ g →
+                2 ≤ r →
+                  CrossbarContract.IsPowerOfTwo g →
+                    MaxDegreeAtMost H 3 →
+                      cGrid * Nat.log 2 g ≤ ell →
+                        g ^ 2 ≤ w →
+                          2 ^ 22 * g ^ 9 * Nat.log 2 g ≤ w →
+                            cCross * r ^ 2 ≤ g ^ 2 →
+                              (∃ g' : ℕ,
+                                g ≤ cGrid * g' * (Nat.log 2 g) ^ 2 ∧
+                                  ContainsGridMinor G g') ∨
+                                ∃ r' : ℕ,
+                                  r ≤ cStrong * r' ∧
+                                    ContainsGridMinor G r' :=
+  gridMinor_or_gridMinor_of_subgraph_hairy_pathOfSets_with_scaled_strong_parameter_of_unbundledCutMatching_and_targetProviders_of_corollary32Input
+    (ChekuriChuzhoy.corollary32Input_of_localRoutingClusterInput_and_stitchingInput
+      hlocal hstitch)
+    hproviders
+
 /-- Supergraph local-routing/stitching version after internalizing the Theorem
 8.1 target-size arithmetic. -/
 theorem gridMinor_or_gridMinor_of_subgraph_hairy_pathOfSets_with_scaled_strong_parameter_of_unbundledCutMatching_of_localRouting_and_stitching
@@ -574,6 +679,40 @@ theorem gridMinor_or_gridMinor_of_subgraph_hairy_pathOfSets_with_scaled_strong_p
                                     ContainsGridMinor G r' :=
   gridMinor_or_gridMinor_of_subgraph_hairy_pathOfSets_with_scaled_strong_parameter_of_unbundledCutMatching_of_corollary32Input
     (ChekuriChuzhoy.corollary32Input_of_localRoutingInput_and_stitchingInput
+      hlocal hstitch)
+    hprovider
+
+/-- Supergraph cluster-faithful local-routing/stitching version after
+internalizing the Theorem 8.1 target-size arithmetic. -/
+theorem gridMinor_or_gridMinor_of_subgraph_hairy_pathOfSets_with_scaled_strong_parameter_of_unbundledCutMatching_of_localRoutingCluster_and_stitching
+    (hlocal : ChekuriChuzhoy.LocalRoutingClusterInput.{u})
+    (hstitch : ChekuriChuzhoy.StitchingInput.{u})
+    (hprovider :
+      ∃ cRound : ℕ, 0 < cRound ∧
+        _root_.TwinWidth.SimpleGraph.HairyCrossbarGrid.FixedRoundCutMatchingUnbundledProvider.{u}
+          cRound) :
+    ∃ cCross cGrid cStrong : ℕ,
+      0 < cCross ∧ 0 < cGrid ∧ 0 < cStrong ∧
+        ∀ {V : Type u} [Fintype V] [DecidableEq V]
+          (G H : _root_.SimpleGraph V) {ell w g r : ℕ}
+          (_ : HairyPathOfSetsSystem H ell w),
+            H ≤ G →
+              2 ≤ g →
+                2 ≤ r →
+                  CrossbarContract.IsPowerOfTwo g →
+                    MaxDegreeAtMost H 3 →
+                      cGrid * Nat.log 2 g ≤ ell →
+                        g ^ 2 ≤ w →
+                          2 ^ 22 * g ^ 9 * Nat.log 2 g ≤ w →
+                            cCross * r ^ 2 ≤ g ^ 2 →
+                              (∃ g' : ℕ,
+                                g ≤ cGrid * g' * (Nat.log 2 g) ^ 2 ∧
+                                  ContainsGridMinor G g') ∨
+                                ∃ r' : ℕ,
+                                  r ≤ cStrong * r' ∧
+                                    ContainsGridMinor G r' :=
+  gridMinor_or_gridMinor_of_subgraph_hairy_pathOfSets_with_scaled_strong_parameter_of_unbundledCutMatching_of_corollary32Input
+    (ChekuriChuzhoy.corollary32Input_of_localRoutingClusterInput_and_stitchingInput
       hlocal hstitch)
     hprovider
 
@@ -618,6 +757,68 @@ theorem gridMinor_or_gridMinor_of_subgraph_hairy_pathOfSets_with_scaled_strong_p
                                   r ≤ cStrong * r' ∧
                                     ContainsGridMinor G r' := by
   rcases local_crossbars_at_odd_clusters_or_strong_pathOfSets_minor_of_crossbarDichotomy
+      hcrossInput with
+    ⟨cCross, hcCross, hodd⟩
+  rcases
+    _root_.TwinWidth.SimpleGraph.HairyCrossbarGrid.exists_gridMinor_of_hairy_pathOfSets_and_crossbars_of_unbundled_and_target
+      hproviders with
+    ⟨cGrid, hcGrid, hgrid⟩
+  rcases hstrongGrid with ⟨cStrong, hcStrong, hstrongGrid⟩
+  refine ⟨cCross, cGrid, cStrong, hcCross, hcGrid, hcStrong, ?_⟩
+  intro V _ _ G H ell w g r Hsys hHG hg hr hpow hmaxDegree hell hw hlarge
+    hscaled
+  rcases hodd Hsys hg hpow hlarge with hcrossbars | hstrong
+  · rcases hgrid H Hsys hg hpow hmaxDegree hell hw hcrossbars with
+      ⟨g', hbound, hgrid⟩
+    exact Or.inl ⟨g', hbound, hgrid.mono hHG⟩
+  · rcases hstrong with ⟨ell', w', hell', hw', hminor⟩
+    rcases hstrongGrid hr
+        (square_le_of_scaled_square_le hcCross hscaled hell')
+        (square_le_of_scaled_square_le hcCross hscaled hw')
+        hminor with
+      ⟨r', hbound, hgrid⟩
+    exact Or.inr ⟨r', hbound, hgrid.mono hHG⟩
+
+/-- Explicit-input supergraph version of the target-provider route using the
+Section 4 weak `g^10 log g` crossbar input. -/
+theorem gridMinor_or_gridMinor_of_subgraph_hairy_pathOfSets_with_scaled_strong_parameter_of_inputs10_and_unbundledCutMatching_and_targetProviders
+    (hcrossInput : ∃ c : ℕ, 0 < c ∧ CrossbarDichotomyInput10.{u} c)
+    (hstrongGrid :
+      ∃ cStrong : ℕ, 0 < cStrong ∧
+        ∀ {V : Type u} [Fintype V] [DecidableEq V]
+          {G : _root_.SimpleGraph V} {ell w g : ℕ},
+            2 ≤ g →
+              g ^ 2 ≤ ell →
+                g ^ 2 ≤ w →
+                  CrossbarContract.HasStrongPathOfSetsMinor G ell w →
+                    ∃ g' : ℕ, g ≤ cStrong * g' ∧ ContainsGridMinor G g')
+    (hproviders :
+      ∃ cRound cScale : ℕ, 0 < cRound ∧ 0 < cScale ∧
+        _root_.TwinWidth.SimpleGraph.HairyCrossbarGrid.FixedRoundCutMatchingUnbundledProvider.{u}
+          cRound ∧
+          _root_.TwinWidth.SimpleGraph.HairyCrossbarGrid.FixedRoundExpanderTargetProvider
+            cRound cScale) :
+    ∃ cCross cGrid cStrong : ℕ,
+      0 < cCross ∧ 0 < cGrid ∧ 0 < cStrong ∧
+        ∀ {V : Type u} [Fintype V] [DecidableEq V]
+          (G H : _root_.SimpleGraph V) {ell w g r : ℕ}
+          (_ : HairyPathOfSetsSystem H ell w),
+            H ≤ G →
+              2 ≤ g →
+                2 ≤ r →
+                  CrossbarContract.IsPowerOfTwo g →
+                    MaxDegreeAtMost H 3 →
+                      cGrid * Nat.log 2 g ≤ ell →
+                        g ^ 2 ≤ w →
+                          2 ^ 22 * g ^ 10 * Nat.log 2 g ≤ w →
+                            cCross * r ^ 2 ≤ g ^ 2 →
+                              (∃ g' : ℕ,
+                                g ≤ cGrid * g' * (Nat.log 2 g) ^ 2 ∧
+                                  ContainsGridMinor G g') ∨
+                                ∃ r' : ℕ,
+                                  r ≤ cStrong * r' ∧
+                                    ContainsGridMinor G r' := by
+  rcases local_crossbars_at_odd_clusters_or_strong_pathOfSets_minor_of_crossbarDichotomy10
       hcrossInput with
     ⟨cCross, hcCross, hodd⟩
   rcases

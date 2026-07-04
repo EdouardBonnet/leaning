@@ -34,6 +34,8 @@
   ["/home/ebonnet/Bitbucket/leaning/twin-width/twin-width-treewidth-exponential-redemption-package/statements/.lake/build/lib/lean/TwinWidthTreewidthExponentialRedemption/Statements/RedDegree.olean"],
   "TwinWidthTreewidthExponentialRedemption.Statements.Main":
   ["/home/ebonnet/Bitbucket/leaning/twin-width/twin-width-treewidth-exponential-redemption-package/statements/.lake/build/lib/lean/TwinWidthTreewidthExponentialRedemption/Statements/Main.olean"],
+  "TwinWidthTreewidthExponentialRedemption.Statements.LeastNatural":
+  ["/home/ebonnet/Bitbucket/leaning/twin-width/twin-width-treewidth-exponential-redemption-package/statements/.lake/build/lib/lean/TwinWidthTreewidthExponentialRedemption/Statements/LeastNatural.olean"],
   "TwinWidthTreewidthExponentialRedemption.Statements.InitialTrigraphState":
   ["/home/ebonnet/Bitbucket/leaning/twin-width/twin-width-treewidth-exponential-redemption-package/statements/.lake/build/lib/lean/TwinWidthTreewidthExponentialRedemption/Statements/InitialTrigraphState.olean"],
   "TwinWidthTreewidthExponentialRedemption.Statements.FinalTrigraphState":

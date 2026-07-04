@@ -1,6 +1,8 @@
 import TwinWidth.Graph.MixedMinorNumber
 import TwinWidth.Graph.Partition
 import TwinWidth.Graph.Treewidth
+import TwinWidth.Graph.TreewidthSparsifierContract
+import TwinWidth.Graph.TreewidthSparsifierSection2
 import TwinWidth.Graph.GridContract
 import TwinWidth.Graph.MinorContract
 import TwinWidth.Graph.Minor
@@ -24,6 +26,7 @@ import TwinWidth.Graph.PathOfSets
 import TwinWidth.Graph.ChekuriChuzhoyStitchedRows
 import TwinWidth.Graph.ChekuriChuzhoyContract
 import TwinWidth.Graph.ChekuriChuzhoyTheoremB1
+import TwinWidth.Graph.ChekuriChuzhoyTheorem31
 import TwinWidth.Graph.ChekuriChuzhoy
 import TwinWidth.Graph.PathOfSetsGridContract
 import TwinWidth.Graph.PathOfSetsGrid

@@ -1,9 +1,9 @@
 {"synthetic": false,
  "schemaVersion": "2025-09-10",
  "outputs":
- {"o": ["9bb0c39d4f27a6bf.olean"],
+ {"o": ["fd6f3bb0a4499539.olean"],
   "m": false,
-  "i": "f5d3f622bf8512ac.ilean",
+  "i": "f1ec83bf1e9ae044.ilean",
   "c": "bf76d7eaaf87599f.c"},
  "log":
  [{"message":
@@ -17,13 +17,13 @@
          "00000000000006bb"]]],
       ["imports",
        [["TwinWidthTreewidthExponentialRedemption.Statements.ContractedBlack transitive imports (legacy)",
-         "fef2be70724cba17"],
+         "2c0cc254e22c8231"],
         ["TwinWidthTreewidthExponentialRedemption.Statements.ContractedBlack:importAllArts",
-         "12170af03b2083ca"],
+         "10ebe2e2354d1780"],
         ["TwinWidthTreewidthExponentialRedemption.Statements.ContractedRed transitive imports (legacy)",
-         "ab560302a23c0891"],
+         "264c7e05fa06adcb"],
         ["TwinWidthTreewidthExponentialRedemption.Statements.ContractedRed:importAllArts",
-         "fec7180e4a50053e"]]]]],
+         "88287350365a8c09"]]]]],
     ["libs",
      [["import dynlibs", "00000000000006bb"],
       ["package external libraries", "00000000000006bb"],
@@ -32,7 +32,7 @@
   ["Lean 4.30.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622",
    "2f4703bb19086252"],
   ["/home/ebonnet/Bitbucket/leaning/twin-width/twin-width-treewidth-exponential-redemption-package/statements/TwinWidthTreewidthExponentialRedemption/Statements/ContractionStep.lean",
-   "f07aecf91ef42337"],
+   "23a6796c950351cb"],
   ["options", "00000000000006bb"],
   ["isModule: false", "feefd2a0d3a1847e"],
   ["Module.name: TwinWidthTreewidthExponentialRedemption.Statements.ContractionStep",
@@ -40,4 +40,4 @@
   ["Package.id?: (some TwinWidthTreewidthExponentialRedemption.Statements)",
    "bfb5b17f1de87276"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "624768745b3873b7"}
+ "depHash": "4d7711a26a618715"}

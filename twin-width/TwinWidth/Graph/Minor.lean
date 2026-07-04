@@ -1,3 +1,4 @@
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 import TwinWidth.Graph.MinorContract
 
 /-!
@@ -104,6 +105,68 @@ def of_embedding {W V : Type*}
   adjacent := by
     intro u v huv
     exact ⟨e u, by simp, e v, by simp, e.map_rel_iff.mpr huv⟩
+
+/-- The union of host branch sets visited by a walk in the pattern graph. -/
+noncomputable def walkBranchUnion {W V : Type*} [DecidableEq W] [DecidableEq V]
+    {H : _root_.SimpleGraph W} {G : _root_.SimpleGraph V}
+    (M : MinorModel H G) {x y : W} (P : H.Walk x y) : Finset V :=
+  P.support.toFinset.biUnion M.branchSet
+
+/-- A vertex of a branch set visited by the walk belongs to the walk branch
+union. -/
+theorem mem_walkBranchUnion_of_mem_branch {W V : Type*}
+    [DecidableEq W] [DecidableEq V]
+    {H : _root_.SimpleGraph W} {G : _root_.SimpleGraph V}
+    (M : MinorModel H G) {x y z : W} {P : H.Walk x y}
+    (hz : z ∈ P.support.toFinset) {v : V}
+    (hv : v ∈ M.branchSet z) :
+    v ∈ M.walkBranchUnion P := by
+  classical
+  simpa [walkBranchUnion] using (Finset.mem_biUnion.2 ⟨z, hz, hv⟩)
+
+/-- The union of host branch sets along a pattern walk induces a connected
+subgraph of the host. -/
+theorem walkBranchUnion_connected {W V : Type*} [DecidableEq W] [DecidableEq V]
+    {H : _root_.SimpleGraph W} {G : _root_.SimpleGraph V}
+    (M : MinorModel H G) :
+    {x y : W} →
+      (P : H.Walk x y) →
+        (G.induce {v : V | v ∈ M.walkBranchUnion P}).Connected
+  | x, _, _root_.SimpleGraph.Walk.nil' _ => by
+      rw [show
+        {v : V | v ∈ M.walkBranchUnion
+          ((_root_.SimpleGraph.Walk.nil : H.Walk x x))}
+          = {v : V | v ∈ M.branchSet x} by
+          ext v
+          simp [walkBranchUnion]]
+      exact M.branch_connected x
+  | x, z, _root_.SimpleGraph.Walk.cons' _ y _ hxy P => by
+      classical
+      have hbranch :
+          (G.induce {v : V | v ∈ M.branchSet x}).Connected :=
+        M.branch_connected x
+      have htail :
+          (G.induce {v : V | v ∈ M.walkBranchUnion P}).Connected :=
+        M.walkBranchUnion_connected P
+      rcases M.adjacent hxy with ⟨u, hu, v, hv, huv⟩
+      have hvTail : v ∈ M.walkBranchUnion P :=
+        M.mem_walkBranchUnion_of_mem_branch (by simp) hv
+      have hconn :
+          (G.induce
+            ({v : V | v ∈ M.branchSet x} ∪
+              {v : V | v ∈ M.walkBranchUnion P})).Connected :=
+        _root_.SimpleGraph.connected_induce_union
+          hbranch.preconnected htail.preconnected hu hvTail huv
+      rw [show
+        {w : V | w ∈ M.walkBranchUnion
+          (_root_.SimpleGraph.Walk.cons hxy P)}
+          =
+        ({w : V | w ∈ M.branchSet x} ∪
+          {w : V | w ∈ M.walkBranchUnion P}) by
+          ext w
+          simp [walkBranchUnion, _root_.SimpleGraph.Walk.support_cons,
+            Finset.mem_biUnion]]
+      exact hconn
 
 /-- Transport the host graph of a minor model across a graph isomorphism. -/
 noncomputable def of_iso_right {W V V' : Type*}

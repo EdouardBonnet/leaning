@@ -118,6 +118,19 @@ theorem DegreeEquals.one_adj_eq {V : Type*} [DecidableEq V]
   have hwa : w = a := by simpa [ha] using hwN
   exact hua.trans hwa.symm
 
+/-- A degree-one vertex has a unique neighbor, in existence form. -/
+theorem DegreeEquals.one_exists_unique_adj {V : Type*} [DecidableEq V]
+    {G : _root_.SimpleGraph V} {v : V}
+    (h : DegreeEquals G v 1) :
+    ∃ u : V, G.Adj v u ∧ ∀ w : V, G.Adj v w → w = u := by
+  rcases h with ⟨N, hN, hcard⟩
+  rcases Finset.card_eq_one.mp hcard with ⟨u, hN_eq⟩
+  have huN : u ∈ N := by simp [hN_eq]
+  refine ⟨u, (hN u).1 huN, ?_⟩
+  intro w hw
+  have hwN : w ∈ N := (hN w).2 hw
+  simpa [hN_eq] using hwN
+
 /-- A degree-two vertex has no neighbor other than two given distinct
 neighbors. -/
 theorem DegreeEquals.two_adj_eq_or_eq {V : Type*} [DecidableEq V]

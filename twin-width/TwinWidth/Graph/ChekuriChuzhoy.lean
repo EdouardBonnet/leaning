@@ -6393,6 +6393,34 @@ theorem corollary32Input_of_localRoutingInput_and_stitchingInput
   · rcases houtputs with ⟨E⟩
     exact Or.inr (hstitch G hg P E (StitchingPieces.canonicalOfTwoLe P E hg))
 
+/-- Cluster-faithful variant of
+`corollary32Input_of_localRoutingInput_and_stitchingInput`.
+
+This matches Chekuri--Chuzhoy Theorem 3.1 more closely: each local routing
+call receives the connectedness of the current path-of-sets cluster from the
+path-of-sets system. -/
+theorem corollary32Input_of_localRoutingClusterInput_and_stitchingInput
+    (hlocal : LocalRoutingClusterInput.{u}) (hstitch : StitchingInput.{u}) :
+    Corollary32Input.{u} := by
+  intro V hVfin hVdec G g hg P
+  letI : Fintype V := hVfin
+  letI : DecidableEq V := hVdec
+  rcases gridMinor_or_evenClusterOutputs_of_localRoutingClusterInput_corollary33Width
+      hlocal G hg P with hgrid | houtputs
+  · exact Or.inl hgrid
+  · rcases houtputs with ⟨E⟩
+    exact Or.inr (hstitch G hg P E (StitchingPieces.canonicalOfTwoLe P E hg))
+
+/-- Contract-backed Corollary 3.2 input obtained by applying the formal
+Theorem 3.1 contract inside connected clusters and using the explicit
+stitched-row assembly input for the remaining Appendix C.1 extraction. -/
+theorem corollary32Input_of_theorem31Contract_and_stitchingInput
+    (hstitch : StitchingInput.{u}) :
+    Corollary32Input.{u} :=
+  corollary32Input_of_localRoutingClusterInput_and_stitchingInput
+    ChekuriChuzhoyContract.localRoutingClusterInput_of_theorem31_contract
+    hstitch
+
 /-- A strong path-of-sets system whose length and width dominate the
 Chekuri--Chuzhoy Corollary 3.3 thresholds contains a `g x g` grid minor. -/
 theorem containsGridMinor_of_strongPathOfSets_ge_of_corollary32Input
@@ -6430,6 +6458,23 @@ theorem containsGridMinor_of_strongPathOfSets_ge_of_localRoutingInput_and_stitch
     ContainsGridMinor G g :=
   containsGridMinor_of_strongPathOfSets_ge_of_corollary32Input
     (corollary32Input_of_localRoutingInput_and_stitchingInput hlocal hstitch)
+    G hg hell hw P
+
+/-- Same path-of-sets-to-grid theorem, using the cluster-faithful split
+Chekuri--Chuzhoy inputs: local routing inside every connected even cluster plus
+the remaining row stitching. -/
+theorem containsGridMinor_of_strongPathOfSets_ge_of_localRoutingClusterInput_and_stitchingInput
+    (hlocal : LocalRoutingClusterInput.{u}) (hstitch : StitchingInput.{u})
+    {V : Type u} [Fintype V] [DecidableEq V]
+    (G : _root_.SimpleGraph V) {ell w g : ℕ}
+    (hg : 2 ≤ g)
+    (hell : 2 * g * (g - 1) ≤ ell)
+    (hw : 16 * g ^ 2 + 10 * g ≤ w)
+    (P : StrongPathOfSetsSystem G ell w) :
+    ContainsGridMinor G g :=
+  containsGridMinor_of_strongPathOfSets_ge_of_corollary32Input
+    (corollary32Input_of_localRoutingClusterInput_and_stitchingInput
+      hlocal hstitch)
     G hg hell hw P
 
 /-- A strong path-of-sets system whose length and width dominate the

@@ -10,6 +10,10 @@
   blocker, an external dependency blocker, or a direct user instruction to
   pause. Do not stop merely because one small lemma, local edit, or verification
   step is complete; if there is no real blocker, keep going.
+- Do not decline or abandon a requested proof merely because it appears hard,
+  long, or dependent on substantial external-paper formalization. Treat those
+  estimates as reasons to decompose the work, read the source material, add the
+  needed intermediate definitions, and keep closing proof obligations.
 
 ## Project mission
 
@@ -55,6 +59,19 @@ The development should build the definitions and intermediate lemmas needed to m
 - Each contract axiom should have a corresponding fully formalized theorem in
   the full proof file once that item is proved. Contract modules should not be
   imported to discharge completed proofs.
+- Hard constraint for proof status: do not call a theorem, package, or route
+  self-contained while it still depends on a contract axiom, an interface
+  hypothesis standing for an external paper theorem, or a composition theorem
+  whose own semantic inputs are not proved in the repository. A theorem that
+  merely exposes smaller paper inputs is progress, not closure. When a paper
+  dependency is announced as closed, its semantic closure of definitions,
+  intermediate statements, and proof-producing theorems must be present in Lean,
+  with the contract and proof statements transparent enough to compare against
+  the paper.
+- Hard constraint for submissions: the submitted surface must include the
+  semantic closure of definitions used by the announced statements. Definitions
+  and statements must be transparent and match their TeX closely enough that a
+  reviewer can check the intended mathematics from the contract files alone.
 
 ## Target mathematical statement
 
@@ -441,3 +458,45 @@ For example, if `HasMixedMinor M 0` is vacuous, downstream maximum and monotonic
 - Do not use an existential theorem where the project already has an explicit bounding function available.
 - Do not claim the final theorem is proved from asymptotic notation alone.
 - Do not leave exploratory `#check`, `#print`, or `#eval` commands in final files unless they are intentionally in `Examples.lean`.
+
+## Lean Meta Library submission integrity
+
+- Treat semantic closure as a hard submission constraint. Every announced LML
+  statement must be submitted together with the definitions it uses, recursively
+  through their mathematical content.
+- Submitted definitions in that closure must be transparent and unpacked,
+  bottoming out only in Lean/Mathlib primitives or already accepted LML entries.
+  Do not hide mathematical content behind aliases to local source definitions,
+  opaque helper predicates, or compatibility wrappers.
+- Do not make a statement look transparent by dropping definitions that are
+  part of the intended theorem. If treewidth, twin-width, contraction sequence,
+  tree decomposition, or another mathematical notion is part of the statement's
+  meaning, the submitted surface must expose the matching definition.
+- Every submitted definition and statement must have matching TeX. From the
+  submitted Lean declarations and TeX alone, a reviewer should be able to tell
+  whether the intended mathematics was formalized correctly.
+- A successful `lml test` is not enough to submit. Before submission, audit each
+  manifest entry for transparent definitions, matching TeX, and absence of
+  unproved contract axioms or placeholder dependencies.
+
+## External-paper formalization discipline
+
+- Treat every cited external theorem as unproved until its source paper has
+  been found in the repository and the Lean theorem depending on it has no
+  remaining contract axioms in its axiom dependency report.
+- Do not decline or abandon a formalization task merely because it appears
+  difficult, long, or likely to require substantial supporting lemmas. Treat
+  that as the expected work: identify the missing proof obligations, close them
+  in a faithful order, and report a blocker only when a required source or
+  mathematical assumption is genuinely absent or inconsistent.
+- Before claiming that an imported theorem is self-contained, inspect the
+  cited paper text and trace the Lean dependency chain with the exact theorem
+  name. A proof route that merely replaces one broad contract by more precise
+  source-route hypotheses is progress, but it is still conditional until those
+  hypotheses are proved.
+- For the Chuzhoy--Tan Appendix A.2 degree-three strong path-of-sets input,
+  do not claim completion while either Theorem A.1, Theorem A.2, or their
+  paper-internal dependencies remain represented by a contract axiom or by an
+  explicit theorem hypothesis. If the cited source paper is absent from the
+  repo, report that as a source gap instead of treating the cited theorem as
+  available.

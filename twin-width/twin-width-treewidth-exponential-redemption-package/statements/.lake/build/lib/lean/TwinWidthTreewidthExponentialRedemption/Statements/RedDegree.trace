@@ -1,10 +1,10 @@
 {"synthetic": false,
  "schemaVersion": "2025-09-10",
  "outputs":
- {"o": ["44e2a2bb6d2dbf17.olean"],
+ {"o": ["4d45c0ec2361fe5b.olean"],
   "m": false,
-  "i": "2556a7f080fad154.ilean",
-  "c": "99a22d91818ff879.c"},
+  "i": "362da10c2bdc42a9.ilean",
+  "c": "80dd229c0ec82d6f.c"},
  "log":
  [{"message":
    ".> LEAN_PATH=/home/ebonnet/Bitbucket/leaning/twin-width/twin-width-treewidth-exponential-redemption-package/statements/.lake/packages/Cli/.lake/build/lib/lean:/home/ebonnet/Bitbucket/leaning/twin-width/twin-width-treewidth-exponential-redemption-package/statements/.lake/packages/batteries/.lake/build/lib/lean:/home/ebonnet/Bitbucket/leaning/twin-width/twin-width-treewidth-exponential-redemption-package/statements/.lake/packages/Qq/.lake/build/lib/lean:/home/ebonnet/Bitbucket/leaning/twin-width/twin-width-treewidth-exponential-redemption-package/statements/.lake/packages/aesop/.lake/build/lib/lean:/home/ebonnet/Bitbucket/leaning/twin-width/twin-width-treewidth-exponential-redemption-package/statements/.lake/packages/proofwidgets/.lake/build/lib/lean:/home/ebonnet/Bitbucket/leaning/twin-width/twin-width-treewidth-exponential-redemption-package/statements/.lake/packages/importGraph/.lake/build/lib/lean:/home/ebonnet/Bitbucket/leaning/twin-width/twin-width-treewidth-exponential-redemption-package/statements/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/home/ebonnet/Bitbucket/leaning/twin-width/twin-width-treewidth-exponential-redemption-package/statements/.lake/packages/plausible/.lake/build/lib/lean:/home/ebonnet/Bitbucket/leaning/twin-width/twin-width-treewidth-exponential-redemption-package/statements/.lake/packages/mathlib/.lake/build/lib/lean:/home/ebonnet/Bitbucket/leaning/twin-width/twin-width-treewidth-exponential-redemption-package/statements/.lake/build/lib/lean /home/ebonnet/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean /home/ebonnet/Bitbucket/leaning/twin-width/twin-width-treewidth-exponential-redemption-package/statements/TwinWidthTreewidthExponentialRedemption/Statements/RedDegree.lean -o /home/ebonnet/Bitbucket/leaning/twin-width/twin-width-treewidth-exponential-redemption-package/statements/.lake/build/lib/lean/TwinWidthTreewidthExponentialRedemption/Statements/RedDegree.olean -i /home/ebonnet/Bitbucket/leaning/twin-width/twin-width-treewidth-exponential-redemption-package/statements/.lake/build/lib/lean/TwinWidthTreewidthExponentialRedemption/Statements/RedDegree.ilean -c /home/ebonnet/Bitbucket/leaning/twin-width/twin-width-treewidth-exponential-redemption-package/statements/.lake/build/ir/TwinWidthTreewidthExponentialRedemption/Statements/RedDegree.c --setup /home/ebonnet/Bitbucket/leaning/twin-width/twin-width-treewidth-exponential-redemption-package/statements/.lake/build/ir/TwinWidthTreewidthExponentialRedemption/Statements/RedDegree.setup.json --json",
@@ -18,7 +18,11 @@
       ["imports",
        [["Mathlib.Data.Finset.Card transitive imports (legacy)",
          "551b6d8032556119"],
-        ["Mathlib.Data.Finset.Card:importAllArts", "fee2edb7b2615788"]]]]],
+        ["Mathlib.Data.Finset.Card:importAllArts", "fee2edb7b2615788"],
+        ["TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState transitive imports (legacy)",
+         "ab560302a23c0891"],
+        ["TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState:importAllArts",
+         "f4b8eec398c5ed2c"]]]]],
     ["libs",
      [["import dynlibs", "00000000000006bb"],
       ["package external libraries", "00000000000006bb"],
@@ -27,7 +31,7 @@
   ["Lean 4.30.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622",
    "2f4703bb19086252"],
   ["/home/ebonnet/Bitbucket/leaning/twin-width/twin-width-treewidth-exponential-redemption-package/statements/TwinWidthTreewidthExponentialRedemption/Statements/RedDegree.lean",
-   "cfa69de1ccd9dc45"],
+   "10d988af1e4b1661"],
   ["options", "00000000000006bb"],
   ["isModule: false", "feefd2a0d3a1847e"],
   ["Module.name: TwinWidthTreewidthExponentialRedemption.Statements.RedDegree",
@@ -35,4 +39,4 @@
   ["Package.id?: (some TwinWidthTreewidthExponentialRedemption.Statements)",
    "bfb5b17f1de87276"],
   ["Module.leanArgs: #[]", "00000000000006bb"]],
- "depHash": "f2eb9ef81d3076bb"}
+ "depHash": "450b3c22230376f6"}

@@ -172,6 +172,70 @@ theorem targetLoad_le_one_of_targetLoadExactlyOne
   · rw [F.targetLoad_eq_zero_of_not_mem hv]
     norm_num
 
+/-- View a path flow inside a same-vertex supergraph. -/
+noncomputable def mapLe (F : OrientedPathFlow G S T)
+    {H : _root_.SimpleGraph V} (hGH : G ≤ H) :
+    OrientedPathFlow H S T where
+  Index := F.Index
+  path := fun i => (F.path i).mapLe hGH
+  source_mem := F.source_mem
+  target_mem := F.target_mem
+  weight := F.weight
+  weight_nonneg := F.weight_nonneg
+
+omit [DecidableEq V] in
+@[simp] theorem mapLe_value (F : OrientedPathFlow G S T)
+    {H : _root_.SimpleGraph V} (hGH : G ≤ H) :
+    (F.mapLe hGH).value = F.value := by
+  rfl
+
+@[simp] theorem mapLe_sourceLoad (F : OrientedPathFlow G S T)
+    {H : _root_.SimpleGraph V} (hGH : G ≤ H) (v : V) :
+    (F.mapLe hGH).sourceLoad v = F.sourceLoad v := by
+  rfl
+
+@[simp] theorem mapLe_targetLoad (F : OrientedPathFlow G S T)
+    {H : _root_.SimpleGraph V} (hGH : G ≤ H) (v : V) :
+    (F.mapLe hGH).targetLoad v = F.targetLoad v := by
+  rfl
+
+@[simp] theorem mapLe_vertexLoad (F : OrientedPathFlow G S T)
+    {H : _root_.SimpleGraph V} (hGH : G ≤ H) (v : V) :
+    (F.mapLe hGH).vertexLoad v = F.vertexLoad v := by
+  classical
+  unfold vertexLoad mapLe
+  refine Finset.sum_congr rfl ?_
+  intro i _hi
+  rw [GraphPath.mapLe_vertexSet]
+
+theorem mapLe_sourceLoadExactlyOne (F : OrientedPathFlow G S T)
+    {H : _root_.SimpleGraph V} (hGH : G ≤ H)
+    (h : F.SourceLoadExactlyOne) :
+    (F.mapLe hGH).SourceLoadExactlyOne := by
+  intro v hv
+  simpa using h v hv
+
+theorem mapLe_targetLoadExactlyOne (F : OrientedPathFlow G S T)
+    {H : _root_.SimpleGraph V} (hGH : G ≤ H)
+    (h : F.TargetLoadExactlyOne) :
+    (F.mapLe hGH).TargetLoadExactlyOne := by
+  intro v hv
+  simpa using h v hv
+
+theorem mapLe_isUnitFlow (F : OrientedPathFlow G S T)
+    {H : _root_.SimpleGraph V} (hGH : G ≤ H)
+    (h : F.IsUnitFlow) :
+    (F.mapLe hGH).IsUnitFlow :=
+  ⟨F.mapLe_sourceLoadExactlyOne hGH h.1,
+    F.mapLe_targetLoadExactlyOne hGH h.2⟩
+
+theorem mapLe_vertexCongestionAtMost (F : OrientedPathFlow G S T)
+    {H : _root_.SimpleGraph V} (hGH : G ≤ H) {η : ℚ}
+    (hη : F.VertexCongestionAtMost η) :
+    (F.mapLe hGH).VertexCongestionAtMost η := by
+  intro v
+  simpa using hη v
+
 /-- Scaling a finite path flow by a nonnegative rational factor. -/
 noncomputable def scale (F : OrientedPathFlow G S T) (c : ℚ) (hc : 0 ≤ c) :
     OrientedPathFlow G S T where

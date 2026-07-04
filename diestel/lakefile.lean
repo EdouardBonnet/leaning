@@ -11,3 +11,6 @@ lean_lib Chapter01 where
 
 lean_lib Chapter02 where
   srcDir := "."
+
+lean_lib Chapter03 where
+  srcDir := "."

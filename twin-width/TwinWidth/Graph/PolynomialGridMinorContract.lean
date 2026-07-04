@@ -38,6 +38,18 @@ theorem polynomial_grid_minor_theorem :
               ContainsGridMinor G g :=
   _root_.TwinWidth.SimpleGraph.PolynomialGridMinor.polynomial_grid_minor_theorem
 
+/-- Weaker degree-ten compatibility form of the Polynomial Excluded Grid
+Theorem.  This is obtained from the completed degree-nine theorem rather than
+from a separate weaker proof. -/
+theorem polynomial_grid_minor_theorem_degree10 :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type*} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {g : ℕ},
+          2 ≤ g →
+            polynomialGridMinorTreewidthBound10 c1 c2 g ≤ treewidth G →
+              ContainsGridMinor G g :=
+  _root_.TwinWidth.SimpleGraph.PolynomialGridMinor.polynomial_grid_minor_theorem_degree10
+
 end PolynomialGridMinorContract
 end SimpleGraph
 end TwinWidth

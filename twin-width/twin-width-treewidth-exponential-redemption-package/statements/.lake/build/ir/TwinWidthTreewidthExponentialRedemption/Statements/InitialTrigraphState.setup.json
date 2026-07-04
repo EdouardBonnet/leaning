@@ -5,7 +5,9 @@
  "TwinWidthTreewidthExponentialRedemption.Statements.InitialTrigraphState",
  "isModule": false,
  "importArts":
- {"TwinWidthTreewidthExponentialRedemption.Statements.SingletonBags":
+ {"TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState":
+  ["/home/ebonnet/Bitbucket/leaning/twin-width/twin-width-treewidth-exponential-redemption-package/statements/.lake/build/lib/lean/TwinWidthTreewidthExponentialRedemption/Statements/TrigraphState.olean"],
+  "TwinWidthTreewidthExponentialRedemption.Statements.SingletonBags":
   ["/home/ebonnet/Bitbucket/leaning/twin-width/twin-width-treewidth-exponential-redemption-package/statements/.lake/build/lib/lean/TwinWidthTreewidthExponentialRedemption/Statements/SingletonBags.olean"],
   "Qq.Typ":
   ["/home/ebonnet/Bitbucket/leaning/twin-width/twin-width-treewidth-exponential-redemption-package/statements/.lake/packages/Qq/.lake/build/lib/lean/Qq/Typ.olean",

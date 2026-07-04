@@ -66,6 +66,29 @@ noncomputable def mapIso
   intro i _hi
   simp
 
+/-- A tree decomposition of a graph is also a tree decomposition of any
+same-vertex spanning subgraph. -/
+noncomputable def of_le
+    {V : Type} [DecidableEq V]
+    {G H : _root_.SimpleGraph V} (D : TreeDecomposition H) (hGH : G ≤ H) :
+    TreeDecomposition G where
+  Node := D.Node
+  nodeFintype := D.nodeFintype
+  nodeDecidableEq := D.nodeDecidableEq
+  tree := D.tree
+  isTree := D.isTree
+  bag := D.bag
+  vertex_mem_bag := D.vertex_mem_bag
+  edge_mem_bag := by
+    intro u v huv
+    exact D.edge_mem_bag (hGH huv)
+  bag_indices_connected := D.bag_indices_connected
+
+@[simp] theorem of_le_width
+    {V : Type} [DecidableEq V]
+    {G H : _root_.SimpleGraph V} (D : TreeDecomposition H) (hGH : G ≤ H) :
+    (D.of_le hGH).width = D.width := rfl
+
 /-- Add a fixed finite set `X` to every bag of a tree decomposition of
 `G.induce S`, obtaining a decomposition of `G`, provided every vertex outside
 `S` lies in `X`.
@@ -194,6 +217,15 @@ end TreeDecomposition
 
 namespace HasTreewidthAtMost
 
+/-- Treewidth-at-most is inherited by same-vertex spanning subgraphs. -/
+theorem of_le
+    {V : Type} [Fintype V] [DecidableEq V]
+    {G H : _root_.SimpleGraph V} {k : ℕ}
+    (h : HasTreewidthAtMost H k) (hGH : G ≤ H) :
+    HasTreewidthAtMost G k := by
+  rcases h with ⟨D, hD⟩
+  exact ⟨D.of_le hGH, by simpa using hD⟩
+
 /-- The predicate `HasTreewidthAtMost` is preserved by graph isomorphism. -/
 theorem of_iso
     {V V' : Type} [Fintype V] [DecidableEq V] [Fintype V'] [DecidableEq V']
@@ -216,6 +248,14 @@ theorem treewidth_eq_of_iso
       ((hasTreewidthAtMost_treewidth G').of_iso e.symm)
   · exact treewidth_le_of_hasTreewidthAtMost
       ((hasTreewidthAtMost_treewidth G).of_iso e)
+
+/-- Treewidth is monotone under passing to a same-vertex spanning subgraph. -/
+theorem treewidth_le_of_le
+    {V : Type} [Fintype V] [DecidableEq V]
+    {G H : _root_.SimpleGraph V} (hGH : G ≤ H) :
+    treewidth G ≤ treewidth H :=
+  treewidth_le_of_hasTreewidthAtMost
+    ((hasTreewidthAtMost_treewidth H).of_le hGH)
 
 /-- If every finite acyclic graph has treewidth at most `1`, then a feedback
 vertex set of size `s` gives treewidth at most `s + 1`.

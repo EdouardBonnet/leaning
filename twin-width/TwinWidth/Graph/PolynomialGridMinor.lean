@@ -10,10 +10,12 @@ import TwinWidth.Graph.GridMinorArithmetic
 # Polynomial grid-minor theorem
 
 This file packages the polynomial grid-minor theorem in proof-facing form and
-formalizes the main composition of the Chuzhoy--Tan proof.  The deep
-combinatorial ingredients are imported through their proof-facing theorem files;
-the remaining open part is the explicit natural-number parameter arithmetic,
-which is isolated in the `*ScaleChoice` interfaces near the end of the file.
+formalizes the main composition of the Chuzhoy--Tan proof.
+
+The broad public wrappers near the end keep the older contract-backed theorem
+available.  The long `*_of_A1omega_ChekuriChuzhoy_*` wrappers expose the
+current source-route inputs and avoid the broad hairy path-of-sets, crossbar,
+and strong-minor contracts when those inputs are supplied.
 -/
 
 namespace TwinWidth
@@ -42,6 +44,46 @@ theorem containsGridMinor_of_constants_spec
         treewidth G) :
     ContainsGridMinor G g :=
   hconstants.2.2 (V := V) G hg htw
+
+/-- The degree-nine threshold is bounded by the degree-ten threshold for
+targets at least two. -/
+theorem polynomialGridMinorTreewidthBound_le_degree10
+    {c1 c2 target : ℕ} (htarget : 2 ≤ target) :
+    polynomialGridMinorTreewidthBound c1 c2 target ≤
+      polynomialGridMinorTreewidthBound10 c1 c2 target := by
+  have htarget_pos : 0 < target :=
+    lt_of_lt_of_le (by decide : 0 < 2) htarget
+  have hpow : target ^ 9 ≤ target ^ 10 :=
+    Nat.pow_le_pow_right htarget_pos (by decide : 9 ≤ 10)
+  calc
+    polynomialGridMinorTreewidthBound c1 c2 target
+        = c1 * target ^ 9 * (Nat.log 2 target) ^ c2 := rfl
+    _ ≤ c1 * target ^ 10 * (Nat.log 2 target) ^ c2 :=
+        Nat.mul_le_mul_right ((Nat.log 2 target) ^ c2)
+          (Nat.mul_le_mul_left c1 hpow)
+    _ = polynomialGridMinorTreewidthBound10 c1 c2 target := rfl
+
+/-- Any degree-nine polynomial grid-minor theorem immediately gives the
+weaker degree-ten formulation with the same constants. -/
+theorem polynomial_grid_minor_theorem_degree10_of_degree9
+    (hdegree9 :
+      ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+        ∀ {V : Type u} [Fintype V] [DecidableEq V]
+          (G : _root_.SimpleGraph V) {target : ℕ},
+            2 ≤ target →
+              polynomialGridMinorTreewidthBound c1 c2 target ≤ treewidth G →
+                ContainsGridMinor G target) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target := by
+  rcases hdegree9 with ⟨c1, c2, hc1, hc2, hmain⟩
+  refine ⟨c1, c2, hc1, hc2, ?_⟩
+  intro V _ _ G target htarget htw
+  exact hmain G htarget
+    (le_trans (polynomialGridMinorTreewidthBound_le_degree10 htarget) htw)
 
 /-- Treewidth-to-hairy-path-of-sets theorem as an explicit input to the
 composition proof. -/
@@ -102,6 +144,307 @@ theorem exists_hairyPathOfSetsInput :
       HairyPathOfSetsInput.{u} cHair cHairLog :=
   HairyPathOfSetsTheorem.exists_subgraph_hairy_pathOfSets_of_treewidth
 
+/-- Appendix A.2 plus the formal Appendix A.4 assembly supply the
+treewidth-to-hairy input once the degree-three strong path-of-sets ingredient
+is provided. -/
+theorem exists_hairyPathOfSetsInput_of_appendixA2PaperInputs
+    (hinputs :
+      ∃ cStrong cStrongLog cSplit : ℕ,
+        0 < cStrong ∧
+          0 < cStrongLog ∧
+            0 < cSplit ∧
+              HairyPathOfSetsTheorem.DegreeThreeStrongPathOfSetsInput.{u}
+                cStrong cStrongLog cSplit ∧
+                HairyPathOfSetsTheorem.AppendixA4SplitInput.{u} cSplit) :
+    ∃ cHair cHairLog : ℕ, 0 < cHair ∧ 0 < cHairLog ∧
+      HairyPathOfSetsInput.{u} cHair cHairLog := by
+  rcases hinputs with
+    ⟨cStrong, cStrongLog, cSplit,
+      hcStrong, hcStrongLog, hcSplit, hdegree, hsplit⟩
+  exact
+    HairyPathOfSetsTheorem.exists_subgraph_hairy_pathOfSets_of_treewidth_of_paper_inputs
+      ⟨cStrong, cStrongLog, cSplit,
+        hcStrong, hcStrongLog, hcSplit, hdegree,
+          HairyPathOfSetsTheorem.strongPathOfSetsToHairyInput_of_appendixA4SplitInput
+            hsplit⟩
+
+/-- Appendix A.2 with the degree-three/strong-path-of-sets ingredient supplied
+by its contract.  The remaining hairy-side input is exactly the Appendix A.4
+split-cluster construction. -/
+theorem exists_hairyPathOfSetsInput_of_degreeThreeContract_and_appendixA4SplitInput
+    (hsplit :
+      ∃ cSplit : ℕ, 0 < cSplit ∧
+        HairyPathOfSetsTheorem.AppendixA4SplitInput.{u} cSplit) :
+    ∃ cHair cHairLog : ℕ, 0 < cHair ∧ 0 < cHairLog ∧
+      HairyPathOfSetsInput.{u} cHair cHairLog :=
+  exists_hairyPathOfSetsInput_of_appendixA2PaperInputs
+    (HairyPathOfSetsTheorem.exists_appendixA2PaperInputs_of_appendixA4SplitInput
+      hsplit)
+
+/-- Hairy path-of-sets input from the degree-three sparsifier, the reduced
+Chekuri--Chuzhoy A.2 route, and the Appendix A.4 split-cluster input. -/
+theorem exists_hairyPathOfSetsInput_of_sparsifier_ChekuriChuzhoy_cutCore_route_and_appendixA4
+    (hsparseInput :
+      ∃ cSparse cSparseLog : ℕ, 0 < cSparse ∧ 0 < cSparseLog ∧
+        ∀ {V : Type u} [Fintype V] [DecidableEq V]
+          (G : _root_.SimpleGraph V) {k t : ℕ},
+            1 < k →
+              k ≤ treewidth G →
+                cSparse * t * (Nat.log 2 k) ^ cSparseLog < k →
+                  ∃ H : _root_.SimpleGraph V,
+                    H ≤ G ∧ MaxDegreeAtMost H 3 ∧ t ≤ treewidth H)
+    (hcut :
+      ∃ cCut cCutLog cDeg cDegLog cAlpha cAlphaLog : ℕ,
+        ChekuriChuzhoy.CutWellLinkedCoreFromTreewidth.{u}
+          cCut cCutLog cDeg cDegLog cAlpha cAlphaLog)
+    (hroute :
+      ∃ cRoute cRouteLog cDeltaPow : ℕ,
+        ChekuriChuzhoy.StrongTreeOfSetsFromNodeWellLinkedCore.{u}
+          cRoute cRouteLog cDeltaPow)
+    (hsplit :
+      ∃ cSplit : ℕ, 0 < cSplit ∧
+        HairyPathOfSetsTheorem.AppendixA4SplitInput.{u} cSplit) :
+    ∃ cHair cHairLog : ℕ, 0 < cHair ∧ 0 < cHairLog ∧
+      HairyPathOfSetsInput.{u} cHair cHairLog :=
+  HairyPathOfSetsTheorem.exists_subgraph_hairy_pathOfSets_of_treewidth_of_sparsifier_ChekuriChuzhoy_cutCore_route_and_appendixA4
+    hsparseInput hcut hroute hsplit
+
+/-- Hairy path-of-sets input from the degree-three sparsifier, the
+cut-well-linked Theorem 2.21 boundary, the faithful direct Section 4 path
+route, and the Appendix A.4 split-cluster input. -/
+theorem exists_hairyPathOfSetsInput_of_sparsifier_ChekuriChuzhoy_cutCore_pathRoute_and_appendixA4
+    (hsparseInput :
+      ∃ cSparse cSparseLog : ℕ, 0 < cSparse ∧ 0 < cSparseLog ∧
+        ∀ {V : Type u} [Fintype V] [DecidableEq V]
+          (G : _root_.SimpleGraph V) {k t : ℕ},
+            1 < k →
+              k ≤ treewidth G →
+                cSparse * t * (Nat.log 2 k) ^ cSparseLog < k →
+                  ∃ H : _root_.SimpleGraph V,
+                    H ≤ G ∧ MaxDegreeAtMost H 3 ∧ t ≤ treewidth H)
+    (hcut :
+      ∃ cCut cCutLog cDeg cDegLog cAlpha cAlphaLog : ℕ,
+        ChekuriChuzhoy.CutWellLinkedCoreFromTreewidth.{u}
+          cCut cCutLog cDeg cDegLog cAlpha cAlphaLog)
+    (hroute :
+      ∃ cRoute cRouteLog cDeltaPow : ℕ,
+        ChekuriChuzhoy.StrongPathOfSetsFromNodeWellLinkedCore.{u}
+          cRoute cRouteLog cDeltaPow)
+    (hsplit :
+      ∃ cSplit : ℕ, 0 < cSplit ∧
+        HairyPathOfSetsTheorem.AppendixA4SplitInput.{u} cSplit) :
+    ∃ cHair cHairLog : ℕ, 0 < cHair ∧ 0 < cHairLog ∧
+      HairyPathOfSetsInput.{u} cHair cHairLog :=
+  HairyPathOfSetsTheorem.exists_subgraph_hairy_pathOfSets_of_treewidth_of_sparsifier_ChekuriChuzhoy_cutCore_pathRoute_and_appendixA4
+    hsparseInput hcut hroute hsplit
+
+/-- Hairy path-of-sets input from the degree-three sparsifier, Lemma 2.17
+routability, the cut-matching/AARV embedding source, the Section 4 tree route,
+and the Appendix A.4 split-cluster input. -/
+theorem exists_hairyPathOfSetsInput_of_sparsifier_ChekuriChuzhoy_routable_cutMatching_route_and_appendixA4
+    (hsparseInput :
+      ∃ cSparse cSparseLog : ℕ, 0 < cSparse ∧ 0 < cSparseLog ∧
+        ∀ {V : Type u} [Fintype V] [DecidableEq V]
+          (G : _root_.SimpleGraph V) {k t : ℕ},
+            1 < k →
+              k ≤ treewidth G →
+                cSparse * t * (Nat.log 2 k) ^ cSparseLog < k →
+                  ∃ H : _root_.SimpleGraph V,
+                    H ≤ G ∧ MaxDegreeAtMost H 3 ∧ t ≤ treewidth H)
+    (hroutable :
+      ∃ cSet cSetLog cRoute cRouteLog : ℕ,
+        ChekuriChuzhoy.RoutableSetFromTreewidth.{u}
+          cSet cSetLog cRoute cRouteLog)
+    (hcutMatching :
+      ∃ cDeg cDegLog cAlpha cAlphaLog : ℕ,
+        ChekuriChuzhoy.CutWellLinkedCoreFromRoutableSet.{u}
+          cDeg cDegLog cAlpha cAlphaLog)
+    (hroute :
+      ∃ cRoute cRouteLog cDeltaPow : ℕ,
+        ChekuriChuzhoy.StrongTreeOfSetsFromNodeWellLinkedCore.{u}
+          cRoute cRouteLog cDeltaPow)
+    (hsplit :
+      ∃ cSplit : ℕ, 0 < cSplit ∧
+        HairyPathOfSetsTheorem.AppendixA4SplitInput.{u} cSplit) :
+    ∃ cHair cHairLog : ℕ, 0 < cHair ∧ 0 < cHairLog ∧
+      HairyPathOfSetsInput.{u} cHair cHairLog :=
+  HairyPathOfSetsTheorem.exists_subgraph_hairy_pathOfSets_of_treewidth_of_sparsifier_ChekuriChuzhoy_routable_cutMatching_route_and_appendixA4
+    hsparseInput hroutable hcutMatching hroute hsplit
+
+/-- Hairy path-of-sets input from the degree-three sparsifier, Lemma 2.17
+routability, the cut-matching/AARV embedding source, the faithful direct
+Section 4 path route, and the Appendix A.4 split-cluster input. -/
+theorem exists_hairyPathOfSetsInput_of_sparsifier_ChekuriChuzhoy_routable_cutMatching_pathRoute_and_appendixA4
+    (hsparseInput :
+      ∃ cSparse cSparseLog : ℕ, 0 < cSparse ∧ 0 < cSparseLog ∧
+        ∀ {V : Type u} [Fintype V] [DecidableEq V]
+          (G : _root_.SimpleGraph V) {k t : ℕ},
+            1 < k →
+              k ≤ treewidth G →
+                cSparse * t * (Nat.log 2 k) ^ cSparseLog < k →
+                  ∃ H : _root_.SimpleGraph V,
+                    H ≤ G ∧ MaxDegreeAtMost H 3 ∧ t ≤ treewidth H)
+    (hroutable :
+      ∃ cSet cSetLog cRoute cRouteLog : ℕ,
+        ChekuriChuzhoy.RoutableSetFromTreewidth.{u}
+          cSet cSetLog cRoute cRouteLog)
+    (hcutMatching :
+      ∃ cDeg cDegLog cAlpha cAlphaLog : ℕ,
+        ChekuriChuzhoy.CutWellLinkedCoreFromRoutableSet.{u}
+          cDeg cDegLog cAlpha cAlphaLog)
+    (hroute :
+      ∃ cRoute cRouteLog cDeltaPow : ℕ,
+        ChekuriChuzhoy.StrongPathOfSetsFromNodeWellLinkedCore.{u}
+          cRoute cRouteLog cDeltaPow)
+    (hsplit :
+      ∃ cSplit : ℕ, 0 < cSplit ∧
+        HairyPathOfSetsTheorem.AppendixA4SplitInput.{u} cSplit) :
+    ∃ cHair cHairLog : ℕ, 0 < cHair ∧ 0 < cHairLog ∧
+      HairyPathOfSetsInput.{u} cHair cHairLog :=
+  HairyPathOfSetsTheorem.exists_subgraph_hairy_pathOfSets_of_treewidth_of_sparsifier_ChekuriChuzhoy_routable_cutMatching_pathRoute_and_appendixA4
+    hsparseInput hroutable hcutMatching hroute hsplit
+
+/-- Hairy path-of-sets input from Theorem A.1 in its paper-shaped Omega form,
+Lemma 2.17 routability, the cut-matching/AARV embedding source, the faithful
+direct Section 4 path route, and the Appendix A.4 split-cluster input. -/
+theorem exists_hairyPathOfSetsInput_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_and_appendixA4
+    (hsparseOmega :
+      ∃ cSparse cSparseLog : ℕ,
+        0 < cSparse ∧ 0 < cSparseLog ∧
+          DegreeThreeStrongPathOfSetsContract.DegreeThreeTreewidthSparsifierOmega.{u}
+            cSparse cSparseLog)
+    (hroutable :
+      ∃ cSet cSetLog cRoute cRouteLog : ℕ,
+        ChekuriChuzhoy.RoutableSetFromTreewidth.{u}
+          cSet cSetLog cRoute cRouteLog)
+    (hcutMatching :
+      ∃ cDeg cDegLog cAlpha cAlphaLog : ℕ,
+        ChekuriChuzhoy.CutWellLinkedCoreFromRoutableSet.{u}
+          cDeg cDegLog cAlpha cAlphaLog)
+    (hroute :
+      ∃ cRoute cRouteLog cDeltaPow : ℕ,
+        ChekuriChuzhoy.StrongPathOfSetsFromNodeWellLinkedCore.{u}
+          cRoute cRouteLog cDeltaPow)
+    (hsplit :
+      ∃ cSplit : ℕ, 0 < cSplit ∧
+        HairyPathOfSetsTheorem.AppendixA4SplitInput.{u} cSplit) :
+    ∃ cHair cHairLog : ℕ, 0 < cHair ∧ 0 < cHairLog ∧
+      HairyPathOfSetsInput.{u} cHair cHairLog :=
+  HairyPathOfSetsTheorem.exists_subgraph_hairy_pathOfSets_of_treewidth_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_and_appendixA4
+    hsparseOmega hroutable hcutMatching hroute hsplit
+
+/-- Hairy path-of-sets input from Theorem A.1 in its paper-shaped Omega form,
+the bundled explicit Chekuri--Chuzhoy A.2 source inputs, and the Appendix A.4
+split-cluster input. -/
+theorem exists_hairyPathOfSetsInput_of_A1omega_ChekuriChuzhoy_theoremA2SourceInputs_and_appendixA4
+    (hsparseOmega :
+      ∃ cSparse cSparseLog : ℕ,
+        0 < cSparse ∧ 0 < cSparseLog ∧
+          DegreeThreeStrongPathOfSetsContract.DegreeThreeTreewidthSparsifierOmega.{u}
+            cSparse cSparseLog)
+    (hA2 : ChekuriChuzhoy.TheoremA2SourceInputs.{u})
+    (hsplit :
+      ∃ cSplit : ℕ, 0 < cSplit ∧
+        HairyPathOfSetsTheorem.AppendixA4SplitInput.{u} cSplit) :
+    ∃ cHair cHairLog : ℕ, 0 < cHair ∧ 0 < cHairLog ∧
+      HairyPathOfSetsInput.{u} cHair cHairLog :=
+  HairyPathOfSetsTheorem.exists_subgraph_hairy_pathOfSets_of_treewidth_of_A1omega_ChekuriChuzhoy_theoremA2SourceInputs_and_appendixA4
+    hsparseOmega hA2 hsplit
+
+/-- Hairy path-of-sets input from Theorem A.1 in its paper-shaped Omega form,
+Lemma 2.17 routability, the cut-matching/AARV embedding source, the Section 4
+strong-tree construction, Theorem 4.6 extraction, and the Appendix A.4
+split-cluster input. -/
+theorem exists_hairyPathOfSetsInput_of_A1omega_ChekuriChuzhoy_routable_cutMatching_treeCore_extraction_and_appendixA4
+    (hsparseOmega :
+      ∃ cSparse cSparseLog : ℕ,
+        0 < cSparse ∧ 0 < cSparseLog ∧
+          DegreeThreeStrongPathOfSetsContract.DegreeThreeTreewidthSparsifierOmega.{u}
+            cSparse cSparseLog)
+    (hroutable :
+      ∃ cSet cSetLog cRoute cRouteLog : ℕ,
+        ChekuriChuzhoy.RoutableSetFromTreewidth.{u}
+          cSet cSetLog cRoute cRouteLog)
+    (hcutMatching :
+      ∃ cDeg cDegLog cAlpha cAlphaLog : ℕ,
+        ChekuriChuzhoy.CutWellLinkedCoreFromRoutableSet.{u}
+          cDeg cDegLog cAlpha cAlphaLog)
+    (hbuild :
+      ∃ cBuild cBuildLog cDeltaPow : ℕ,
+        ChekuriChuzhoy.StrongTreeOfSetsCoreFromNodeWellLinkedCore.{u}
+          cBuild cBuildLog cDeltaPow)
+    (hextract : ChekuriChuzhoy.StrongPathOfSetsFromStrongTreeOfSets.{u})
+    (hsplit :
+      ∃ cSplit : ℕ, 0 < cSplit ∧
+        HairyPathOfSetsTheorem.AppendixA4SplitInput.{u} cSplit) :
+    ∃ cHair cHairLog : ℕ, 0 < cHair ∧ 0 < cHairLog ∧
+      HairyPathOfSetsInput.{u} cHair cHairLog :=
+  HairyPathOfSetsTheorem.exists_subgraph_hairy_pathOfSets_of_treewidth_of_A1omega_ChekuriChuzhoy_routable_cutMatching_treeCore_extraction_and_appendixA4
+    hsparseOmega hroutable hcutMatching hbuild hextract hsplit
+
+/-- Hairy path-of-sets input from Theorem A.1 in its paper-shaped Omega form,
+Lemma 2.17 routability, the cut-matching/AARV embedding source, the Section 4
+strong-tree construction, the split proof of Theorem 4.6, and the Appendix
+A.4 split-cluster input. -/
+theorem exists_hairyPathOfSetsInput_of_A1omega_ChekuriChuzhoy_routable_cutMatching_treeCore_metaDichotomy_leafExtraction_and_appendixA4
+    (hsparseOmega :
+      ∃ cSparse cSparseLog : ℕ,
+        0 < cSparse ∧ 0 < cSparseLog ∧
+          DegreeThreeStrongPathOfSetsContract.DegreeThreeTreewidthSparsifierOmega.{u}
+            cSparse cSparseLog)
+    (hroutable :
+      ∃ cSet cSetLog cRoute cRouteLog : ℕ,
+        ChekuriChuzhoy.RoutableSetFromTreewidth.{u}
+          cSet cSetLog cRoute cRouteLog)
+    (hcutMatching :
+      ∃ cDeg cDegLog cAlpha cAlphaLog : ℕ,
+        ChekuriChuzhoy.CutWellLinkedCoreFromRoutableSet.{u}
+          cDeg cDegLog cAlpha cAlphaLog)
+    (hbuild :
+      ∃ cBuild cBuildLog cDeltaPow : ℕ,
+        ChekuriChuzhoy.StrongTreeOfSetsCoreFromNodeWellLinkedCore.{u}
+          cBuild cBuildLog cDeltaPow)
+    (hdichotomy : ChekuriChuzhoy.StrongTreeMetaDichotomy.{u})
+    (hleaf : ChekuriChuzhoy.StrongPathOfSetsFromLeafyStrongTreeOfSets.{u})
+    (hsplit :
+      ∃ cSplit : ℕ, 0 < cSplit ∧
+        HairyPathOfSetsTheorem.AppendixA4SplitInput.{u} cSplit) :
+    ∃ cHair cHairLog : ℕ, 0 < cHair ∧ 0 < cHairLog ∧
+      HairyPathOfSetsInput.{u} cHair cHairLog :=
+  HairyPathOfSetsTheorem.exists_subgraph_hairy_pathOfSets_of_treewidth_of_A1omega_ChekuriChuzhoy_routable_cutMatching_treeCore_metaDichotomy_leafExtraction_and_appendixA4
+    hsparseOmega hroutable hcutMatching hbuild hdichotomy hleaf hsplit
+
+/-- Hairy path-of-sets input from Theorem A.1 in its paper-shaped Omega form,
+Lemma 2.17 routability, the cut-matching/AARV embedding source, the Section 4
+strong-tree construction, the proved finite-tree dichotomy, the DFS/many-leaves
+branch of Theorem 4.6, and the Appendix A.4 split-cluster input. -/
+theorem exists_hairyPathOfSetsInput_of_A1omega_ChekuriChuzhoy_routable_cutMatching_treeCore_leafExtraction_and_appendixA4
+    (hsparseOmega :
+      ∃ cSparse cSparseLog : ℕ,
+        0 < cSparse ∧ 0 < cSparseLog ∧
+          DegreeThreeStrongPathOfSetsContract.DegreeThreeTreewidthSparsifierOmega.{u}
+            cSparse cSparseLog)
+    (hroutable :
+      ∃ cSet cSetLog cRoute cRouteLog : ℕ,
+        ChekuriChuzhoy.RoutableSetFromTreewidth.{u}
+          cSet cSetLog cRoute cRouteLog)
+    (hcutMatching :
+      ∃ cDeg cDegLog cAlpha cAlphaLog : ℕ,
+        ChekuriChuzhoy.CutWellLinkedCoreFromRoutableSet.{u}
+          cDeg cDegLog cAlpha cAlphaLog)
+    (hbuild :
+      ∃ cBuild cBuildLog cDeltaPow : ℕ,
+        ChekuriChuzhoy.StrongTreeOfSetsCoreFromNodeWellLinkedCore.{u}
+          cBuild cBuildLog cDeltaPow)
+    (hleaf : ChekuriChuzhoy.StrongPathOfSetsFromLeafyStrongTreeOfSets.{u})
+    (hsplit :
+      ∃ cSplit : ℕ, 0 < cSplit ∧
+        HairyPathOfSetsTheorem.AppendixA4SplitInput.{u} cSplit) :
+    ∃ cHair cHairLog : ℕ, 0 < cHair ∧ 0 < cHairLog ∧
+      HairyPathOfSetsInput.{u} cHair cHairLog :=
+  HairyPathOfSetsTheorem.exists_subgraph_hairy_pathOfSets_of_treewidth_of_A1omega_ChekuriChuzhoy_routable_cutMatching_treeCore_leafExtraction_and_appendixA4
+    hsparseOmega hroutable hcutMatching hbuild hleaf hsplit
+
 /-- The imported Chuzhoy--Tan crossbar theorem supplies the local crossbar
 dichotomy input used by the polynomial grid-minor composition.
 
@@ -111,6 +454,37 @@ theorem exists_crossbarDichotomyInput :
     ∃ cCross : ℕ, 0 < cCross ∧
       HairyPathOfSetsSystem.CrossbarDichotomyInput.{u} cCross :=
   CrossbarTheorem.crossbar_or_strong_pathOfSets_minor
+
+/-- Section 4 weak crossbar input packaged in the shape used by the
+polynomial grid-minor composition. -/
+theorem exists_crossbarDichotomyInput10 :
+    ∃ cCross : ℕ, 0 < cCross ∧
+      HairyPathOfSetsSystem.CrossbarDichotomyInput10.{u} cCross :=
+  HairyPathOfSetsSystem.exists_crossbarDichotomyInput10
+
+/-- Section 4 weak crossbar input from the formal Theorem 4.1 proof and the
+explicit pseudo-grid branch for Sections 4.2--4.6. -/
+theorem exists_crossbarDichotomyInput10_of_section4PseudoGridBranchInput
+    {cCross : ℕ} (hcCross : 0 < cCross)
+    (hbranch :
+      CrossbarTheorem.Section4PseudoGridBranchInput10.{u} cCross) :
+    ∃ cCross : ℕ, 0 < cCross ∧
+      HairyPathOfSetsSystem.CrossbarDichotomyInput10.{u} cCross :=
+  HairyPathOfSetsSystem.exists_crossbarDichotomyInput10_of_section4PseudoGridBranchInput
+    hcCross hbranch
+
+/-- Section 4 weak crossbar input from the formal Theorem 4.1 proof, the
+Section 4.5 weak path-of-sets assembly data, and Section 4.6 strongification
+data. -/
+theorem exists_crossbarDichotomyInput10_of_section4WeakToStrongAssemblyInput
+    {cCross : ℕ} (hcCross : 0 < cCross)
+    (hbranch :
+      CrossbarTheorem.Section4WeakToStrongAssemblyInput10.{u} cCross) :
+    ∃ cCross : ℕ, 0 < cCross ∧
+      HairyPathOfSetsSystem.CrossbarDichotomyInput10.{u} cCross :=
+  HairyPathOfSetsSystem.exists_crossbarDichotomyInput10_of_section4WeakToStrongAssemblyInput
+    hcCross hbranch
+
 
 /-- Axiom-free graph-theoretic composition from explicit hard inputs.
 
@@ -158,6 +532,59 @@ theorem gridMinor_or_gridMinor_of_treewidth_parameters_with_scaled_strong_parame
     ⟨cHair, cHairLog, hcHair, hcHairLog, hhairy⟩
   rcases
     HairyPathOfSetsSystem.gridMinor_or_gridMinor_of_subgraph_hairy_pathOfSets_with_scaled_strong_parameter_of_inputs
+      hcrossInput hstrongGrid hlargeData with
+    ⟨cCross, cGrid, cStrong, hcCross, hcGrid, hcStrong, hcrossbar⟩
+  refine ⟨cHair, cHairLog, cCross, cGrid, cStrong,
+    hcHair, hcHairLog, hcCross, hcGrid, hcStrong, ?_⟩
+  intro V _ _ G ell w k g r hell hw hk htw hhairyLarge hg hr hpow hellGrid
+    hwGrid hlarge hscaled
+  rcases hhairy G hell hw hk htw hhairyLarge with
+    ⟨H, hHG, hmaxDegree, ⟨Hsys⟩⟩
+  exact hcrossbar G H Hsys hHG hg hr hpow hmaxDegree hellGrid hwGrid hlarge
+    hscaled
+
+/-- Axiom-free graph-theoretic composition from explicit hard inputs, using
+the Section 4 `g^10 log g` crossbar input. -/
+theorem gridMinor_or_gridMinor_of_treewidth_parameters_with_scaled_strong_parameter_of_inputs10
+    (hhairyInput :
+      ∃ cHair cHairLog : ℕ, 0 < cHair ∧ 0 < cHairLog ∧
+        HairyPathOfSetsInput.{u} cHair cHairLog)
+    (hcrossInput :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        HairyPathOfSetsSystem.CrossbarDichotomyInput10.{u} cCross)
+    (hstrongGrid :
+      ∃ cStrong : ℕ, 0 < cStrong ∧
+        StrongMinorGridInput.{u} cStrong)
+    (hlargeData :
+      ∃ cGrid : ℕ, 0 < cGrid ∧
+        HairyCrossbarGrid.LargeCaseCutMatchingDataProvider.{u} cGrid) :
+    ∃ cHair cHairLog cCross cGrid cStrong : ℕ,
+      0 < cHair ∧ 0 < cHairLog ∧ 0 < cCross ∧
+        0 < cGrid ∧ 0 < cStrong ∧
+          ∀ {V : Type u} [Fintype V] [DecidableEq V]
+            (G : _root_.SimpleGraph V) {ell w k g r : ℕ},
+              1 < ell →
+                1 < w →
+                  1 < k →
+                    k ≤ treewidth G →
+                      cHair * w * ell ^ 48 * (Nat.log 2 k) ^ cHairLog < k →
+                        2 ≤ g →
+                          2 ≤ r →
+                            CrossbarContract.IsPowerOfTwo g →
+                              cGrid * Nat.log 2 g ≤ ell →
+                                g ^ 2 ≤ w →
+                                  2 ^ 22 * g ^ 10 * Nat.log 2 g ≤ w →
+                                    cCross * r ^ 2 ≤ g ^ 2 →
+                                      (∃ g' : ℕ,
+                                        g ≤ cGrid * g' * (Nat.log 2 g) ^ 2 ∧
+                                          ContainsGridMinor G g') ∨
+                                        ∃ r' : ℕ,
+                                          r ≤ cStrong * r' ∧
+                                            ContainsGridMinor G r' := by
+  rcases hhairyInput with
+    ⟨cHair, cHairLog, hcHair, hcHairLog, hhairy⟩
+  rcases
+    HairyPathOfSetsSystem.gridMinor_or_gridMinor_of_subgraph_hairy_pathOfSets_with_scaled_strong_parameter_of_inputs10
       hcrossInput hstrongGrid hlargeData with
     ⟨cCross, cGrid, cStrong, hcCross, hcGrid, hcStrong, hcrossbar⟩
   refine ⟨cHair, cHairLog, cCross, cGrid, cStrong,
@@ -4741,6 +5168,205 @@ theorem containsGridMinor_of_treewidth_parameters_with_scaled_strong_parameter_o
     exact hgrid.of_order_le htarget_le
 
 /-- Axiom-free parameterized proof after both branch lower bounds, using the
+Section 4 weak `g^10 log g` crossbar input. -/
+theorem containsGridMinor_of_treewidth_parameters_with_scaled_strong_parameter_of_inputs10
+    (hhairyInput :
+      ∃ cHair cHairLog : ℕ, 0 < cHair ∧ 0 < cHairLog ∧
+        HairyPathOfSetsInput.{u} cHair cHairLog)
+    (hcrossInput :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        HairyPathOfSetsSystem.CrossbarDichotomyInput10.{u} cCross)
+    (hstrongGrid :
+      ∃ cStrong : ℕ, 0 < cStrong ∧
+        StrongMinorGridInput.{u} cStrong)
+    (hlargeData :
+      ∃ cGrid : ℕ, 0 < cGrid ∧
+        HairyCrossbarGrid.LargeCaseCutMatchingDataProvider.{u} cGrid) :
+    ∃ cHair cHairLog cCross cGrid cStrong : ℕ,
+      0 < cHair ∧ 0 < cHairLog ∧ 0 < cCross ∧
+        0 < cGrid ∧ 0 < cStrong ∧
+          ∀ {V : Type u} [Fintype V] [DecidableEq V]
+            (G : _root_.SimpleGraph V) {ell w k g r target : ℕ},
+              1 < ell →
+                1 < w →
+                  1 < k →
+                    k ≤ treewidth G →
+                      cHair * w * ell ^ 48 * (Nat.log 2 k) ^ cHairLog < k →
+                        2 ≤ g →
+                          2 ≤ r →
+                            CrossbarContract.IsPowerOfTwo g →
+                              cGrid * Nat.log 2 g ≤ ell →
+                                g ^ 2 ≤ w →
+                                  2 ^ 22 * g ^ 10 * Nat.log 2 g ≤ w →
+                                    cCross * r ^ 2 ≤ g ^ 2 →
+                                      cGrid * target * (Nat.log 2 g) ^ 2 ≤ g →
+                                        cStrong * target ≤ r →
+                                          ContainsGridMinor G target := by
+  rcases
+    gridMinor_or_gridMinor_of_treewidth_parameters_with_scaled_strong_parameter_of_inputs10
+      hhairyInput hcrossInput hstrongGrid hlargeData with
+    ⟨cHair, cHairLog, cCross, cGrid, cStrong,
+      hcHair, hcHairLog, hcCross, hcGrid, hcStrong, hmain⟩
+  refine ⟨cHair, cHairLog, cCross, cGrid, cStrong,
+    hcHair, hcHairLog, hcCross, hcGrid, hcStrong, ?_⟩
+  intro V _ _ G ell w k g r target hell hw hk htw hhairyLarge hg hr hpow
+    hellGrid hwGrid hlarge hscaled htargetDirect htargetStrong
+  rcases hmain G hell hw hk htw hhairyLarge hg hr hpow hellGrid hwGrid hlarge
+      hscaled with hdirect | hstrong
+  · rcases hdirect with ⟨g', hproduced, hgrid⟩
+    exact hgrid.of_order_le
+      (le_gridOrder_of_direct_branch_bound hcGrid hg htargetDirect hproduced)
+  · rcases hstrong with ⟨r', hproduced, hgrid⟩
+    have htarget_le : target ≤ r' :=
+      le_of_const_mul_le_const_mul hcStrong (le_trans htargetStrong hproduced)
+    exact hgrid.of_order_le htarget_le
+
+/-- Parameterized proof using the formal Appendix A.2/A.4 hairy route and
+the Section 4 weak crossbar route.  The remaining hypotheses are the
+degree-three strong path-of-sets input, the pseudo-grid branch of
+Sections 4.2--4.6, the strong-minor-to-grid input, and the large-case
+cut-matching data provider. -/
+theorem containsGridMinor_of_treewidth_parameters_with_scaled_strong_parameter_of_appendixA2_and_section4_inputs
+    (hhairyPaper :
+      ∃ cStrong cStrongLog cSplit : ℕ,
+        0 < cStrong ∧
+          0 < cStrongLog ∧
+            0 < cSplit ∧
+              HairyPathOfSetsTheorem.DegreeThreeStrongPathOfSetsInput.{u}
+                cStrong cStrongLog cSplit ∧
+                HairyPathOfSetsTheorem.AppendixA4SplitInput.{u} cSplit)
+    (hsection4 :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        CrossbarTheorem.Section4PseudoGridBranchInput10.{u} cCross)
+    (hstrongGrid :
+      ∃ cStrong : ℕ, 0 < cStrong ∧
+        StrongMinorGridInput.{u} cStrong)
+    (hlargeData :
+      ∃ cGrid : ℕ, 0 < cGrid ∧
+        HairyCrossbarGrid.LargeCaseCutMatchingDataProvider.{u} cGrid) :
+    ∃ cHair cHairLog cCross cGrid cStrong : ℕ,
+      0 < cHair ∧ 0 < cHairLog ∧ 0 < cCross ∧
+        0 < cGrid ∧ 0 < cStrong ∧
+          ∀ {V : Type u} [Fintype V] [DecidableEq V]
+            (G : _root_.SimpleGraph V) {ell w k g r target : ℕ},
+              1 < ell →
+                1 < w →
+                  1 < k →
+                    k ≤ treewidth G →
+                      cHair * w * ell ^ 48 * (Nat.log 2 k) ^ cHairLog < k →
+                        2 ≤ g →
+                          2 ≤ r →
+                            CrossbarContract.IsPowerOfTwo g →
+                              cGrid * Nat.log 2 g ≤ ell →
+                                g ^ 2 ≤ w →
+                                  2 ^ 22 * g ^ 10 * Nat.log 2 g ≤ w →
+                                    cCross * r ^ 2 ≤ g ^ 2 →
+                                      cGrid * target * (Nat.log 2 g) ^ 2 ≤ g →
+                                        cStrong * target ≤ r →
+                                          ContainsGridMinor G target := by
+  rcases hsection4 with ⟨cCross, hcCross, hbranch⟩
+  exact containsGridMinor_of_treewidth_parameters_with_scaled_strong_parameter_of_inputs10
+    (exists_hairyPathOfSetsInput_of_appendixA2PaperInputs hhairyPaper)
+    (exists_crossbarDichotomyInput10_of_section4PseudoGridBranchInput
+      hcCross hbranch)
+    hstrongGrid
+    hlargeData
+
+/-- Parameterized proof using the formal Appendix A.2/A.4 hairy route and the
+Section 4 route reduced to Section 4.5 weak path-of-sets assembly plus
+Section 4.6 strongification data. -/
+theorem containsGridMinor_of_treewidth_parameters_with_scaled_strong_parameter_of_appendixA2_and_section4_weakToStrong_inputs
+    (hhairyPaper :
+      ∃ cStrong cStrongLog cSplit : ℕ,
+        0 < cStrong ∧
+          0 < cStrongLog ∧
+            0 < cSplit ∧
+              HairyPathOfSetsTheorem.DegreeThreeStrongPathOfSetsInput.{u}
+                cStrong cStrongLog cSplit ∧
+                HairyPathOfSetsTheorem.AppendixA4SplitInput.{u} cSplit)
+    (hsection4 :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        CrossbarTheorem.Section4WeakToStrongAssemblyInput10.{u} cCross)
+    (hstrongGrid :
+      ∃ cStrong : ℕ, 0 < cStrong ∧
+        StrongMinorGridInput.{u} cStrong)
+    (hlargeData :
+      ∃ cGrid : ℕ, 0 < cGrid ∧
+        HairyCrossbarGrid.LargeCaseCutMatchingDataProvider.{u} cGrid) :
+    ∃ cHair cHairLog cCross cGrid cStrong : ℕ,
+      0 < cHair ∧ 0 < cHairLog ∧ 0 < cCross ∧
+        0 < cGrid ∧ 0 < cStrong ∧
+          ∀ {V : Type u} [Fintype V] [DecidableEq V]
+            (G : _root_.SimpleGraph V) {ell w k g r target : ℕ},
+              1 < ell →
+                1 < w →
+                  1 < k →
+                    k ≤ treewidth G →
+                      cHair * w * ell ^ 48 * (Nat.log 2 k) ^ cHairLog < k →
+                        2 ≤ g →
+                          2 ≤ r →
+                            CrossbarContract.IsPowerOfTwo g →
+                              cGrid * Nat.log 2 g ≤ ell →
+                                g ^ 2 ≤ w →
+                                  2 ^ 22 * g ^ 10 * Nat.log 2 g ≤ w →
+                                    cCross * r ^ 2 ≤ g ^ 2 →
+                                      cGrid * target * (Nat.log 2 g) ^ 2 ≤ g →
+                                        cStrong * target ≤ r →
+                                          ContainsGridMinor G target := by
+  rcases hsection4 with ⟨cCross, hcCross, hbranch⟩
+  exact
+    containsGridMinor_of_treewidth_parameters_with_scaled_strong_parameter_of_appendixA2_and_section4_inputs
+      hhairyPaper
+      ⟨cCross, hcCross,
+        CrossbarTheorem.section4PseudoGridBranchInput10_of_weakToStrongAssemblyInput10
+          hbranch⟩
+      hstrongGrid
+      hlargeData
+
+/-- Same parameterized proof after discharging the Appendix A.2
+degree-three/strong-path-of-sets ingredient through its contract.  The
+remaining hairy-side hypothesis is only the Appendix A.4 split-cluster input. -/
+theorem containsGridMinor_of_treewidth_parameters_with_scaled_strong_parameter_of_appendixA4_and_section4_weakToStrong_inputs
+    (happendixA4 :
+      ∃ cSplit : ℕ, 0 < cSplit ∧
+        HairyPathOfSetsTheorem.AppendixA4SplitInput.{u} cSplit)
+    (hsection4 :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        CrossbarTheorem.Section4WeakToStrongAssemblyInput10.{u} cCross)
+    (hstrongGrid :
+      ∃ cStrong : ℕ, 0 < cStrong ∧
+        StrongMinorGridInput.{u} cStrong)
+    (hlargeData :
+      ∃ cGrid : ℕ, 0 < cGrid ∧
+        HairyCrossbarGrid.LargeCaseCutMatchingDataProvider.{u} cGrid) :
+    ∃ cHair cHairLog cCross cGrid cStrong : ℕ,
+      0 < cHair ∧ 0 < cHairLog ∧ 0 < cCross ∧
+        0 < cGrid ∧ 0 < cStrong ∧
+          ∀ {V : Type u} [Fintype V] [DecidableEq V]
+            (G : _root_.SimpleGraph V) {ell w k g r target : ℕ},
+              1 < ell →
+                1 < w →
+                  1 < k →
+                    k ≤ treewidth G →
+                      cHair * w * ell ^ 48 * (Nat.log 2 k) ^ cHairLog < k →
+                        2 ≤ g →
+                          2 ≤ r →
+                            CrossbarContract.IsPowerOfTwo g →
+                              cGrid * Nat.log 2 g ≤ ell →
+                                g ^ 2 ≤ w →
+                                  2 ^ 22 * g ^ 10 * Nat.log 2 g ≤ w →
+                                    cCross * r ^ 2 ≤ g ^ 2 →
+                                      cGrid * target * (Nat.log 2 g) ^ 2 ≤ g →
+                                        cStrong * target ≤ r →
+                                          ContainsGridMinor G target :=
+  containsGridMinor_of_treewidth_parameters_with_scaled_strong_parameter_of_appendixA2_and_section4_weakToStrong_inputs
+    (HairyPathOfSetsTheorem.exists_appendixA2PaperInputs_of_appendixA4SplitInput
+      happendixA4)
+    hsection4
+    hstrongGrid
+    hlargeData
+
+/-- Axiom-free parameterized proof after both branch lower bounds, using the
 target-provider large-case route. -/
 theorem containsGridMinor_of_treewidth_parameters_with_scaled_strong_parameter_of_inputs_and_unbundledCutMatching_and_targetProviders
     (hhairyInput :
@@ -7332,6 +7958,1024 @@ theorem polynomial_grid_minor_theorem :
           SharpClogCoefficientPolynomialThresholdTemplate.canonical
             cHair cHairLog cCross cGrid cStrong)
 
+/-- Degree-ten corollary of the explicit-input composition theorem.
+
+This does not reprove the theorem with weaker arithmetic; it reuses the
+degree-nine composition and relaxes the public threshold. -/
+theorem polynomial_grid_minor_theorem_degree10_of_inputs
+    (hhairyInput :
+      ∃ cHair cHairLog : ℕ, 0 < cHair ∧ 0 < cHairLog ∧
+        HairyPathOfSetsInput.{u} cHair cHairLog)
+    (hcrossInput :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        HairyPathOfSetsSystem.CrossbarDichotomyInput.{u} cCross)
+    (hstrongGrid :
+      ∃ cStrong : ℕ, 0 < cStrong ∧
+        StrongMinorGridInput.{u} cStrong)
+    (hlargeData :
+      ∃ cGrid : ℕ, 0 < cGrid ∧
+        HairyCrossbarGrid.LargeCaseCutMatchingDataProvider.{u} cGrid) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  polynomial_grid_minor_theorem_degree10_of_degree9
+    (polynomial_grid_minor_theorem_of_inputs
+      hhairyInput hcrossInput hstrongGrid hlargeData)
+
+/-- Degree-ten corollary of the explicit-input composition theorem using the
+unbundled cut-matching provider and explicit Theorem 8.1 target-size provider. -/
+theorem polynomial_grid_minor_theorem_degree10_of_inputs_and_unbundledCutMatching_and_targetProviders
+    (hhairyInput :
+      ∃ cHair cHairLog : ℕ, 0 < cHair ∧ 0 < cHairLog ∧
+        HairyPathOfSetsInput.{u} cHair cHairLog)
+    (hcrossInput :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        HairyPathOfSetsSystem.CrossbarDichotomyInput.{u} cCross)
+    (hstrongGrid :
+      ∃ cStrong : ℕ, 0 < cStrong ∧
+        StrongMinorGridInput.{u} cStrong)
+    (hproviders :
+      ∃ cRound cScale : ℕ, 0 < cRound ∧ 0 < cScale ∧
+        HairyCrossbarGrid.FixedRoundCutMatchingUnbundledProvider.{u}
+          cRound ∧
+          HairyCrossbarGrid.FixedRoundExpanderTargetProvider cRound cScale) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  polynomial_grid_minor_theorem_degree10_of_degree9
+    (polynomial_grid_minor_theorem_of_inputs_and_unbundledCutMatching_and_targetProviders
+      hhairyInput hcrossInput hstrongGrid hproviders)
+
+/-- Degree-ten corollary of the explicit-input composition theorem after
+internalizing the Theorem 8.1 target-size arithmetic. -/
+theorem polynomial_grid_minor_theorem_degree10_of_inputs_and_unbundledCutMatching
+    (hhairyInput :
+      ∃ cHair cHairLog : ℕ, 0 < cHair ∧ 0 < cHairLog ∧
+        HairyPathOfSetsInput.{u} cHair cHairLog)
+    (hcrossInput :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        HairyPathOfSetsSystem.CrossbarDichotomyInput.{u} cCross)
+    (hstrongGrid :
+      ∃ cStrong : ℕ, 0 < cStrong ∧
+        StrongMinorGridInput.{u} cStrong)
+    (hprovider :
+      ∃ cRound : ℕ, 0 < cRound ∧
+        HairyCrossbarGrid.FixedRoundCutMatchingUnbundledProvider.{u}
+          cRound) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  polynomial_grid_minor_theorem_degree10_of_degree9
+    (polynomial_grid_minor_theorem_of_inputs_and_unbundledCutMatching
+      hhairyInput hcrossInput hstrongGrid hprovider)
+
+/-- Degree-ten corollary using the unbundled fixed-round cut-matching provider
+and explicit Theorem 8.1 target-size provider. -/
+theorem polynomial_grid_minor_theorem_degree10_of_unbundledCutMatching_and_targetProviders
+    (hproviders :
+      ∃ cRound cScale : ℕ, 0 < cRound ∧ 0 < cScale ∧
+        HairyCrossbarGrid.FixedRoundCutMatchingUnbundledProvider.{u}
+          cRound ∧
+          HairyCrossbarGrid.FixedRoundExpanderTargetProvider cRound cScale) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  polynomial_grid_minor_theorem_degree10_of_degree9
+    (polynomial_grid_minor_theorem_of_unbundledCutMatching_and_targetProviders
+      hproviders)
+
+/-- Degree-ten corollary after internalizing the explicit Theorem 8.1
+target-size arithmetic. -/
+theorem polynomial_grid_minor_theorem_degree10_of_unbundledCutMatching
+    (hprovider :
+      ∃ cRound : ℕ, 0 < cRound ∧
+        HairyCrossbarGrid.FixedRoundCutMatchingUnbundledProvider.{u}
+          cRound) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  polynomial_grid_minor_theorem_degree10_of_degree9
+    (polynomial_grid_minor_theorem_of_unbundledCutMatching hprovider)
+
+/-- Degree-ten proof-facing form with the Section 4 cut-matching game
+internalized.  This is a relaxed-threshold corollary of the existing
+degree-nine cut-matching route. -/
+theorem polynomial_grid_minor_theorem_degree10_of_cutMatchingGame :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  polynomial_grid_minor_theorem_degree10_of_unbundledCutMatching
+    HairyCrossbarGrid.exists_fixedRoundCutMatchingUnbundledProvider
+
+/-- Degree-ten form of the polynomial excluded-grid theorem in the
+proof-facing namespace.  It is obtained from the proved degree-nine theorem. -/
+theorem polynomial_grid_minor_theorem_degree10 :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  polynomial_grid_minor_theorem_degree10_of_degree9
+    polynomial_grid_minor_theorem
+
+/-!
+## Direct degree-ten numerical endpoint
+
+The preceding degree-ten public statements reuse the stronger degree-nine
+crossbar-width route.  Section 4 of Chuzhoy--Tan only supplies the weaker
+`g^10 log g` local crossbar input, so we also keep a parallel endpoint whose
+parameter package asks for exactly that weaker width inequality.
+-/
+
+/-- Numerical parameter package for the proof skeleton using the Section 4
+`g^10 log g` crossbar-width requirement. -/
+structure ParameterChoice10
+    (cHair cHairLog cCross cGrid cStrong target tw : ℕ) where
+  /-- Hairy path-of-sets length. -/
+  ell : ℕ
+  /-- Hairy path-of-sets width. -/
+  w : ℕ
+  /-- Treewidth scale passed to the hairy path-of-sets theorem. -/
+  k : ℕ
+  /-- Crossbar parameter, required to be a power of two. -/
+  g : ℕ
+  /-- Strong path-of-sets parameter used in the second branch. -/
+  r : ℕ
+  /-- The hairy-system length is nontrivial. -/
+  ell_gt_one : 1 < ell
+  /-- The hairy-system width is nontrivial. -/
+  w_gt_one : 1 < w
+  /-- The treewidth scale is nontrivial. -/
+  k_gt_one : 1 < k
+  /-- The chosen scale is bounded by the graph treewidth. -/
+  k_le_treewidth : k ≤ tw
+  /-- The Chuzhoy--Tan Theorem 2.3 numerical hypothesis. -/
+  hairy_large :
+    cHair * w * ell ^ 48 * (Nat.log 2 k) ^ cHairLog < k
+  /-- The crossbar parameter is at least two. -/
+  g_ge_two : 2 ≤ g
+  /-- The strong-branch parameter is at least two. -/
+  r_ge_two : 2 ≤ r
+  /-- The crossbar parameter is a power of two. -/
+  g_powerOfTwo : CrossbarContract.IsPowerOfTwo g
+  /-- There are enough clusters for the crossbar-grid assembly theorem. -/
+  grid_length : cGrid * Nat.log 2 g ≤ ell
+  /-- The system is wide enough for `g^2` crossbar paths. -/
+  grid_width : g ^ 2 ≤ w
+  /-- The Section 4 local crossbar theorem's weaker width lower bound. -/
+  crossbar_width10 : 2 ^ 22 * g ^ 10 * Nat.log 2 g ≤ w
+  /-- The strong branch can be thinned to parameter `r`. -/
+  strong_scale : cCross * r ^ 2 ≤ g ^ 2
+  /-- The direct branch produces a grid at least as large as `target`. -/
+  target_direct : cGrid * target * (Nat.log 2 g) ^ 2 ≤ g
+  /-- The strong branch produces a grid at least as large as `target`. -/
+  target_strong : cStrong * target ≤ r
+
+namespace ParameterChoice10
+
+/-- A degree-ten numerical parameter choice remains valid when the available
+treewidth bound is increased. -/
+def mono_treewidth {cHair cHairLog cCross cGrid cStrong target tw tw' : ℕ}
+    (P : ParameterChoice10 cHair cHairLog cCross cGrid cStrong target tw)
+    (htw : tw ≤ tw') :
+    ParameterChoice10 cHair cHairLog cCross cGrid cStrong target tw' where
+  ell := P.ell
+  w := P.w
+  k := P.k
+  g := P.g
+  r := P.r
+  ell_gt_one := P.ell_gt_one
+  w_gt_one := P.w_gt_one
+  k_gt_one := P.k_gt_one
+  k_le_treewidth := le_trans P.k_le_treewidth htw
+  hairy_large := P.hairy_large
+  g_ge_two := P.g_ge_two
+  r_ge_two := P.r_ge_two
+  g_powerOfTwo := P.g_powerOfTwo
+  grid_length := P.grid_length
+  grid_width := P.grid_width
+  crossbar_width10 := P.crossbar_width10
+  strong_scale := P.strong_scale
+  target_direct := P.target_direct
+  target_strong := P.target_strong
+
+end ParameterChoice10
+
+/-- Canonical path-of-sets width for the rounded crossbar scale, using the
+Section 4 `g^10 log g` local threshold. -/
+def widthScale10 (n : ℕ) : ℕ :=
+  max 2
+    (max ((GridMinorArithmetic.powTwoFloor n) ^ 2)
+      (2 ^ 22 * (GridMinorArithmetic.powTwoFloor n) ^ 10 *
+        Nat.log 2 (GridMinorArithmetic.powTwoFloor n)))
+
+/-- A simpler upper bound for `widthScale10`, using the unrounded scale. -/
+def coarseWidthScale10 (n : ℕ) : ℕ :=
+  max 2 (max (n ^ 2) (2 ^ 22 * n ^ 10 * Nat.log 2 n))
+
+/-- The degree-ten canonical width is nontrivial. -/
+theorem widthScale10_gt_one (n : ℕ) :
+    1 < widthScale10 n :=
+  lt_of_lt_of_le (by decide : 1 < 2) (le_max_left 2 _)
+
+/-- The degree-ten canonical width contains the square of the rounded
+crossbar scale. -/
+theorem widthScale10_grid_width (n : ℕ) :
+    (GridMinorArithmetic.powTwoFloor n) ^ 2 ≤ widthScale10 n :=
+  le_trans (le_max_left _ _) (le_max_right 2 _)
+
+/-- The degree-ten canonical width satisfies the Section 4 local crossbar
+threshold. -/
+theorem widthScale10_crossbar_width (n : ℕ) :
+    2 ^ 22 * (GridMinorArithmetic.powTwoFloor n) ^ 10 *
+        Nat.log 2 (GridMinorArithmetic.powTwoFloor n) ≤
+      widthScale10 n :=
+  le_trans (le_max_right _ _) (le_max_right 2 _)
+
+/-- The rounded degree-ten crossbar-width term is bounded by the corresponding
+unrounded term. -/
+theorem rounded_crossbar_width10_le_unrounded (n : ℕ) (hn : 2 ≤ n) :
+    2 ^ 22 * (GridMinorArithmetic.powTwoFloor n) ^ 10 *
+        Nat.log 2 (GridMinorArithmetic.powTwoFloor n) ≤
+      2 ^ 22 * n ^ 10 * Nat.log 2 n := by
+  calc
+    2 ^ 22 * (GridMinorArithmetic.powTwoFloor n) ^ 10 *
+        Nat.log 2 (GridMinorArithmetic.powTwoFloor n)
+        =
+      2 ^ 22 * ((GridMinorArithmetic.powTwoFloor n) ^ 10 *
+        Nat.log 2 (GridMinorArithmetic.powTwoFloor n)) := by
+        ac_rfl
+    _ ≤ 2 ^ 22 * (n ^ 10 * Nat.log 2 n) :=
+      Nat.mul_le_mul_left _ (Nat.mul_le_mul
+        (GridMinorArithmetic.pow_powTwoFloor_le_pow hn)
+        (GridMinorArithmetic.log_powTwoFloor_le_log hn))
+    _ = 2 ^ 22 * n ^ 10 * Nat.log 2 n := by
+      ac_rfl
+
+/-- The degree-ten canonical width is bounded by the simpler unrounded width
+expression. -/
+theorem widthScale10_le_unrounded (n : ℕ) (hn : 2 ≤ n) :
+    widthScale10 n ≤ coarseWidthScale10 n := by
+  apply max_le
+  · exact le_max_left _ _
+  · apply max_le
+    · exact le_trans (GridMinorArithmetic.pow_powTwoFloor_le_pow hn)
+        (le_trans (le_max_left _ _) (le_max_right 2 _))
+    · exact le_trans (rounded_crossbar_width10_le_unrounded n hn)
+        (le_trans (le_max_right _ _) (le_max_right 2 _))
+
+/-- The degree-ten coarse width is bounded by the logarithmic width term
+`2^22 * n^10 * log n`, once `n >= 2`. -/
+theorem coarseWidthScale10_le_logarithmic {n : ℕ} (hn : 2 ≤ n) :
+    coarseWidthScale10 n ≤ 2 ^ 22 * n ^ 10 * Nat.log 2 n := by
+  have hnpos : 0 < n := lt_of_lt_of_le (by decide : 0 < 2) hn
+  have hlog_pos : 0 < Nat.log 2 n :=
+    Nat.log_pos (by decide : 1 < 2) hn
+  have hlog_one : 1 ≤ Nat.log 2 n := Nat.succ_le_of_lt hlog_pos
+  have hn10_log_one : 1 ≤ n ^ 10 * Nat.log 2 n :=
+    Nat.mul_le_mul (Nat.succ_le_of_lt (Nat.pow_pos hnpos)) hlog_one
+  have htwo_le_const : 2 ≤ 2 ^ 22 := by decide
+  have htwo_le_term : 2 ≤ 2 ^ 22 * n ^ 10 * Nat.log 2 n := by
+    calc
+      2 = 2 * 1 := by simp
+      _ ≤ 2 ^ 22 * (n ^ 10 * Nat.log 2 n) :=
+        Nat.mul_le_mul htwo_le_const hn10_log_one
+      _ = 2 ^ 22 * n ^ 10 * Nat.log 2 n := by
+        ac_rfl
+  have hn2_le_term : n ^ 2 ≤ 2 ^ 22 * n ^ 10 * Nat.log 2 n := by
+    calc
+      n ^ 2 ≤ n ^ 10 :=
+        Nat.pow_le_pow_right hnpos (by decide : 2 ≤ 10)
+      _ = n ^ 10 * 1 := by simp
+      _ ≤ n ^ 10 * Nat.log 2 n := Nat.mul_le_mul_left _ hlog_one
+      _ = 1 * (n ^ 10 * Nat.log 2 n) := by simp
+      _ ≤ 2 ^ 22 * (n ^ 10 * Nat.log 2 n) :=
+        Nat.mul_le_mul_right _ (by decide : 1 ≤ 2 ^ 22)
+      _ = 2 ^ 22 * n ^ 10 * Nat.log 2 n := by
+        ac_rfl
+  rw [coarseWidthScale10]
+  apply max_le
+  · exact htwo_le_term
+  · apply max_le
+    · exact hn2_le_term
+    · exact le_rfl
+
+/-- The exact degree-ten hairy-system size expression is bounded by the
+logarithmic width/length expression preserving the `n^10` exponent. -/
+theorem hairy_size10_le_logarithmic
+    (cHair cHairLog cGrid k n : ℕ) (hn : 2 ≤ n) :
+    cHair * widthScale10 n * (lengthScale cGrid n) ^ 48 *
+        (Nat.log 2 k) ^ cHairLog ≤
+      cHair * (2 ^ 22 * n ^ 10 * Nat.log 2 n) *
+        (max 2 cGrid * Nat.log 2 n) ^ 48 *
+        (Nat.log 2 k) ^ cHairLog := by
+  have hw : widthScale10 n ≤ 2 ^ 22 * n ^ 10 * Nat.log 2 n :=
+    le_trans (widthScale10_le_unrounded n hn)
+      (coarseWidthScale10_le_logarithmic hn)
+  have hell :
+      lengthScale cGrid n ≤ max 2 cGrid * Nat.log 2 n :=
+    le_trans (lengthScale_le_unrounded cGrid n hn)
+      (coarseLengthScale_le_logarithmic cGrid hn)
+  gcongr
+
+/-- The degree-ten logarithmic hairy-size upper bound can be written as one
+constant times `n^10 * (log n)^49`. -/
+theorem logarithmic_hairy_size10_eq_normalized
+    (cHair cHairLog cGrid k n : ℕ) :
+    cHair * (2 ^ 22 * n ^ 10 * Nat.log 2 n) *
+        (max 2 cGrid * Nat.log 2 n) ^ 48 *
+        (Nat.log 2 k) ^ cHairLog =
+      exponentHairyConstant cHair cGrid * n ^ 10 *
+        (Nat.log 2 n) ^ 49 *
+        (Nat.log 2 k) ^ cHairLog := by
+  rw [mul_pow]
+  have hlog :
+      Nat.log 2 n * (Nat.log 2 n) ^ 48 =
+        (Nat.log 2 n) ^ 49 := by
+    rw [show (49 : ℕ) = 1 + 48 by decide, pow_add]
+    simp
+  calc
+    cHair * (2 ^ 22 * n ^ 10 * Nat.log 2 n) *
+        ((max 2 cGrid) ^ 48 * (Nat.log 2 n) ^ 48) *
+        (Nat.log 2 k) ^ cHairLog
+        =
+      cHair * 2 ^ 22 * (max 2 cGrid) ^ 48 * n ^ 10 *
+        (Nat.log 2 n * (Nat.log 2 n) ^ 48) *
+        (Nat.log 2 k) ^ cHairLog := by
+        ac_rfl
+    _ =
+      exponentHairyConstant cHair cGrid * n ^ 10 *
+        (Nat.log 2 n) ^ 49 *
+        (Nat.log 2 k) ^ cHairLog := by
+        rw [hlog, exponentHairyConstant]
+
+/-- A normalized logarithmic degree-ten hairy-system inequality implies the
+exact hairy-system inequality used by the Section 4 proof skeleton. -/
+theorem hairy_large10_of_logarithmic_normalized
+    {cHair cHairLog cGrid k n : ℕ} (hn : 2 ≤ n)
+    (h :
+      exponentHairyConstant cHair cGrid * n ^ 10 *
+        (Nat.log 2 n) ^ 49 *
+        (Nat.log 2 k) ^ cHairLog < k) :
+    cHair * widthScale10 n * (lengthScale cGrid n) ^ 48 *
+        (Nat.log 2 k) ^ cHairLog < k := by
+  apply lt_of_le_of_lt (hairy_size10_le_logarithmic cHair cHairLog cGrid k n hn)
+  rwa [logarithmic_hairy_size10_eq_normalized]
+
+/-- The public degree-ten polynomial grid-minor threshold is the degree-ten
+monomial-logarithmic scale. -/
+theorem polynomialGridMinorTreewidthBound10_eq_monomialLogScale
+    (K b target : ℕ) :
+    polynomialGridMinorTreewidthBound10 K b target =
+      monomialLogScale K 10 b target :=
+  rfl
+
+/-- The public degree-ten polynomial grid-minor threshold is nontrivial when
+its coefficient is positive and the target grid order is at least two. -/
+theorem polynomialGridMinorTreewidthBound10_gt_one
+    {K b target : ℕ} (hK : 1 ≤ K) (htarget : 2 ≤ target) :
+    1 < polynomialGridMinorTreewidthBound10 K b target := by
+  have hlog_pos : 0 < Nat.log 2 target :=
+    Nat.log_pos (by decide : 1 < 2) htarget
+  have hlog_pow : 1 ≤ (Nat.log 2 target) ^ b :=
+    Nat.succ_le_of_lt (Nat.pow_pos hlog_pos)
+  have htarget_pow : 2 ≤ target ^ 10 := by
+    calc
+      2 ≤ 2 ^ 10 := by decide
+      _ ≤ target ^ 10 := Nat.pow_le_pow_left htarget 10
+  have htwo :
+      2 ≤ polynomialGridMinorTreewidthBound10 K b target := by
+    calc
+      2 ≤ K * target ^ 10 := by
+        calc
+          2 = 1 * 2 := by simp
+          _ ≤ K * target ^ 10 :=
+            Nat.mul_le_mul hK htarget_pow
+      _ = K * target ^ 10 * 1 := by simp
+      _ ≤ K * target ^ 10 * (Nat.log 2 target) ^ b :=
+        Nat.mul_le_mul_left _ hlog_pow
+      _ = polynomialGridMinorTreewidthBound10 K b target := by
+        rw [polynomialGridMinorTreewidthBound10]
+  exact lt_of_lt_of_le (by decide : 1 < 2) htwo
+
+/-- A coefficient and exponent budget that imply the normalized degree-ten
+hairy-system inequality at the public degree-ten polynomial threshold. -/
+theorem hairy_large_threshold10_of_coeff
+    {cHair cHairLog cGrid C p Dn Dk K b target : ℕ}
+    (htarget : 2 ≤ target)
+    (hexponent : p * 10 + 49 + cHairLog ≤ b)
+    (hcoeff :
+      exponentHairyConstant cHair cGrid * C ^ 10 * Dn ^ 49 *
+        Dk ^ cHairLog < K) :
+    exponentHairyConstant cHair cGrid *
+        (logProductScale C p target) ^ 10 *
+      (Dn * Nat.log 2 target) ^ 49 *
+      (Dk * Nat.log 2 target) ^ cHairLog <
+        polynomialGridMinorTreewidthBound10 K b target := by
+  set L := Nat.log 2 target
+  have hLpos : 0 < L := by
+    simpa [L] using Nat.log_pos (by decide : 1 < 2) htarget
+  have htarget_pos : 0 < target :=
+    lt_of_lt_of_le (by decide : 0 < 2) htarget
+  have htarget_pow_pos : 0 < target ^ 10 := Nat.pow_pos htarget_pos
+  have hLpow_b_pos : 0 < L ^ b := Nat.pow_pos hLpos
+  have hmult_pos : 0 < target ^ 10 * L ^ b :=
+    Nat.mul_pos htarget_pow_pos hLpow_b_pos
+  have hLp :
+      (L ^ p) ^ 10 = L ^ (p * 10) := by
+    simpa using (Nat.pow_mul L p 10).symm
+  have hleft_eq :
+      exponentHairyConstant cHair cGrid *
+          (logProductScale C p target) ^ 10 *
+        (Dn * Nat.log 2 target) ^ 49 *
+        (Dk * Nat.log 2 target) ^ cHairLog =
+      (exponentHairyConstant cHair cGrid * C ^ 10 * Dn ^ 49 *
+          Dk ^ cHairLog) *
+        target ^ 10 * L ^ (p * 10 + 49 + cHairLog) := by
+    calc
+      exponentHairyConstant cHair cGrid *
+          (logProductScale C p target) ^ 10 *
+        (Dn * Nat.log 2 target) ^ 49 *
+        (Dk * Nat.log 2 target) ^ cHairLog
+          =
+        exponentHairyConstant cHair cGrid *
+          (C ^ 10 * target ^ 10 * (L ^ p) ^ 10) *
+          (Dn ^ 49 * L ^ 49) *
+          (Dk ^ cHairLog * L ^ cHairLog) := by
+          rw [logProductScale]
+          repeat rw [mul_pow]
+      _ =
+        exponentHairyConstant cHair cGrid *
+          (C ^ 10 * target ^ 10 * L ^ (p * 10)) *
+          (Dn ^ 49 * L ^ 49) *
+          (Dk ^ cHairLog * L ^ cHairLog) := by
+          rw [hLp]
+      _ =
+        (exponentHairyConstant cHair cGrid * C ^ 10 * Dn ^ 49 *
+            Dk ^ cHairLog) *
+          target ^ 10 *
+          (L ^ (p * 10) * L ^ 49 * L ^ cHairLog) := by
+          ac_rfl
+      _ =
+        (exponentHairyConstant cHair cGrid * C ^ 10 * Dn ^ 49 *
+            Dk ^ cHairLog) *
+          target ^ 10 * L ^ (p * 10 + 49 + cHairLog) := by
+          rw [← pow_add, ← pow_add]
+  have hpow :
+      L ^ (p * 10 + 49 + cHairLog) ≤ L ^ b :=
+    Nat.pow_le_pow_right hLpos hexponent
+  calc
+    exponentHairyConstant cHair cGrid *
+        (logProductScale C p target) ^ 10 *
+      (Dn * Nat.log 2 target) ^ 49 *
+      (Dk * Nat.log 2 target) ^ cHairLog
+        =
+      (exponentHairyConstant cHair cGrid * C ^ 10 * Dn ^ 49 *
+          Dk ^ cHairLog) *
+        target ^ 10 * L ^ (p * 10 + 49 + cHairLog) := hleft_eq
+    _ ≤ (exponentHairyConstant cHair cGrid * C ^ 10 * Dn ^ 49 *
+          Dk ^ cHairLog) *
+        target ^ 10 * L ^ b :=
+      Nat.mul_le_mul_left
+        ((exponentHairyConstant cHair cGrid * C ^ 10 * Dn ^ 49 *
+          Dk ^ cHairLog) * target ^ 10) hpow
+    _ < K * target ^ 10 * L ^ b := by
+      calc
+        (exponentHairyConstant cHair cGrid * C ^ 10 * Dn ^ 49 *
+            Dk ^ cHairLog) *
+          target ^ 10 * L ^ b
+            =
+          (exponentHairyConstant cHair cGrid * C ^ 10 * Dn ^ 49 *
+            Dk ^ cHairLog) * (target ^ 10 * L ^ b) := by
+            ac_rfl
+        _ < K * (target ^ 10 * L ^ b) :=
+          Nat.mul_lt_mul_of_pos_right hcoeff hmult_pos
+        _ = K * target ^ 10 * L ^ b := by
+          ac_rfl
+    _ = polynomialGridMinorTreewidthBound10 K b target := by
+      simp [polynomialGridMinorTreewidthBound10, L]
+
+/-- Degree-ten scale choice at the public `k^10 polylog k` threshold, using
+the same sharp square-form strong-branch rounding as the degree-nine endpoint. -/
+structure SharpClogCoefficientPolynomialThresholdChoice10
+    (cHair cHairLog cCross cGrid cStrong target K b : ℕ) where
+  /-- Constant multiplier in the crossbar scale. -/
+  C : ℕ
+  /-- Exponent of `log target` in the crossbar scale. -/
+  p : ℕ
+  /-- The crossbar-scale coefficient is positive. -/
+  C_pos : 1 ≤ C
+  /-- The threshold coefficient is positive. -/
+  K_pos : 1 ≤ K
+  /-- The target grid order is at least two. -/
+  target_ge_two : 2 ≤ target
+  /-- The log-product exponent is large enough for the direct branch. -/
+  p_ge_two : 2 ≤ p
+  /-- Coefficient budget for the sharp strong-branch inequality. -/
+  strong_coeff :
+    4 * cCross * (max 2 cStrong) ^ 2 ≤ C ^ 2
+  /-- Coefficient budget for the direct-branch inequality. -/
+  direct_coeff :
+    2 * cGrid * (Nat.clog 2 C + p + 2) ^ 2 ≤ C
+  /-- Logarithmic exponent budget for the degree-ten hairy-system inequality. -/
+  hairy_exponent : p * 10 + 49 + cHairLog ≤ b
+  /-- Strict coefficient budget for the degree-ten hairy-system inequality. -/
+  hairy_coeff :
+    exponentHairyConstant cHair cGrid * C ^ 10 *
+        (Nat.clog 2 C + p + 2) ^ 49 *
+      (Nat.clog 2 K + 2 * 10 + b) ^ cHairLog < K
+
+namespace SharpClogCoefficientPolynomialThresholdChoice10
+
+/-- Degree-ten coefficient choices imply the exact parameter package consumed
+by the Section 4 graph-theoretic proof skeleton. -/
+def toParameterChoice10
+    {cHair cHairLog cCross cGrid cStrong target K b : ℕ}
+    (P :
+      SharpClogCoefficientPolynomialThresholdChoice10 cHair cHairLog cCross
+        cGrid cStrong target K b) :
+    ParameterChoice10 cHair cHairLog cCross cGrid cStrong target
+      (polynomialGridMinorTreewidthBound10 K b target) where
+  ell := lengthScale cGrid (logProductScale P.C P.p target)
+  w := widthScale10 (logProductScale P.C P.p target)
+  k := polynomialGridMinorTreewidthBound10 K b target
+  g := GridMinorArithmetic.powTwoFloor (logProductScale P.C P.p target)
+  r := strongScale cStrong target
+  ell_gt_one := lengthScale_gt_one cGrid (logProductScale P.C P.p target)
+  w_gt_one := widthScale10_gt_one (logProductScale P.C P.p target)
+  k_gt_one :=
+    polynomialGridMinorTreewidthBound10_gt_one P.K_pos P.target_ge_two
+  k_le_treewidth := le_rfl
+  hairy_large := by
+    apply hairy_large10_of_logarithmic_normalized
+      (two_le_logProductScale P.C_pos P.target_ge_two)
+    have hlog_n :
+        Nat.log 2 (logProductScale P.C P.p target) ≤
+          (Nat.clog 2 P.C + P.p + 2) * Nat.log 2 target :=
+      log_logProductScale_le_clog_const_mul_log P.C P.p P.target_ge_two
+    have hlog_k :
+        Nat.log 2 (polynomialGridMinorTreewidthBound10 K b target) ≤
+          (Nat.clog 2 K + 2 * 10 + b) * Nat.log 2 target := by
+      simpa [polynomialGridMinorTreewidthBound10_eq_monomialLogScale,
+        monomialLogScale] using
+        log_monomialLogScale_le_clog_const_mul_log K 10 b P.target_ge_two
+    have hlog_n_pow :
+        (Nat.log 2 (logProductScale P.C P.p target)) ^ 49 ≤
+          ((Nat.clog 2 P.C + P.p + 2) * Nat.log 2 target) ^ 49 :=
+      Nat.pow_le_pow_left hlog_n 49
+    have hlog_k_pow :
+        (Nat.log 2 (polynomialGridMinorTreewidthBound10 K b target)) ^
+            cHairLog ≤
+          ((Nat.clog 2 K + 2 * 10 + b) * Nat.log 2 target) ^
+            cHairLog :=
+      Nat.pow_le_pow_left hlog_k cHairLog
+    have hthreshold :
+        exponentHairyConstant cHair cGrid *
+            (logProductScale P.C P.p target) ^ 10 *
+          ((Nat.clog 2 P.C + P.p + 2) * Nat.log 2 target) ^ 49 *
+          ((Nat.clog 2 K + 2 * 10 + b) * Nat.log 2 target) ^ cHairLog <
+            polynomialGridMinorTreewidthBound10 K b target :=
+      hairy_large_threshold10_of_coeff P.target_ge_two P.hairy_exponent
+        P.hairy_coeff
+    have hle :
+        exponentHairyConstant cHair cGrid *
+            (logProductScale P.C P.p target) ^ 10 *
+          (Nat.log 2 (logProductScale P.C P.p target)) ^ 49 *
+          (Nat.log 2 (polynomialGridMinorTreewidthBound10 K b target)) ^
+            cHairLog ≤
+        exponentHairyConstant cHair cGrid *
+            (logProductScale P.C P.p target) ^ 10 *
+          ((Nat.clog 2 P.C + P.p + 2) * Nat.log 2 target) ^ 49 *
+          ((Nat.clog 2 K + 2 * 10 + b) * Nat.log 2 target) ^
+            cHairLog := by
+      calc
+        exponentHairyConstant cHair cGrid *
+            (logProductScale P.C P.p target) ^ 10 *
+          (Nat.log 2 (logProductScale P.C P.p target)) ^ 49 *
+          (Nat.log 2 (polynomialGridMinorTreewidthBound10 K b target)) ^
+            cHairLog
+            =
+          (exponentHairyConstant cHair cGrid *
+              (logProductScale P.C P.p target) ^ 10) *
+            ((Nat.log 2 (logProductScale P.C P.p target)) ^ 49 *
+              (Nat.log 2 (polynomialGridMinorTreewidthBound10 K b target)) ^
+                cHairLog) := by
+            ac_rfl
+        _ ≤
+          (exponentHairyConstant cHair cGrid *
+              (logProductScale P.C P.p target) ^ 10) *
+            (((Nat.clog 2 P.C + P.p + 2) * Nat.log 2 target) ^ 49 *
+              ((Nat.clog 2 K + 2 * 10 + b) * Nat.log 2 target) ^
+                cHairLog) :=
+            Nat.mul_le_mul_left _
+              (Nat.mul_le_mul hlog_n_pow hlog_k_pow)
+        _ =
+          exponentHairyConstant cHair cGrid *
+              (logProductScale P.C P.p target) ^ 10 *
+            ((Nat.clog 2 P.C + P.p + 2) * Nat.log 2 target) ^ 49 *
+            ((Nat.clog 2 K + 2 * 10 + b) * Nat.log 2 target) ^
+              cHairLog := by
+            ac_rfl
+    exact lt_of_le_of_lt hle hthreshold
+  g_ge_two :=
+    GridMinorArithmetic.two_le_powTwoFloor
+      (two_le_logProductScale P.C_pos P.target_ge_two)
+  r_ge_two := strongScale_ge_two cStrong target
+  g_powerOfTwo :=
+    GridMinorArithmetic.isPowerOfTwo_powTwoFloor
+      (logProductScale P.C P.p target)
+  grid_length :=
+    lengthScale_grid_length cGrid (logProductScale P.C P.p target)
+  grid_width :=
+    widthScale10_grid_width (logProductScale P.C P.p target)
+  crossbar_width10 :=
+    widthScale10_crossbar_width (logProductScale P.C P.p target)
+  strong_scale :=
+    GridMinorArithmetic.le_powTwoFloor_sq_of_four_mul_le_sq
+      (strong_scale_logProduct_sq_of_coeff P.target_ge_two P.strong_coeff)
+  target_direct := by
+    have hlog_n :
+        Nat.log 2 (logProductScale P.C P.p target) ≤
+          (Nat.clog 2 P.C + P.p + 2) * Nat.log 2 target :=
+      log_logProductScale_le_clog_const_mul_log P.C P.p P.target_ge_two
+    have hlog_sq :
+        (Nat.log 2 (logProductScale P.C P.p target)) ^ 2 ≤
+          ((Nat.clog 2 P.C + P.p + 2) * Nat.log 2 target) ^ 2 :=
+      Nat.pow_le_pow_left hlog_n 2
+    exact
+      GridMinorArithmetic.direct_bound_powTwoFloor_of_two_mul_le
+        (two_le_logProductScale P.C_pos P.target_ge_two)
+        (by
+          calc
+            2 * (cGrid * target *
+                (Nat.log 2 (logProductScale P.C P.p target)) ^ 2)
+                ≤
+              2 * (cGrid * target *
+                ((Nat.clog 2 P.C + P.p + 2) *
+                  Nat.log 2 target) ^ 2) :=
+                Nat.mul_le_mul_left 2
+                  (Nat.mul_le_mul_left (cGrid * target) hlog_sq)
+            _ ≤ logProductScale P.C P.p target :=
+              target_direct_logProduct_of_coeff P.target_ge_two P.p_ge_two
+                P.direct_coeff)
+  target_strong := target_le_strongScale cStrong target
+
+end SharpClogCoefficientPolynomialThresholdChoice10
+
+/-- Target-independent constants satisfying the degree-ten clog-coefficient
+budgets. -/
+structure SharpClogCoefficientPolynomialThresholdTemplate10
+    (cHair cHairLog cCross cGrid cStrong : ℕ) where
+  /-- Coefficient in the public degree-ten treewidth threshold. -/
+  K : ℕ
+  /-- Logarithmic exponent in the public degree-ten treewidth threshold. -/
+  b : ℕ
+  /-- Constant multiplier in the crossbar scale. -/
+  C : ℕ
+  /-- Exponent of `log target` in the crossbar scale. -/
+  p : ℕ
+  /-- The threshold coefficient is positive. -/
+  K_pos : 0 < K
+  /-- The logarithmic exponent is positive. -/
+  b_pos : 0 < b
+  /-- The crossbar-scale coefficient is positive. -/
+  C_pos : 1 ≤ C
+  /-- The log-product exponent is large enough for the direct branch. -/
+  p_ge_two : 2 ≤ p
+  /-- Coefficient budget for the sharp strong-branch inequality. -/
+  strong_coeff :
+    4 * cCross * (max 2 cStrong) ^ 2 ≤ C ^ 2
+  /-- Coefficient budget for the direct-branch inequality. -/
+  direct_coeff :
+    2 * cGrid * (Nat.clog 2 C + p + 2) ^ 2 ≤ C
+  /-- Logarithmic exponent budget for the degree-ten hairy-system inequality. -/
+  hairy_exponent : p * 10 + 49 + cHairLog ≤ b
+  /-- Strict coefficient budget for the degree-ten hairy-system inequality. -/
+  hairy_coeff :
+    exponentHairyConstant cHair cGrid * C ^ 10 *
+        (Nat.clog 2 C + p + 2) ^ 49 *
+      (Nat.clog 2 K + 2 * 10 + b) ^ cHairLog < K
+
+namespace SharpClogCoefficientPolynomialThresholdTemplate10
+
+/-- A target-independent degree-ten template supplies choices for every target
+at least two. -/
+def choiceAt
+    {cHair cHairLog cCross cGrid cStrong : ℕ}
+    (T :
+      SharpClogCoefficientPolynomialThresholdTemplate10 cHair cHairLog
+        cCross cGrid cStrong)
+    (target : ℕ) (htarget : 2 ≤ target) :
+    SharpClogCoefficientPolynomialThresholdChoice10 cHair cHairLog cCross
+      cGrid cStrong target T.K T.b where
+  C := T.C
+  p := T.p
+  C_pos := T.C_pos
+  K_pos := Nat.succ_le_of_lt T.K_pos
+  target_ge_two := htarget
+  p_ge_two := T.p_ge_two
+  strong_coeff := T.strong_coeff
+  direct_coeff := T.direct_coeff
+  hairy_exponent := T.hairy_exponent
+  hairy_coeff := T.hairy_coeff
+
+/-- A canonical target-independent degree-ten template satisfying all
+coefficient budgets. -/
+def canonical
+    (cHair cHairLog cCross cGrid cStrong : ℕ) :
+    SharpClogCoefficientPolynomialThresholdTemplate10 cHair cHairLog cCross
+      cGrid cStrong := by
+  let C := crossbarCoefficient cCross cGrid cStrong
+  let b := 2 * 10 + 49 + cHairLog
+  let A :=
+    exponentHairyConstant cHair cGrid * C ^ 10 *
+      (Nat.clog 2 C + 2 + 2) ^ 49
+  let E := 2 * 10 + b
+  refine
+    { K := thresholdCoefficient A cHairLog E
+      b := b
+      C := C
+      p := 2
+      K_pos := ?_
+      b_pos := ?_
+      C_pos := ?_
+      p_ge_two := le_rfl
+      strong_coeff := ?_
+      direct_coeff := ?_
+      hairy_exponent := ?_
+      hairy_coeff := ?_ }
+  · dsimp [thresholdCoefficient]
+    exact Nat.pow_pos (by decide : 0 < 2)
+  · omega
+  · dsimp [C, crossbarCoefficient]
+    exact Nat.succ_le_of_lt
+      (Nat.pow_pos (by decide : 0 < 2))
+  · simpa [C] using
+      strong_coeff_crossbarCoefficient cCross cGrid cStrong
+  · simpa [C] using
+      direct_coeff_crossbarCoefficient cCross cGrid cStrong
+  · omega
+  · simpa [A, E, Nat.add_assoc] using
+      coeff_mul_clog_thresholdCoefficient_add_pow_lt A cHairLog E
+
+end SharpClogCoefficientPolynomialThresholdTemplate10
+
+/-- Bundled degree-ten parameter proof from explicit hard inputs and the
+Section 4 `g^10 log g` crossbar input. -/
+theorem containsGridMinor_of_parameterChoice10_of_inputs10
+    (hhairyInput :
+      ∃ cHair cHairLog : ℕ, 0 < cHair ∧ 0 < cHairLog ∧
+        HairyPathOfSetsInput.{u} cHair cHairLog)
+    (hcrossInput :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        HairyPathOfSetsSystem.CrossbarDichotomyInput10.{u} cCross)
+    (hstrongGrid :
+      ∃ cStrong : ℕ, 0 < cStrong ∧
+        StrongMinorGridInput.{u} cStrong)
+    (hlargeData :
+      ∃ cGrid : ℕ, 0 < cGrid ∧
+        HairyCrossbarGrid.LargeCaseCutMatchingDataProvider.{u} cGrid) :
+    ∃ cHair cHairLog cCross cGrid cStrong : ℕ,
+      0 < cHair ∧ 0 < cHairLog ∧ 0 < cCross ∧
+        0 < cGrid ∧ 0 < cStrong ∧
+          ∀ {V : Type u} [Fintype V] [DecidableEq V]
+            (G : _root_.SimpleGraph V) (target : ℕ),
+              ParameterChoice10 cHair cHairLog cCross cGrid cStrong target
+                (treewidth G) →
+                ContainsGridMinor G target := by
+  rcases
+    containsGridMinor_of_treewidth_parameters_with_scaled_strong_parameter_of_inputs10
+      hhairyInput hcrossInput hstrongGrid hlargeData with
+    ⟨cHair, cHairLog, cCross, cGrid, cStrong,
+      hcHair, hcHairLog, hcCross, hcGrid, hcStrong, hmain⟩
+  refine ⟨cHair, cHairLog, cCross, cGrid, cStrong,
+    hcHair, hcHairLog, hcCross, hcGrid, hcStrong, ?_⟩
+  intro V _ _ G target P
+  exact hmain G P.ell_gt_one P.w_gt_one P.k_gt_one P.k_le_treewidth
+    P.hairy_large P.g_ge_two P.r_ge_two P.g_powerOfTwo P.grid_length
+    P.grid_width P.crossbar_width10 P.strong_scale P.target_direct
+    P.target_strong
+
+/-- Bundled degree-ten parameter proof from explicit hard inputs, using the
+unbundled cut-matching provider and explicit Theorem 8.1 target-size provider
+for the direct branch. -/
+theorem containsGridMinor_of_parameterChoice10_of_inputs10_and_unbundledCutMatching_and_targetProviders
+    (hhairyInput :
+      ∃ cHair cHairLog : ℕ, 0 < cHair ∧ 0 < cHairLog ∧
+        HairyPathOfSetsInput.{u} cHair cHairLog)
+    (hcrossInput :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        HairyPathOfSetsSystem.CrossbarDichotomyInput10.{u} cCross)
+    (hstrongGrid :
+      ∃ cStrong : ℕ, 0 < cStrong ∧
+        StrongMinorGridInput.{u} cStrong)
+    (hproviders :
+      ∃ cRound cScale : ℕ, 0 < cRound ∧ 0 < cScale ∧
+        HairyCrossbarGrid.FixedRoundCutMatchingUnbundledProvider.{u}
+          cRound ∧
+          HairyCrossbarGrid.FixedRoundExpanderTargetProvider cRound cScale) :
+    ∃ cHair cHairLog cCross cGrid cStrong : ℕ,
+      0 < cHair ∧ 0 < cHairLog ∧ 0 < cCross ∧
+        0 < cGrid ∧ 0 < cStrong ∧
+          ∀ {V : Type u} [Fintype V] [DecidableEq V]
+            (G : _root_.SimpleGraph V) (target : ℕ),
+              ParameterChoice10 cHair cHairLog cCross cGrid cStrong target
+                (treewidth G) →
+                ContainsGridMinor G target := by
+  rcases hhairyInput with
+    ⟨cHair, cHairLog, hcHair, hcHairLog, hhairy⟩
+  rcases
+    HairyPathOfSetsSystem.gridMinor_or_gridMinor_of_subgraph_hairy_pathOfSets_with_scaled_strong_parameter_of_inputs10_and_unbundledCutMatching_and_targetProviders
+      hcrossInput hstrongGrid hproviders with
+    ⟨cCross, cGrid, cStrong, hcCross, hcGrid, hcStrong, hcrossbar⟩
+  refine ⟨cHair, cHairLog, cCross, cGrid, cStrong,
+    hcHair, hcHairLog, hcCross, hcGrid, hcStrong, ?_⟩
+  intro V _ _ G target P
+  rcases hhairy G P.ell_gt_one P.w_gt_one P.k_gt_one P.k_le_treewidth
+      P.hairy_large with
+    ⟨H, hHG, hmaxDegree, ⟨Hsys⟩⟩
+  rcases hcrossbar G H Hsys hHG P.g_ge_two P.r_ge_two P.g_powerOfTwo
+      hmaxDegree P.grid_length P.grid_width P.crossbar_width10
+      P.strong_scale with hdirect | hstrong
+  · rcases hdirect with ⟨g', hproduced, hgrid⟩
+    exact hgrid.of_order_le
+      (le_gridOrder_of_direct_branch_bound hcGrid P.g_ge_two
+        P.target_direct hproduced)
+  · rcases hstrong with ⟨r', hproduced, hgrid⟩
+    have htarget_le : target ≤ r' :=
+      le_of_const_mul_le_const_mul hcStrong
+        (le_trans P.target_strong hproduced)
+    exact hgrid.of_order_le htarget_le
+
+/-- Finalization from a supplied degree-ten bundled graph-theoretic proof
+skeleton and target-independent degree-ten clog-coefficient templates. -/
+theorem exists_constants_containsGridMinor10_of_template_of_parameterChoice10
+    (hparam :
+      ∃ cHair cHairLog cCross cGrid cStrong : ℕ,
+        0 < cHair ∧ 0 < cHairLog ∧ 0 < cCross ∧
+          0 < cGrid ∧ 0 < cStrong ∧
+            ∀ {V : Type u} [Fintype V] [DecidableEq V]
+              (G : _root_.SimpleGraph V) (target : ℕ),
+                ParameterChoice10 cHair cHairLog cCross cGrid cStrong target
+                  (treewidth G) →
+                  ContainsGridMinor G target)
+    (hchoices :
+      ∀ {cHair cHairLog cCross cGrid cStrong : ℕ},
+        0 < cHair → 0 < cHairLog → 0 < cCross → 0 < cGrid →
+          0 < cStrong →
+            SharpClogCoefficientPolynomialThresholdTemplate10
+              cHair cHairLog cCross cGrid cStrong) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target := by
+  rcases hparam with
+    ⟨cHair, cHairLog, cCross, cGrid, cStrong,
+      hcHair, hcHairLog, hcCross, hcGrid, hcStrong, hmain⟩
+  let T := hchoices hcHair hcHairLog hcCross hcGrid hcStrong
+  refine ⟨T.K, T.b, T.K_pos, T.b_pos, ?_⟩
+  intro V _ _ G target htarget htw
+  exact hmain G target
+    ((T.choiceAt target htarget).toParameterChoice10.mono_treewidth htw)
+
+/-- Polynomial excluded-grid theorem at the direct `k^10 polylog k` endpoint,
+using the Section 4 `g^10 log g` crossbar input. -/
+theorem polynomial_grid_minor_theorem_degree10_of_inputs10
+    (hhairyInput :
+      ∃ cHair cHairLog : ℕ, 0 < cHair ∧ 0 < cHairLog ∧
+        HairyPathOfSetsInput.{u} cHair cHairLog)
+    (hcrossInput :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        HairyPathOfSetsSystem.CrossbarDichotomyInput10.{u} cCross)
+    (hstrongGrid :
+      ∃ cStrong : ℕ, 0 < cStrong ∧
+        StrongMinorGridInput.{u} cStrong)
+    (hlargeData :
+      ∃ cGrid : ℕ, 0 < cGrid ∧
+        HairyCrossbarGrid.LargeCaseCutMatchingDataProvider.{u} cGrid) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  exists_constants_containsGridMinor10_of_template_of_parameterChoice10
+    (containsGridMinor_of_parameterChoice10_of_inputs10
+      hhairyInput hcrossInput hstrongGrid hlargeData)
+    (hchoices := by
+      intro cHair cHairLog cCross cGrid cStrong _hcHair _hcHairLog _hcCross
+        _hcGrid _hcStrong
+      exact
+        SharpClogCoefficientPolynomialThresholdTemplate10.canonical
+          cHair cHairLog cCross cGrid cStrong)
+
+/-- Direct degree-ten endpoint using the unbundled cut-matching provider and
+explicit Theorem 8.1 target-size provider. -/
+theorem polynomial_grid_minor_theorem_degree10_of_inputs10_and_unbundledCutMatching_and_targetProviders
+    (hhairyInput :
+      ∃ cHair cHairLog : ℕ, 0 < cHair ∧ 0 < cHairLog ∧
+        HairyPathOfSetsInput.{u} cHair cHairLog)
+    (hcrossInput :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        HairyPathOfSetsSystem.CrossbarDichotomyInput10.{u} cCross)
+    (hstrongGrid :
+      ∃ cStrong : ℕ, 0 < cStrong ∧
+        StrongMinorGridInput.{u} cStrong)
+    (hproviders :
+      ∃ cRound cScale : ℕ, 0 < cRound ∧ 0 < cScale ∧
+        HairyCrossbarGrid.FixedRoundCutMatchingUnbundledProvider.{u}
+          cRound ∧
+          HairyCrossbarGrid.FixedRoundExpanderTargetProvider cRound cScale) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  exists_constants_containsGridMinor10_of_template_of_parameterChoice10
+    (containsGridMinor_of_parameterChoice10_of_inputs10_and_unbundledCutMatching_and_targetProviders
+      hhairyInput hcrossInput hstrongGrid hproviders)
+    (hchoices := by
+      intro cHair cHairLog cCross cGrid cStrong _hcHair _hcHairLog _hcCross
+        _hcGrid _hcStrong
+      exact
+        SharpClogCoefficientPolynomialThresholdTemplate10.canonical
+          cHair cHairLog cCross cGrid cStrong)
+
+/-- Direct degree-ten endpoint after internalizing the Theorem 8.1 target-size
+arithmetic. -/
+theorem polynomial_grid_minor_theorem_degree10_of_inputs10_and_unbundledCutMatching
+    (hhairyInput :
+      ∃ cHair cHairLog : ℕ, 0 < cHair ∧ 0 < cHairLog ∧
+        HairyPathOfSetsInput.{u} cHair cHairLog)
+    (hcrossInput :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        HairyPathOfSetsSystem.CrossbarDichotomyInput10.{u} cCross)
+    (hstrongGrid :
+      ∃ cStrong : ℕ, 0 < cStrong ∧
+        StrongMinorGridInput.{u} cStrong)
+    (hprovider :
+      ∃ cRound : ℕ, 0 < cRound ∧
+        HairyCrossbarGrid.FixedRoundCutMatchingUnbundledProvider.{u}
+          cRound) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  polynomial_grid_minor_theorem_degree10_of_inputs10_and_unbundledCutMatching_and_targetProviders
+    hhairyInput hcrossInput hstrongGrid
+    (by
+      rcases hprovider with ⟨cRound, hcRound, hunbundled⟩
+      exact ⟨cRound, HairyCrossbarGrid.fixedRoundExpanderTargetScale cRound,
+        hcRound, HairyCrossbarGrid.fixedRoundExpanderTargetScale_pos cRound,
+        hunbundled, HairyCrossbarGrid.fixedRoundExpanderTargetProvider_explicit
+          cRound⟩)
+
+/-- Direct degree-ten endpoint with the proved fixed-round cut-matching game
+internalized. -/
+theorem polynomial_grid_minor_theorem_degree10_of_inputs10_and_cutMatchingGame
+    (hhairyInput :
+      ∃ cHair cHairLog : ℕ, 0 < cHair ∧ 0 < cHairLog ∧
+        HairyPathOfSetsInput.{u} cHair cHairLog)
+    (hcrossInput :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        HairyPathOfSetsSystem.CrossbarDichotomyInput10.{u} cCross)
+    (hstrongGrid :
+      ∃ cStrong : ℕ, 0 < cStrong ∧
+        StrongMinorGridInput.{u} cStrong) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  polynomial_grid_minor_theorem_degree10_of_inputs10_and_unbundledCutMatching
+    hhairyInput hcrossInput hstrongGrid
+    HairyCrossbarGrid.exists_fixedRoundCutMatchingUnbundledProvider
+
 /-- Conditional finalization using unrounded scale choices. -/
 theorem exists_constants_containsGridMinor_of_unroundedScaleChoicesAt
     {threshold : ℕ → ℕ → ℕ → ℕ → ℕ → ℕ → ℕ}
@@ -8086,6 +9730,793 @@ theorem polynomial_grid_minor_theorem_of_unbundled_inputs
   PolynomialGridMinor.polynomial_grid_minor_theorem_of_unbundled_inputs
     hhairyInput hcrossInput hstrongGrid hproviders
 
+/-- Public composition theorem whose hairy-side input is supplied directly by
+the paper-shaped A.1 Omega sparsifier source, the lower-level
+Chekuri--Chuzhoy Theorem 2.21 sources, the faithful Section 4 path route, and
+the Appendix A.4 split-cluster source.
+
+The remaining hypotheses are the non-hairy-side grid-minor inputs: the
+crossbar dichotomy, the strong-minor grid branch, and the large-case
+cut-matching/separator providers. -/
+theorem polynomial_grid_minor_theorem_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_and_unbundled_inputs
+    (hsparseOmega :
+      ∃ cSparse cSparseLog : ℕ,
+        0 < cSparse ∧ 0 < cSparseLog ∧
+          DegreeThreeStrongPathOfSetsContract.DegreeThreeTreewidthSparsifierOmega.{u}
+            cSparse cSparseLog)
+    (hroutable :
+      ∃ cSet cSetLog cRoute cRouteLog : ℕ,
+        ChekuriChuzhoy.RoutableSetFromTreewidth.{u}
+          cSet cSetLog cRoute cRouteLog)
+    (hcutMatching :
+      ∃ cDeg cDegLog cAlpha cAlphaLog : ℕ,
+        ChekuriChuzhoy.CutWellLinkedCoreFromRoutableSet.{u}
+          cDeg cDegLog cAlpha cAlphaLog)
+    (hpathRoute :
+      ∃ cRoute cRouteLog cDeltaPow : ℕ,
+        ChekuriChuzhoy.StrongPathOfSetsFromNodeWellLinkedCore.{u}
+          cRoute cRouteLog cDeltaPow)
+    (hsplit :
+      ∃ cSplit : ℕ, 0 < cSplit ∧
+        HairyPathOfSetsTheorem.AppendixA4SplitInput.{u} cSplit)
+    (hcrossInput :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        HairyPathOfSetsSystem.CrossbarDichotomyInput.{u} cCross)
+    (hstrongGrid :
+      ∃ cStrong : ℕ, 0 < cStrong ∧
+        PolynomialGridMinor.StrongMinorGridInput.{u} cStrong)
+    (hproviders :
+      ∃ cRound cScale : ℕ, 0 < cRound ∧ 0 < cScale ∧
+        HairyCrossbarGrid.FixedRoundCutMatchingUnbundledProvider.{u}
+          cRound ∧
+          HairyCrossbarGrid.FixedRoundSeparatorGridProvider cRound cScale) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  polynomial_grid_minor_theorem_of_unbundled_inputs
+    (PolynomialGridMinor.exists_hairyPathOfSetsInput_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_and_appendixA4
+      hsparseOmega hroutable hcutMatching hpathRoute hsplit)
+    hcrossInput hstrongGrid hproviders
+
+/-- Degree-ten corollary of
+`polynomial_grid_minor_theorem_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_and_unbundled_inputs`.
+
+This reuses the stronger degree-nine theorem and only relaxes the public
+threshold to the `k^10 polylog k` shape. -/
+theorem polynomial_grid_minor_theorem_degree10_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_and_unbundled_inputs
+    (hsparseOmega :
+      ∃ cSparse cSparseLog : ℕ,
+        0 < cSparse ∧ 0 < cSparseLog ∧
+          DegreeThreeStrongPathOfSetsContract.DegreeThreeTreewidthSparsifierOmega.{u}
+            cSparse cSparseLog)
+    (hroutable :
+      ∃ cSet cSetLog cRoute cRouteLog : ℕ,
+        ChekuriChuzhoy.RoutableSetFromTreewidth.{u}
+          cSet cSetLog cRoute cRouteLog)
+    (hcutMatching :
+      ∃ cDeg cDegLog cAlpha cAlphaLog : ℕ,
+        ChekuriChuzhoy.CutWellLinkedCoreFromRoutableSet.{u}
+          cDeg cDegLog cAlpha cAlphaLog)
+    (hpathRoute :
+      ∃ cRoute cRouteLog cDeltaPow : ℕ,
+        ChekuriChuzhoy.StrongPathOfSetsFromNodeWellLinkedCore.{u}
+          cRoute cRouteLog cDeltaPow)
+    (hsplit :
+      ∃ cSplit : ℕ, 0 < cSplit ∧
+        HairyPathOfSetsTheorem.AppendixA4SplitInput.{u} cSplit)
+    (hcrossInput :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        HairyPathOfSetsSystem.CrossbarDichotomyInput.{u} cCross)
+    (hstrongGrid :
+      ∃ cStrong : ℕ, 0 < cStrong ∧
+        PolynomialGridMinor.StrongMinorGridInput.{u} cStrong)
+    (hproviders :
+      ∃ cRound cScale : ℕ, 0 < cRound ∧ 0 < cScale ∧
+        HairyCrossbarGrid.FixedRoundCutMatchingUnbundledProvider.{u}
+          cRound ∧
+          HairyCrossbarGrid.FixedRoundSeparatorGridProvider cRound cScale) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  PolynomialGridMinor.polynomial_grid_minor_theorem_degree10_of_degree9
+    (polynomial_grid_minor_theorem_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_and_unbundled_inputs
+      hsparseOmega hroutable hcutMatching hpathRoute hsplit
+      hcrossInput hstrongGrid hproviders)
+
+/-- Public composition theorem whose hairy-side input is supplied by the
+paper-shaped A.1 Omega sparsifier source, the lower-level Chekuri--Chuzhoy
+Theorem 2.21 sources, the faithful Section 4 path route, and the Appendix A.4
+split-cluster source, with the large-case fixed-round cut-matching game
+internalized.
+
+Compared with
+`polynomial_grid_minor_theorem_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_and_unbundled_inputs`,
+this theorem uses the proved cut-matching-game theorem and the explicit
+Theorem 8.1 target-size arithmetic, so no cut-matching or separator provider is
+left as a hypothesis. -/
+theorem polynomial_grid_minor_theorem_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_and_cutMatchingGame
+    (hsparseOmega :
+      ∃ cSparse cSparseLog : ℕ,
+        0 < cSparse ∧ 0 < cSparseLog ∧
+          DegreeThreeStrongPathOfSetsContract.DegreeThreeTreewidthSparsifierOmega.{u}
+            cSparse cSparseLog)
+    (hroutable :
+      ∃ cSet cSetLog cRoute cRouteLog : ℕ,
+        ChekuriChuzhoy.RoutableSetFromTreewidth.{u}
+          cSet cSetLog cRoute cRouteLog)
+    (hcutMatching :
+      ∃ cDeg cDegLog cAlpha cAlphaLog : ℕ,
+        ChekuriChuzhoy.CutWellLinkedCoreFromRoutableSet.{u}
+          cDeg cDegLog cAlpha cAlphaLog)
+    (hpathRoute :
+      ∃ cRoute cRouteLog cDeltaPow : ℕ,
+        ChekuriChuzhoy.StrongPathOfSetsFromNodeWellLinkedCore.{u}
+          cRoute cRouteLog cDeltaPow)
+    (hsplit :
+      ∃ cSplit : ℕ, 0 < cSplit ∧
+        HairyPathOfSetsTheorem.AppendixA4SplitInput.{u} cSplit)
+    (hcrossInput :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        HairyPathOfSetsSystem.CrossbarDichotomyInput.{u} cCross)
+    (hstrongGrid :
+      ∃ cStrong : ℕ, 0 < cStrong ∧
+        PolynomialGridMinor.StrongMinorGridInput.{u} cStrong) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  PolynomialGridMinor.polynomial_grid_minor_theorem_of_inputs_and_unbundledCutMatching
+    (PolynomialGridMinor.exists_hairyPathOfSetsInput_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_and_appendixA4
+      hsparseOmega hroutable hcutMatching hpathRoute hsplit)
+    hcrossInput hstrongGrid
+    HairyCrossbarGrid.exists_fixedRoundCutMatchingUnbundledProvider
+
+/-- Degree-ten corollary of
+`polynomial_grid_minor_theorem_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_and_cutMatchingGame`.
+
+This reuses the stronger degree-nine theorem and only relaxes the public
+threshold to the `k^10 polylog k` shape. -/
+theorem polynomial_grid_minor_theorem_degree10_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_and_cutMatchingGame
+    (hsparseOmega :
+      ∃ cSparse cSparseLog : ℕ,
+        0 < cSparse ∧ 0 < cSparseLog ∧
+          DegreeThreeStrongPathOfSetsContract.DegreeThreeTreewidthSparsifierOmega.{u}
+            cSparse cSparseLog)
+    (hroutable :
+      ∃ cSet cSetLog cRoute cRouteLog : ℕ,
+        ChekuriChuzhoy.RoutableSetFromTreewidth.{u}
+          cSet cSetLog cRoute cRouteLog)
+    (hcutMatching :
+      ∃ cDeg cDegLog cAlpha cAlphaLog : ℕ,
+        ChekuriChuzhoy.CutWellLinkedCoreFromRoutableSet.{u}
+          cDeg cDegLog cAlpha cAlphaLog)
+    (hpathRoute :
+      ∃ cRoute cRouteLog cDeltaPow : ℕ,
+        ChekuriChuzhoy.StrongPathOfSetsFromNodeWellLinkedCore.{u}
+          cRoute cRouteLog cDeltaPow)
+    (hsplit :
+      ∃ cSplit : ℕ, 0 < cSplit ∧
+        HairyPathOfSetsTheorem.AppendixA4SplitInput.{u} cSplit)
+    (hcrossInput :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        HairyPathOfSetsSystem.CrossbarDichotomyInput.{u} cCross)
+    (hstrongGrid :
+      ∃ cStrong : ℕ, 0 < cStrong ∧
+        PolynomialGridMinor.StrongMinorGridInput.{u} cStrong) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  PolynomialGridMinor.polynomial_grid_minor_theorem_degree10_of_degree9
+    (polynomial_grid_minor_theorem_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_and_cutMatchingGame
+      hsparseOmega hroutable hcutMatching hpathRoute hsplit
+      hcrossInput hstrongGrid)
+
+/-- A.1/A.2-shaped composition with the large-case cut-matching game
+internalized and the strong-minor branch supplied by Chekuri--Chuzhoy
+Corollary 3.2. -/
+theorem polynomial_grid_minor_theorem_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_cutMatchingGame_and_corollary32Input
+    (hsparseOmega :
+      ∃ cSparse cSparseLog : ℕ,
+        0 < cSparse ∧ 0 < cSparseLog ∧
+          DegreeThreeStrongPathOfSetsContract.DegreeThreeTreewidthSparsifierOmega.{u}
+            cSparse cSparseLog)
+    (hroutable :
+      ∃ cSet cSetLog cRoute cRouteLog : ℕ,
+        ChekuriChuzhoy.RoutableSetFromTreewidth.{u}
+          cSet cSetLog cRoute cRouteLog)
+    (hcutMatching :
+      ∃ cDeg cDegLog cAlpha cAlphaLog : ℕ,
+        ChekuriChuzhoy.CutWellLinkedCoreFromRoutableSet.{u}
+          cDeg cDegLog cAlpha cAlphaLog)
+    (hpathRoute :
+      ∃ cRoute cRouteLog cDeltaPow : ℕ,
+        ChekuriChuzhoy.StrongPathOfSetsFromNodeWellLinkedCore.{u}
+          cRoute cRouteLog cDeltaPow)
+    (hsplit :
+      ∃ cSplit : ℕ, 0 < cSplit ∧
+        HairyPathOfSetsTheorem.AppendixA4SplitInput.{u} cSplit)
+    (hcrossInput :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        HairyPathOfSetsSystem.CrossbarDichotomyInput.{u} cCross)
+    (hchekuri : ChekuriChuzhoy.Corollary32Input.{u}) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  polynomial_grid_minor_theorem_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_and_cutMatchingGame
+    hsparseOmega hroutable hcutMatching hpathRoute hsplit hcrossInput
+    (PolynomialGridMinor.strongMinorGridInput_of_corollary32Input hchekuri)
+
+/-- Degree-ten corollary of
+`polynomial_grid_minor_theorem_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_cutMatchingGame_and_corollary32Input`. -/
+theorem polynomial_grid_minor_theorem_degree10_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_cutMatchingGame_and_corollary32Input
+    (hsparseOmega :
+      ∃ cSparse cSparseLog : ℕ,
+        0 < cSparse ∧ 0 < cSparseLog ∧
+          DegreeThreeStrongPathOfSetsContract.DegreeThreeTreewidthSparsifierOmega.{u}
+            cSparse cSparseLog)
+    (hroutable :
+      ∃ cSet cSetLog cRoute cRouteLog : ℕ,
+        ChekuriChuzhoy.RoutableSetFromTreewidth.{u}
+          cSet cSetLog cRoute cRouteLog)
+    (hcutMatching :
+      ∃ cDeg cDegLog cAlpha cAlphaLog : ℕ,
+        ChekuriChuzhoy.CutWellLinkedCoreFromRoutableSet.{u}
+          cDeg cDegLog cAlpha cAlphaLog)
+    (hpathRoute :
+      ∃ cRoute cRouteLog cDeltaPow : ℕ,
+        ChekuriChuzhoy.StrongPathOfSetsFromNodeWellLinkedCore.{u}
+          cRoute cRouteLog cDeltaPow)
+    (hsplit :
+      ∃ cSplit : ℕ, 0 < cSplit ∧
+        HairyPathOfSetsTheorem.AppendixA4SplitInput.{u} cSplit)
+    (hcrossInput :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        HairyPathOfSetsSystem.CrossbarDichotomyInput.{u} cCross)
+    (hchekuri : ChekuriChuzhoy.Corollary32Input.{u}) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  PolynomialGridMinor.polynomial_grid_minor_theorem_degree10_of_degree9
+    (polynomial_grid_minor_theorem_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_cutMatchingGame_and_corollary32Input
+      hsparseOmega hroutable hcutMatching hpathRoute hsplit
+      hcrossInput hchekuri)
+
+/-- A.1/A.2-shaped composition with the large-case cut-matching game
+internalized and Chekuri--Chuzhoy Corollary 3.2 split into local routing and
+row stitching inputs. -/
+theorem polynomial_grid_minor_theorem_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_cutMatchingGame_and_localRouting_stitching
+    (hsparseOmega :
+      ∃ cSparse cSparseLog : ℕ,
+        0 < cSparse ∧ 0 < cSparseLog ∧
+          DegreeThreeStrongPathOfSetsContract.DegreeThreeTreewidthSparsifierOmega.{u}
+            cSparse cSparseLog)
+    (hroutable :
+      ∃ cSet cSetLog cRoute cRouteLog : ℕ,
+        ChekuriChuzhoy.RoutableSetFromTreewidth.{u}
+          cSet cSetLog cRoute cRouteLog)
+    (hcutMatching :
+      ∃ cDeg cDegLog cAlpha cAlphaLog : ℕ,
+        ChekuriChuzhoy.CutWellLinkedCoreFromRoutableSet.{u}
+          cDeg cDegLog cAlpha cAlphaLog)
+    (hpathRoute :
+      ∃ cRoute cRouteLog cDeltaPow : ℕ,
+        ChekuriChuzhoy.StrongPathOfSetsFromNodeWellLinkedCore.{u}
+          cRoute cRouteLog cDeltaPow)
+    (hsplit :
+      ∃ cSplit : ℕ, 0 < cSplit ∧
+        HairyPathOfSetsTheorem.AppendixA4SplitInput.{u} cSplit)
+    (hcrossInput :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        HairyPathOfSetsSystem.CrossbarDichotomyInput.{u} cCross)
+    (hlocal : ChekuriChuzhoy.LocalRoutingInput.{u})
+    (hstitch : ChekuriChuzhoy.StitchingInput.{u}) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  polynomial_grid_minor_theorem_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_cutMatchingGame_and_corollary32Input
+    hsparseOmega hroutable hcutMatching hpathRoute hsplit hcrossInput
+    (ChekuriChuzhoy.corollary32Input_of_localRoutingInput_and_stitchingInput
+      hlocal hstitch)
+
+/-- Degree-ten corollary of the local-routing/stitching A.1/A.2-shaped
+composition with the large-case cut-matching game internalized. -/
+theorem polynomial_grid_minor_theorem_degree10_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_cutMatchingGame_and_localRouting_stitching
+    (hsparseOmega :
+      ∃ cSparse cSparseLog : ℕ,
+        0 < cSparse ∧ 0 < cSparseLog ∧
+          DegreeThreeStrongPathOfSetsContract.DegreeThreeTreewidthSparsifierOmega.{u}
+            cSparse cSparseLog)
+    (hroutable :
+      ∃ cSet cSetLog cRoute cRouteLog : ℕ,
+        ChekuriChuzhoy.RoutableSetFromTreewidth.{u}
+          cSet cSetLog cRoute cRouteLog)
+    (hcutMatching :
+      ∃ cDeg cDegLog cAlpha cAlphaLog : ℕ,
+        ChekuriChuzhoy.CutWellLinkedCoreFromRoutableSet.{u}
+          cDeg cDegLog cAlpha cAlphaLog)
+    (hpathRoute :
+      ∃ cRoute cRouteLog cDeltaPow : ℕ,
+        ChekuriChuzhoy.StrongPathOfSetsFromNodeWellLinkedCore.{u}
+          cRoute cRouteLog cDeltaPow)
+    (hsplit :
+      ∃ cSplit : ℕ, 0 < cSplit ∧
+        HairyPathOfSetsTheorem.AppendixA4SplitInput.{u} cSplit)
+    (hcrossInput :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        HairyPathOfSetsSystem.CrossbarDichotomyInput.{u} cCross)
+    (hlocal : ChekuriChuzhoy.LocalRoutingInput.{u})
+    (hstitch : ChekuriChuzhoy.StitchingInput.{u}) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  PolynomialGridMinor.polynomial_grid_minor_theorem_degree10_of_degree9
+    (polynomial_grid_minor_theorem_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_cutMatchingGame_and_localRouting_stitching
+      hsparseOmega hroutable hcutMatching hpathRoute hsplit
+      hcrossInput hlocal hstitch)
+
+/-- A.1/A.2-shaped composition with Appendix A.4 derived from the local
+Appendix A.3 split-cluster theorem, with the large-case cut-matching game
+internalized and Chekuri--Chuzhoy Corollary 3.2 split into local routing and
+row stitching inputs. -/
+theorem polynomial_grid_minor_theorem_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_A3_cutMatchingGame_and_localRouting_stitching
+    (hsparseOmega :
+      ∃ cSparse cSparseLog : ℕ,
+        0 < cSparse ∧ 0 < cSparseLog ∧
+          DegreeThreeStrongPathOfSetsContract.DegreeThreeTreewidthSparsifierOmega.{u}
+            cSparse cSparseLog)
+    (hroutable :
+      ∃ cSet cSetLog cRoute cRouteLog : ℕ,
+        ChekuriChuzhoy.RoutableSetFromTreewidth.{u}
+          cSet cSetLog cRoute cRouteLog)
+    (hcutMatching :
+      ∃ cDeg cDegLog cAlpha cAlphaLog : ℕ,
+        ChekuriChuzhoy.CutWellLinkedCoreFromRoutableSet.{u}
+          cDeg cDegLog cAlpha cAlphaLog)
+    (hpathRoute :
+      ∃ cRoute cRouteLog cDeltaPow : ℕ,
+        ChekuriChuzhoy.StrongPathOfSetsFromNodeWellLinkedCore.{u}
+          cRoute cRouteLog cDeltaPow)
+    (hA3 :
+      ∃ cSplit : ℕ, 0 < cSplit ∧
+        HairyPathOfSetsTheorem.AppendixA3ClusterSplitInput.{u} cSplit)
+    (hcrossInput :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        HairyPathOfSetsSystem.CrossbarDichotomyInput.{u} cCross)
+    (hlocal : ChekuriChuzhoy.LocalRoutingInput.{u})
+    (hstitch : ChekuriChuzhoy.StitchingInput.{u}) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  polynomial_grid_minor_theorem_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_cutMatchingGame_and_localRouting_stitching
+    hsparseOmega hroutable hcutMatching hpathRoute
+    (by
+      rcases hA3 with ⟨cSplit, hcSplit, hsplit⟩
+      exact ⟨cSplit, hcSplit,
+        HairyPathOfSetsTheorem.appendixA4SplitInput_of_appendixA3ClusterSplitInput
+          hsplit⟩)
+    hcrossInput hlocal hstitch
+
+/-- Degree-ten corollary with Appendix A.4 derived from the local Appendix A.3
+split-cluster theorem, the large-case cut-matching game internalized, and
+Chekuri--Chuzhoy Corollary 3.2 split into local routing and row stitching
+inputs. -/
+theorem polynomial_grid_minor_theorem_degree10_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_A3_cutMatchingGame_and_localRouting_stitching
+    (hsparseOmega :
+      ∃ cSparse cSparseLog : ℕ,
+        0 < cSparse ∧ 0 < cSparseLog ∧
+          DegreeThreeStrongPathOfSetsContract.DegreeThreeTreewidthSparsifierOmega.{u}
+            cSparse cSparseLog)
+    (hroutable :
+      ∃ cSet cSetLog cRoute cRouteLog : ℕ,
+        ChekuriChuzhoy.RoutableSetFromTreewidth.{u}
+          cSet cSetLog cRoute cRouteLog)
+    (hcutMatching :
+      ∃ cDeg cDegLog cAlpha cAlphaLog : ℕ,
+        ChekuriChuzhoy.CutWellLinkedCoreFromRoutableSet.{u}
+          cDeg cDegLog cAlpha cAlphaLog)
+    (hpathRoute :
+      ∃ cRoute cRouteLog cDeltaPow : ℕ,
+        ChekuriChuzhoy.StrongPathOfSetsFromNodeWellLinkedCore.{u}
+          cRoute cRouteLog cDeltaPow)
+    (hA3 :
+      ∃ cSplit : ℕ, 0 < cSplit ∧
+        HairyPathOfSetsTheorem.AppendixA3ClusterSplitInput.{u} cSplit)
+    (hcrossInput :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        HairyPathOfSetsSystem.CrossbarDichotomyInput.{u} cCross)
+    (hlocal : ChekuriChuzhoy.LocalRoutingInput.{u})
+    (hstitch : ChekuriChuzhoy.StitchingInput.{u}) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  PolynomialGridMinor.polynomial_grid_minor_theorem_degree10_of_degree9
+    (polynomial_grid_minor_theorem_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_A3_cutMatchingGame_and_localRouting_stitching
+      hsparseOmega hroutable hcutMatching hpathRoute hA3
+      hcrossInput hlocal hstitch)
+
+/-- Direct degree-ten A.1/A.2-shaped composition using the Section 4 weak
+`g^10 log g` crossbar input, Appendix A.4 derived from the local Appendix A.3
+split-cluster theorem, the proved large-case cut-matching game, and the split
+Chekuri--Chuzhoy Corollary 3.2 inputs. -/
+theorem polynomial_grid_minor_theorem_degree10_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_A3_crossbar10_cutMatchingGame_and_localRouting_stitching
+    (hsparseOmega :
+      ∃ cSparse cSparseLog : ℕ,
+        0 < cSparse ∧ 0 < cSparseLog ∧
+          DegreeThreeStrongPathOfSetsContract.DegreeThreeTreewidthSparsifierOmega.{u}
+            cSparse cSparseLog)
+    (hroutable :
+      ∃ cSet cSetLog cRoute cRouteLog : ℕ,
+        ChekuriChuzhoy.RoutableSetFromTreewidth.{u}
+          cSet cSetLog cRoute cRouteLog)
+    (hcutMatching :
+      ∃ cDeg cDegLog cAlpha cAlphaLog : ℕ,
+        ChekuriChuzhoy.CutWellLinkedCoreFromRoutableSet.{u}
+          cDeg cDegLog cAlpha cAlphaLog)
+    (hpathRoute :
+      ∃ cRoute cRouteLog cDeltaPow : ℕ,
+        ChekuriChuzhoy.StrongPathOfSetsFromNodeWellLinkedCore.{u}
+          cRoute cRouteLog cDeltaPow)
+    (hA3 :
+      ∃ cSplit : ℕ, 0 < cSplit ∧
+        HairyPathOfSetsTheorem.AppendixA3ClusterSplitInput.{u} cSplit)
+    (hcrossInput :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        HairyPathOfSetsSystem.CrossbarDichotomyInput10.{u} cCross)
+    (hlocal : ChekuriChuzhoy.LocalRoutingInput.{u})
+    (hstitch : ChekuriChuzhoy.StitchingInput.{u}) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  PolynomialGridMinor.polynomial_grid_minor_theorem_degree10_of_inputs10_and_cutMatchingGame
+    (PolynomialGridMinor.exists_hairyPathOfSetsInput_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_and_appendixA4
+      hsparseOmega hroutable hcutMatching hpathRoute
+      (by
+        rcases hA3 with ⟨cSplit, hcSplit, hsplit⟩
+        exact ⟨cSplit, hcSplit,
+          HairyPathOfSetsTheorem.appendixA4SplitInput_of_appendixA3ClusterSplitInput
+            hsplit⟩))
+    hcrossInput
+    (PolynomialGridMinor.strongMinorGridInput_of_corollary32Input
+      (ChekuriChuzhoy.corollary32Input_of_localRoutingInput_and_stitchingInput
+        hlocal hstitch))
+
+/-- Direct degree-ten A.1/A.2-shaped composition using the Section 4 weak
+`g^10 log g` crossbar input, Appendix A.4 derived from the local Appendix A.3
+split-cluster theorem, the proved large-case cut-matching game, and the
+cluster-faithful split Chekuri--Chuzhoy Corollary 3.2 inputs. -/
+theorem polynomial_grid_minor_theorem_degree10_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_A3_crossbar10_cutMatchingGame_and_localRoutingCluster_stitching
+    (hsparseOmega :
+      ∃ cSparse cSparseLog : ℕ,
+        0 < cSparse ∧ 0 < cSparseLog ∧
+          DegreeThreeStrongPathOfSetsContract.DegreeThreeTreewidthSparsifierOmega.{u}
+            cSparse cSparseLog)
+    (hroutable :
+      ∃ cSet cSetLog cRoute cRouteLog : ℕ,
+        ChekuriChuzhoy.RoutableSetFromTreewidth.{u}
+          cSet cSetLog cRoute cRouteLog)
+    (hcutMatching :
+      ∃ cDeg cDegLog cAlpha cAlphaLog : ℕ,
+        ChekuriChuzhoy.CutWellLinkedCoreFromRoutableSet.{u}
+          cDeg cDegLog cAlpha cAlphaLog)
+    (hpathRoute :
+      ∃ cRoute cRouteLog cDeltaPow : ℕ,
+        ChekuriChuzhoy.StrongPathOfSetsFromNodeWellLinkedCore.{u}
+          cRoute cRouteLog cDeltaPow)
+    (hA3 :
+      ∃ cSplit : ℕ, 0 < cSplit ∧
+        HairyPathOfSetsTheorem.AppendixA3ClusterSplitInput.{u} cSplit)
+    (hcrossInput :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        HairyPathOfSetsSystem.CrossbarDichotomyInput10.{u} cCross)
+    (hlocal : ChekuriChuzhoy.LocalRoutingClusterInput.{u})
+    (hstitch : ChekuriChuzhoy.StitchingInput.{u}) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  PolynomialGridMinor.polynomial_grid_minor_theorem_degree10_of_inputs10_and_cutMatchingGame
+    (PolynomialGridMinor.exists_hairyPathOfSetsInput_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_and_appendixA4
+      hsparseOmega hroutable hcutMatching hpathRoute
+      (by
+        rcases hA3 with ⟨cSplit, hcSplit, hsplit⟩
+        exact ⟨cSplit, hcSplit,
+          HairyPathOfSetsTheorem.appendixA4SplitInput_of_appendixA3ClusterSplitInput
+            hsplit⟩))
+    hcrossInput
+    (PolynomialGridMinor.strongMinorGridInput_of_corollary32Input
+      (ChekuriChuzhoy.corollary32Input_of_localRoutingClusterInput_and_stitchingInput
+        hlocal hstitch))
+
+/-- Direct degree-ten A.1/A.2-shaped composition with the Section 4 crossbar
+branch reduced to the formal Theorem 4.1 proof plus Section 4.5 weak assembly
+and Section 4.6 strongification data. -/
+theorem polynomial_grid_minor_theorem_degree10_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_A3_section4WeakToStrong_cutMatchingGame_and_localRouting_stitching
+    (hsparseOmega :
+      ∃ cSparse cSparseLog : ℕ,
+        0 < cSparse ∧ 0 < cSparseLog ∧
+          DegreeThreeStrongPathOfSetsContract.DegreeThreeTreewidthSparsifierOmega.{u}
+            cSparse cSparseLog)
+    (hroutable :
+      ∃ cSet cSetLog cRoute cRouteLog : ℕ,
+        ChekuriChuzhoy.RoutableSetFromTreewidth.{u}
+          cSet cSetLog cRoute cRouteLog)
+    (hcutMatching :
+      ∃ cDeg cDegLog cAlpha cAlphaLog : ℕ,
+        ChekuriChuzhoy.CutWellLinkedCoreFromRoutableSet.{u}
+          cDeg cDegLog cAlpha cAlphaLog)
+    (hpathRoute :
+      ∃ cRoute cRouteLog cDeltaPow : ℕ,
+        ChekuriChuzhoy.StrongPathOfSetsFromNodeWellLinkedCore.{u}
+          cRoute cRouteLog cDeltaPow)
+    (hA3 :
+      ∃ cSplit : ℕ, 0 < cSplit ∧
+        HairyPathOfSetsTheorem.AppendixA3ClusterSplitInput.{u} cSplit)
+    (hsection4 :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        CrossbarTheorem.Section4WeakToStrongAssemblyInput10.{u} cCross)
+    (hlocal : ChekuriChuzhoy.LocalRoutingInput.{u})
+    (hstitch : ChekuriChuzhoy.StitchingInput.{u}) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  polynomial_grid_minor_theorem_degree10_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_A3_crossbar10_cutMatchingGame_and_localRouting_stitching
+    hsparseOmega hroutable hcutMatching hpathRoute hA3
+    (by
+      rcases hsection4 with ⟨cCross, hcCross, hbranch⟩
+      exact
+        PolynomialGridMinor.exists_crossbarDichotomyInput10_of_section4WeakToStrongAssemblyInput
+          hcCross hbranch)
+    hlocal hstitch
+
+/-- Direct degree-ten A.1/A.2-shaped composition with the Section 4 crossbar
+branch reduced to the formal Theorem 4.1 proof plus Section 4.5 weak assembly
+and Section 4.6 strongification data, using the cluster-faithful local-routing
+input for the Chekuri--Chuzhoy branch. -/
+theorem polynomial_grid_minor_theorem_degree10_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_A3_section4WeakToStrong_cutMatchingGame_and_localRoutingCluster_stitching
+    (hsparseOmega :
+      ∃ cSparse cSparseLog : ℕ,
+        0 < cSparse ∧ 0 < cSparseLog ∧
+          DegreeThreeStrongPathOfSetsContract.DegreeThreeTreewidthSparsifierOmega.{u}
+            cSparse cSparseLog)
+    (hroutable :
+      ∃ cSet cSetLog cRoute cRouteLog : ℕ,
+        ChekuriChuzhoy.RoutableSetFromTreewidth.{u}
+          cSet cSetLog cRoute cRouteLog)
+    (hcutMatching :
+      ∃ cDeg cDegLog cAlpha cAlphaLog : ℕ,
+        ChekuriChuzhoy.CutWellLinkedCoreFromRoutableSet.{u}
+          cDeg cDegLog cAlpha cAlphaLog)
+    (hpathRoute :
+      ∃ cRoute cRouteLog cDeltaPow : ℕ,
+        ChekuriChuzhoy.StrongPathOfSetsFromNodeWellLinkedCore.{u}
+          cRoute cRouteLog cDeltaPow)
+    (hA3 :
+      ∃ cSplit : ℕ, 0 < cSplit ∧
+        HairyPathOfSetsTheorem.AppendixA3ClusterSplitInput.{u} cSplit)
+    (hsection4 :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        CrossbarTheorem.Section4WeakToStrongAssemblyInput10.{u} cCross)
+    (hlocal : ChekuriChuzhoy.LocalRoutingClusterInput.{u})
+    (hstitch : ChekuriChuzhoy.StitchingInput.{u}) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  polynomial_grid_minor_theorem_degree10_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_A3_crossbar10_cutMatchingGame_and_localRoutingCluster_stitching
+    hsparseOmega hroutable hcutMatching hpathRoute hA3
+    (by
+      rcases hsection4 with ⟨cCross, hcCross, hbranch⟩
+      exact
+        PolynomialGridMinor.exists_crossbarDichotomyInput10_of_section4WeakToStrongAssemblyInput
+          hcCross hbranch)
+    hlocal hstitch
+
+/-- Direct degree-ten composition with Theorem A.1 in Omega form and the
+Chekuri--Chuzhoy A.2 route bundled as its explicit source-input boundary.
+
+This is the preferred public theorem for auditing the remaining A.1/A.2 closure
+for the `k^10 polylog k` route: `hA2` is exactly the three-paper-input
+semantic closure recorded by `ChekuriChuzhoy.TheoremA2SourceInputs`, not the
+broad A.2 contract axiom. -/
+theorem polynomial_grid_minor_theorem_degree10_of_A1omega_ChekuriChuzhoy_theoremA2SourceInputs_A3_section4WeakToStrong_cutMatchingGame_and_localRoutingCluster_stitching
+    (hsparseOmega :
+      ∃ cSparse cSparseLog : ℕ,
+        0 < cSparse ∧ 0 < cSparseLog ∧
+          DegreeThreeStrongPathOfSetsContract.DegreeThreeTreewidthSparsifierOmega.{u}
+            cSparse cSparseLog)
+    (hA2 : ChekuriChuzhoy.TheoremA2SourceInputs.{u})
+    (hA3 :
+      ∃ cSplit : ℕ, 0 < cSplit ∧
+        HairyPathOfSetsTheorem.AppendixA3ClusterSplitInput.{u} cSplit)
+    (hsection4 :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        CrossbarTheorem.Section4WeakToStrongAssemblyInput10.{u} cCross)
+    (hlocal : ChekuriChuzhoy.LocalRoutingClusterInput.{u})
+    (hstitch : ChekuriChuzhoy.StitchingInput.{u}) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target := by
+  rcases hA2 with ⟨hroutable, hcutMatching, hpathRoute⟩
+  exact
+    polynomial_grid_minor_theorem_degree10_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_A3_section4WeakToStrong_cutMatchingGame_and_localRoutingCluster_stitching
+      hsparseOmega hroutable hcutMatching hpathRoute hA3 hsection4 hlocal hstitch
+
+/-- Direct degree-ten A.1/A.2-shaped composition where the Chekuri--Chuzhoy
+A.2 route is split into the Section 4 strong-tree construction and Theorem 4.6
+extraction.  This is the same public `k^10 polylog k` bound as the path-route
+variant, but it exposes the currently relevant paper-internal dependencies
+instead of bundling them as `StrongPathOfSetsFromNodeWellLinkedCore`. -/
+theorem polynomial_grid_minor_theorem_degree10_of_A1omega_ChekuriChuzhoy_routable_cutMatching_treeCore_extraction_A3_section4WeakToStrong_cutMatchingGame_and_localRoutingCluster_stitching
+    (hsparseOmega :
+      ∃ cSparse cSparseLog : ℕ,
+        0 < cSparse ∧ 0 < cSparseLog ∧
+          DegreeThreeStrongPathOfSetsContract.DegreeThreeTreewidthSparsifierOmega.{u}
+            cSparse cSparseLog)
+    (hroutable :
+      ∃ cSet cSetLog cRoute cRouteLog : ℕ,
+        ChekuriChuzhoy.RoutableSetFromTreewidth.{u}
+          cSet cSetLog cRoute cRouteLog)
+    (hcutMatching :
+      ∃ cDeg cDegLog cAlpha cAlphaLog : ℕ,
+        ChekuriChuzhoy.CutWellLinkedCoreFromRoutableSet.{u}
+          cDeg cDegLog cAlpha cAlphaLog)
+    (hbuild :
+      ∃ cBuild cBuildLog cDeltaPow : ℕ,
+        ChekuriChuzhoy.StrongTreeOfSetsCoreFromNodeWellLinkedCore.{u}
+          cBuild cBuildLog cDeltaPow)
+    (hextract : ChekuriChuzhoy.StrongPathOfSetsFromStrongTreeOfSets.{u})
+    (hA3 :
+      ∃ cSplit : ℕ, 0 < cSplit ∧
+        HairyPathOfSetsTheorem.AppendixA3ClusterSplitInput.{u} cSplit)
+    (hsection4 :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        CrossbarTheorem.Section4WeakToStrongAssemblyInput10.{u} cCross)
+    (hlocal : ChekuriChuzhoy.LocalRoutingClusterInput.{u})
+    (hstitch : ChekuriChuzhoy.StitchingInput.{u}) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  polynomial_grid_minor_theorem_degree10_of_A1omega_ChekuriChuzhoy_routable_cutMatching_pathRoute_A3_section4WeakToStrong_cutMatchingGame_and_localRoutingCluster_stitching
+    hsparseOmega hroutable hcutMatching
+    (ChekuriChuzhoy.strongPathOfSetsFromNodeWellLinkedCore_of_strongTreeCore_and_extraction
+      hbuild hextract)
+    hA3 hsection4 hlocal hstitch
+
+/-- Direct degree-ten A.1/A.2-shaped composition where the
+Chekuri--Chuzhoy A.2 route is split down to the strong-tree construction, the
+pure meta-tree dichotomy, and the DFS/many-leaves branch of Theorem 4.6.
+
+The buffered-path branch of Theorem 4.6 is proved by `TreeOfSets.lean` and is
+composed here, so the theorem exposes only the remaining leaf-side construction
+instead of the monolithic extraction hypothesis. -/
+theorem polynomial_grid_minor_theorem_degree10_of_A1omega_ChekuriChuzhoy_routable_cutMatching_treeCore_metaDichotomy_leafExtraction_A3_section4WeakToStrong_cutMatchingGame_and_localRoutingCluster_stitching
+    (hsparseOmega :
+      ∃ cSparse cSparseLog : ℕ,
+        0 < cSparse ∧ 0 < cSparseLog ∧
+          DegreeThreeStrongPathOfSetsContract.DegreeThreeTreewidthSparsifierOmega.{u}
+            cSparse cSparseLog)
+    (hroutable :
+      ∃ cSet cSetLog cRoute cRouteLog : ℕ,
+        ChekuriChuzhoy.RoutableSetFromTreewidth.{u}
+          cSet cSetLog cRoute cRouteLog)
+    (hcutMatching :
+      ∃ cDeg cDegLog cAlpha cAlphaLog : ℕ,
+        ChekuriChuzhoy.CutWellLinkedCoreFromRoutableSet.{u}
+          cDeg cDegLog cAlpha cAlphaLog)
+    (hbuild :
+      ∃ cBuild cBuildLog cDeltaPow : ℕ,
+        ChekuriChuzhoy.StrongTreeOfSetsCoreFromNodeWellLinkedCore.{u}
+          cBuild cBuildLog cDeltaPow)
+    (hdichotomy : ChekuriChuzhoy.StrongTreeMetaDichotomy.{u})
+    (hleaf : ChekuriChuzhoy.StrongPathOfSetsFromLeafyStrongTreeOfSets.{u})
+    (hA3 :
+      ∃ cSplit : ℕ, 0 < cSplit ∧
+        HairyPathOfSetsTheorem.AppendixA3ClusterSplitInput.{u} cSplit)
+    (hsection4 :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        CrossbarTheorem.Section4WeakToStrongAssemblyInput10.{u} cCross)
+    (hlocal : ChekuriChuzhoy.LocalRoutingClusterInput.{u})
+    (hstitch : ChekuriChuzhoy.StitchingInput.{u}) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  polynomial_grid_minor_theorem_degree10_of_A1omega_ChekuriChuzhoy_routable_cutMatching_treeCore_extraction_A3_section4WeakToStrong_cutMatchingGame_and_localRoutingCluster_stitching
+    hsparseOmega hroutable hcutMatching hbuild
+    (ChekuriChuzhoy.strongPathOfSetsFromStrongTreeOfSets_of_metaDichotomy_and_leafExtraction
+      hdichotomy hleaf)
+    hA3 hsection4 hlocal hstitch
+
+/-- Direct degree-ten A.1/A.2-shaped composition where the
+Chekuri--Chuzhoy A.2 route is split down to the strong-tree construction and
+the DFS/many-leaves branch of Theorem 4.6.  The finite meta-tree dichotomy is
+proved internally. -/
+theorem polynomial_grid_minor_theorem_degree10_of_A1omega_ChekuriChuzhoy_routable_cutMatching_treeCore_leafExtraction_A3_section4WeakToStrong_cutMatchingGame_and_localRoutingCluster_stitching
+    (hsparseOmega :
+      ∃ cSparse cSparseLog : ℕ,
+        0 < cSparse ∧ 0 < cSparseLog ∧
+          DegreeThreeStrongPathOfSetsContract.DegreeThreeTreewidthSparsifierOmega.{u}
+            cSparse cSparseLog)
+    (hroutable :
+      ∃ cSet cSetLog cRoute cRouteLog : ℕ,
+        ChekuriChuzhoy.RoutableSetFromTreewidth.{u}
+          cSet cSetLog cRoute cRouteLog)
+    (hcutMatching :
+      ∃ cDeg cDegLog cAlpha cAlphaLog : ℕ,
+        ChekuriChuzhoy.CutWellLinkedCoreFromRoutableSet.{u}
+          cDeg cDegLog cAlpha cAlphaLog)
+    (hbuild :
+      ∃ cBuild cBuildLog cDeltaPow : ℕ,
+        ChekuriChuzhoy.StrongTreeOfSetsCoreFromNodeWellLinkedCore.{u}
+          cBuild cBuildLog cDeltaPow)
+    (hleaf : ChekuriChuzhoy.StrongPathOfSetsFromLeafyStrongTreeOfSets.{u})
+    (hA3 :
+      ∃ cSplit : ℕ, 0 < cSplit ∧
+        HairyPathOfSetsTheorem.AppendixA3ClusterSplitInput.{u} cSplit)
+    (hsection4 :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        CrossbarTheorem.Section4WeakToStrongAssemblyInput10.{u} cCross)
+    (hlocal : ChekuriChuzhoy.LocalRoutingClusterInput.{u})
+    (hstitch : ChekuriChuzhoy.StitchingInput.{u}) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  polynomial_grid_minor_theorem_degree10_of_A1omega_ChekuriChuzhoy_routable_cutMatching_treeCore_extraction_A3_section4WeakToStrong_cutMatchingGame_and_localRoutingCluster_stitching
+    hsparseOmega hroutable hcutMatching hbuild
+    (ChekuriChuzhoy.strongPathOfSetsFromStrongTreeOfSets_of_leafExtraction
+      hleaf)
+    hA3 hsection4 hlocal hstitch
+
 /-- Public axiom-free composition theorem with the strong-minor branch supplied
 by the paper-level Chekuri--Chuzhoy Corollary 3.2 dichotomy. -/
 theorem polynomial_grid_minor_theorem_of_chekuri_and_unbundled_inputs
@@ -8163,6 +10594,140 @@ theorem polynomial_grid_minor_theorem :
             polynomialGridMinorTreewidthBound c1 c2 target ≤ treewidth G →
               ContainsGridMinor G target :=
   PolynomialGridMinor.polynomial_grid_minor_theorem
+
+/-- Public degree-ten corollary of the explicit-input composition theorem. -/
+theorem polynomial_grid_minor_theorem_degree10_of_inputs
+    (hhairyInput :
+      ∃ cHair cHairLog : ℕ, 0 < cHair ∧ 0 < cHairLog ∧
+        PolynomialGridMinor.HairyPathOfSetsInput.{u} cHair cHairLog)
+    (hcrossInput :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        HairyPathOfSetsSystem.CrossbarDichotomyInput.{u} cCross)
+    (hstrongGrid :
+      ∃ cStrong : ℕ, 0 < cStrong ∧
+        PolynomialGridMinor.StrongMinorGridInput.{u} cStrong)
+    (hlargeData :
+      ∃ cGrid : ℕ, 0 < cGrid ∧
+        HairyCrossbarGrid.LargeCaseCutMatchingDataProvider.{u} cGrid) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  PolynomialGridMinor.polynomial_grid_minor_theorem_degree10_of_inputs
+    hhairyInput hcrossInput hstrongGrid hlargeData
+
+/-- Public degree-ten corollary using explicit hard inputs, the unbundled
+fixed-round cut-matching provider, and the explicit Theorem 8.1 target-size
+provider. -/
+theorem polynomial_grid_minor_theorem_degree10_of_inputs_and_unbundledCutMatching_and_targetProviders
+    (hhairyInput :
+      ∃ cHair cHairLog : ℕ, 0 < cHair ∧ 0 < cHairLog ∧
+        PolynomialGridMinor.HairyPathOfSetsInput.{u} cHair cHairLog)
+    (hcrossInput :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        HairyPathOfSetsSystem.CrossbarDichotomyInput.{u} cCross)
+    (hstrongGrid :
+      ∃ cStrong : ℕ, 0 < cStrong ∧
+        PolynomialGridMinor.StrongMinorGridInput.{u} cStrong)
+    (hproviders :
+      ∃ cRound cScale : ℕ, 0 < cRound ∧ 0 < cScale ∧
+        HairyCrossbarGrid.FixedRoundCutMatchingUnbundledProvider.{u}
+          cRound ∧
+          HairyCrossbarGrid.FixedRoundExpanderTargetProvider cRound cScale) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  PolynomialGridMinor.polynomial_grid_minor_theorem_degree10_of_inputs_and_unbundledCutMatching_and_targetProviders
+    hhairyInput hcrossInput hstrongGrid hproviders
+
+/-- Public degree-ten corollary from explicit hard inputs after internalizing
+the explicit Theorem 8.1 target-size arithmetic. -/
+theorem polynomial_grid_minor_theorem_degree10_of_inputs_and_unbundledCutMatching
+    (hhairyInput :
+      ∃ cHair cHairLog : ℕ, 0 < cHair ∧ 0 < cHairLog ∧
+        PolynomialGridMinor.HairyPathOfSetsInput.{u} cHair cHairLog)
+    (hcrossInput :
+      ∃ cCross : ℕ, 0 < cCross ∧
+        HairyPathOfSetsSystem.CrossbarDichotomyInput.{u} cCross)
+    (hstrongGrid :
+      ∃ cStrong : ℕ, 0 < cStrong ∧
+        PolynomialGridMinor.StrongMinorGridInput.{u} cStrong)
+    (hprovider :
+      ∃ cRound : ℕ, 0 < cRound ∧
+        HairyCrossbarGrid.FixedRoundCutMatchingUnbundledProvider.{u}
+          cRound) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  PolynomialGridMinor.polynomial_grid_minor_theorem_degree10_of_inputs_and_unbundledCutMatching
+    hhairyInput hcrossInput hstrongGrid hprovider
+
+/-- Public degree-ten corollary using the unbundled fixed-round cut-matching
+provider and explicit Theorem 8.1 target-size provider. -/
+theorem polynomial_grid_minor_theorem_degree10_of_unbundledCutMatching_and_targetProviders
+    (hproviders :
+      ∃ cRound cScale : ℕ, 0 < cRound ∧ 0 < cScale ∧
+        HairyCrossbarGrid.FixedRoundCutMatchingUnbundledProvider.{u}
+          cRound ∧
+          HairyCrossbarGrid.FixedRoundExpanderTargetProvider cRound cScale) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  PolynomialGridMinor.polynomial_grid_minor_theorem_degree10_of_unbundledCutMatching_and_targetProviders
+    hproviders
+
+/-- Public degree-ten corollary after internalizing the explicit Theorem 8.1
+target-size arithmetic. -/
+theorem polynomial_grid_minor_theorem_degree10_of_unbundledCutMatching
+    (hprovider :
+      ∃ cRound : ℕ, 0 < cRound ∧
+        HairyCrossbarGrid.FixedRoundCutMatchingUnbundledProvider.{u}
+          cRound) :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  PolynomialGridMinor.polynomial_grid_minor_theorem_degree10_of_unbundledCutMatching
+    hprovider
+
+/-- Public proof-facing degree-ten form with the Section 4 cut-matching game
+internalized. -/
+theorem polynomial_grid_minor_theorem_degree10_of_cutMatchingGame :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  PolynomialGridMinor.polynomial_grid_minor_theorem_degree10_of_cutMatchingGame
+
+/-- Public degree-ten form of the polynomial excluded-grid theorem.
+
+This wrapper follows the broad contract-backed public theorem.  For the current
+axiom-free source-route shape, use one of the longer
+`*_of_A1omega_ChekuriChuzhoy_*` theorems above and discharge its explicit
+paper-input hypotheses. -/
+theorem polynomial_grid_minor_theorem_degree10 :
+    ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
+      ∀ {V : Type u} [Fintype V] [DecidableEq V]
+        (G : _root_.SimpleGraph V) {target : ℕ},
+          2 ≤ target →
+            polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
+              ContainsGridMinor G target :=
+  PolynomialGridMinor.polynomial_grid_minor_theorem_degree10
 
 end SimpleGraph
 end TwinWidth

@@ -201,7 +201,7 @@ private lemma delete_edges_induce_eq_self_of_right_notMem {V : Type u}
     · exact hy (hya.symm ▸ a.2)
     · exact hy (hyb.symm ▸ b.2)
 
-private lemma isKConnected_delete_edge_pred {V : Type u} (G : SimpleGraph V)
+theorem isKConnected_delete_edge_pred {V : Type u} (G : SimpleGraph V)
     [Finite V] {k : ℕ} (hk : k ≠ 0)
     (hG : IsKConnected G (k + 1)) (e : Sym2 V) :
     IsKConnected (G.deleteEdges {e}) k := by
@@ -244,7 +244,7 @@ private lemma isKConnected_delete_edge_pred {V : Type u} (G : SimpleGraph V)
         · rw [delete_edges_induce_eq_self_of_left_notMem G S hx]
           exact hconnH
 
-private lemma isEdgeConnected_of_isKConnected {V : Type u} (G : SimpleGraph V)
+theorem isEdgeConnected_of_isKConnected {V : Type u} (G : SimpleGraph V)
     [Finite V] : ∀ k : ℕ, IsKConnected G k → G.IsEdgeConnected k
   | 0, _ => SimpleGraph.IsEdgeConnected.zero
   | k + 1, hG => by

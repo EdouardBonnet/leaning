@@ -1,4 +1,4 @@
-import TwinWidth.Graph.HairyCrossbarGrid
+import TwinWidth.Graph.CutMatchingGame
 
 /-!
 # Contract for the cut-matching game
@@ -36,7 +36,7 @@ The hypotheses `2 ≤ g`, `IsPowerOfTwo g`, and `g^2 ≤ w` are the conventions
 under which the local crossbar machinery supplies a perfect transported
 matching across every full bisection of `GridVertex g`.
 -/
-axiom exists_bisection_strategy_transported_matchings_half_expander :
+theorem exists_bisection_strategy_transported_matchings_half_expander :
     ∃ cRound : ℕ, 0 < cRound ∧
       ∀ {V : Type u} [Fintype V] [DecidableEq V]
         (G : _root_.SimpleGraph V) {ell w g : ℕ}
@@ -68,7 +68,8 @@ axiom exists_bisection_strategy_transported_matchings_half_expander :
                                   (le_rfl :
                                     largeCaseRoundBound cRound g ≤
                                       largeCaseRoundBound cRound g)
-                                  U W hdisj hcard).IsHalfEdgeExpander
+                                  U W hdisj hcard).IsHalfEdgeExpander :=
+  _root_.TwinWidth.SimpleGraph.HairyCrossbarGrid.exists_bisection_strategy_transported_matchings_half_expander
 
 end CutMatchingGameContract
 end HairyCrossbarGrid

@@ -17,5 +17,10 @@ namespace SimpleGraph
 def polynomialGridMinorTreewidthBound (c1 c2 g : ℕ) : ℕ :=
   c1 * g ^ 9 * (Nat.log 2 g) ^ c2
 
+/-- The weaker degree-ten natural-number treewidth threshold used as a
+compatibility target for the `k^10 polylog k` form of the grid-minor theorem. -/
+def polynomialGridMinorTreewidthBound10 (c1 c2 g : ℕ) : ℕ :=
+  c1 * g ^ 10 * (Nat.log 2 g) ^ c2
+
 end SimpleGraph
 end TwinWidth

@@ -1,6 +1,6 @@
 // Lean compiler output
 // Module: TwinWidthTreewidthExponentialRedemption.Statements.TwinWidth
-// Imports: public import Init public meta import Init public import TwinWidthTreewidthExponentialRedemption.Statements.ContractionSequenceWidth
+// Imports: public import Init public meta import Init public import TwinWidthTreewidthExponentialRedemption.Statements.LeastNatural public import TwinWidthTreewidthExponentialRedemption.Statements.ContractionSequenceWidth
 #include <lean/lean.h>
 #if defined(__clang__)
 #pragma clang diagnostic ignored "-Wunused-parameter"
@@ -15,6 +15,7 @@ extern "C" {
 #endif
 lean_object* initialize_Init(uint8_t builtin);
 lean_object* initialize_Init(uint8_t builtin);
+lean_object* initialize_TwinWidthTreewidthExponentialRedemption_x2eStatements_TwinWidthTreewidthExponentialRedemption_Statements_LeastNatural(uint8_t builtin);
 lean_object* initialize_TwinWidthTreewidthExponentialRedemption_x2eStatements_TwinWidthTreewidthExponentialRedemption_Statements_ContractionSequenceWidth(uint8_t builtin);
 static bool _G_initialized = false;
 LEAN_EXPORT lean_object* initialize_TwinWidthTreewidthExponentialRedemption_x2eStatements_TwinWidthTreewidthExponentialRedemption_Statements_TwinWidth(uint8_t builtin) {
@@ -25,6 +26,9 @@ res = initialize_Init(builtin);
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
 res = initialize_Init(builtin);
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_TwinWidthTreewidthExponentialRedemption_x2eStatements_TwinWidthTreewidthExponentialRedemption_Statements_LeastNatural(builtin);
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
 res = initialize_TwinWidthTreewidthExponentialRedemption_x2eStatements_TwinWidthTreewidthExponentialRedemption_Statements_ContractionSequenceWidth(builtin);

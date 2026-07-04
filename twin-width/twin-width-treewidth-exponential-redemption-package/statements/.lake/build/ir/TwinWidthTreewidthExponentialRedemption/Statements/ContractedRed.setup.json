@@ -4,7 +4,9 @@
  "name": "TwinWidthTreewidthExponentialRedemption.Statements.ContractedRed",
  "isModule": false,
  "importArts":
- {"Qq.Typ":
+ {"TwinWidthTreewidthExponentialRedemption.Statements.TrigraphState":
+  ["/home/ebonnet/Bitbucket/leaning/twin-width/twin-width-treewidth-exponential-redemption-package/statements/.lake/build/lib/lean/TwinWidthTreewidthExponentialRedemption/Statements/TrigraphState.olean"],
+  "Qq.Typ":
   ["/home/ebonnet/Bitbucket/leaning/twin-width/twin-width-treewidth-exponential-redemption-package/statements/.lake/packages/Qq/.lake/build/lib/lean/Qq/Typ.olean",
    "/home/ebonnet/Bitbucket/leaning/twin-width/twin-width-treewidth-exponential-redemption-package/statements/.lake/packages/Qq/.lake/build/lib/lean/Qq/Typ.ir",
    "/home/ebonnet/Bitbucket/leaning/twin-width/twin-width-treewidth-exponential-redemption-package/statements/.lake/packages/Qq/.lake/build/lib/lean/Qq/Typ.olean.server",

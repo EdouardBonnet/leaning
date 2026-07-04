@@ -1,20 +1,20 @@
 import TwinWidth.Graph.Flow
+import TwinWidth.Graph.FlowWellLinked
 import TwinWidth.Graph.FlowIntegrality
 import TwinWidth.Graph.Menger
 
 /-!
-# Contract for standard finite flow theorems
+# Re-exported finite flow theorems
 
 The Chekuri--Chuzhoy boosting theorem uses standard flow facts:
 
-* cut-well-linked terminals support a unit path flow with bounded edge
-  congestion;
+* scaled cut-well-linked terminals contain many disjoint paths in bounded
+  degree graphs;
 * a valid vertex-capacitated flow of integer value yields the same number of
   node-disjoint paths.
 
-The first item remains as the fractional max-flow/min-cut contract.  The second
-item is now proved from finite vertex-Menger in `FlowIntegrality` and is
-re-exported here with the old contract-shaped name.
+Both are now theorem wrappers over the self-contained finite max-flow/Menger
+development.  This file intentionally introduces no flow axiom.
 -/
 
 namespace TwinWidth
@@ -26,19 +26,47 @@ open Finset
 
 namespace FlowContract
 
-/-- Max-flow/min-cut consequence for scaled cut-well-linked sets: equal-size
-terminal subsets can route one unit from each source to a distinct target with
-edge congestion at most `alphaDen / alphaNum`. -/
-axiom scaledEdgeWellLinked_exists_unit_edgeCongestedFlow
+/-- Equal-size terminal subsets of a scaled cut-well-linked set contain many
+node-disjoint paths in a bounded-degree graph.
+
+The size bound is written without division:
+`10 * Δ * alphaDen * k ≤ 3 * alphaNum * |S|`. -/
+theorem scaledEdgeWellLinked_hasDisjointSTPaths
     {V : Type u} [Fintype V] [DecidableEq V]
     {G : _root_.SimpleGraph V} {Terminals S T : Finset V}
-    {alphaNum alphaDen : ℕ}
+    {alphaNum alphaDen Δ k : ℕ}
+    (hdegree : MaxDegreeAtMost G Δ)
+    (hDelta : 3 ≤ Δ)
     (hwell : ScaledEdgeWellLinked G Terminals alphaNum alphaDen)
     (hS : S ⊆ Terminals) (hT : T ⊆ Terminals)
-    (hcard : S.card = T.card) :
-    ∃ F : OrientedPathFlow G S T,
-      F.IsUnitFlow ∧
-        F.EdgeCongestionAtMost (scaledCongestion alphaNum alphaDen)
+    (hcard : S.card = T.card)
+    (hk : 10 * Δ * alphaDen * k ≤ 3 * alphaNum * S.card) :
+    HasDisjointSTPaths G S T k :=
+  FlowWellLinked.hasDisjointSTPaths_of_scaledEdgeWellLinked
+    (G := G) (Terminals := Terminals) (S := S) (T := T)
+    (alphaNum := alphaNum) (alphaDen := alphaDen) (Δ := Δ) (k := k)
+    hdegree hDelta hwell hS hT hcard hk
+
+/-- Sharpened disjoint-terminal version of the scaled cut-well-linked routing
+theorem.
+
+The size bound is written without division:
+`5 * Δ * alphaDen * k ≤ 6 * alphaNum * |S|`. -/
+theorem scaledEdgeWellLinked_hasDisjointSTPaths_disjoint
+    {V : Type u} [Fintype V] [DecidableEq V]
+    {G : _root_.SimpleGraph V} {Terminals S T : Finset V}
+    {alphaNum alphaDen Δ k : ℕ}
+    (hdegree : MaxDegreeAtMost G Δ)
+    (hDelta : 3 ≤ Δ)
+    (hwell : ScaledEdgeWellLinked G Terminals alphaNum alphaDen)
+    (hS : S ⊆ Terminals) (hT : T ⊆ Terminals)
+    (hcard : S.card = T.card) (hdisj : Disjoint S T)
+    (hk : 5 * Δ * alphaDen * k ≤ 6 * alphaNum * S.card) :
+    HasDisjointSTPaths G S T k :=
+  FlowWellLinked.hasDisjointSTPaths_of_scaledEdgeWellLinked_disjoint
+    (G := G) (Terminals := Terminals) (S := S) (T := T)
+    (alphaNum := alphaNum) (alphaDen := alphaDen) (Δ := Δ) (k := k)
+    hdegree hDelta hwell hS hT hcard hdisj hk
 
 /-- Integral vertex-flow decomposition: a unit-vertex-capacity flow of value at
 least `k` contains `k` pairwise vertex-disjoint source-to-target paths. -/
