@@ -1,3 +1,4 @@
+import Mathlib.Combinatorics.SimpleGraph.Acyclic
 import TwinWidthMixedMinorNumberEquivalenceRedemption.Source.TwinWidth.Equivalence.MainContract
 import TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Main
 
