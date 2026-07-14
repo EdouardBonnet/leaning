@@ -1,0 +1,13 @@
+\(\mathrm{GraphParam}\) is the type of finite simple graph parameters:
+families assigning a natural number to every simple graph on every finite vertex
+type with decidable equality.
+
+\(\mathrm{FunctionallyEquivalent}(p,q)\) means that the two graph parameters
+\(p\) and \(q\) bound each other up to arbitrary numerical functions.  Explicitly,
+there are functions \(f,g:\mathbb{N}\to\mathbb{N}\) such that, for every finite
+simple graph \(G\),
+\[
+  p(G)\le f(q(G))
+  \qquad\text{and}\qquad
+  q(G)\le g(p(G)).
+\]

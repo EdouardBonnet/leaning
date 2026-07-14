@@ -1,0 +1,143 @@
+manifestVersion: "1"
+leanVersion: v4.30.0
+mathlibVersion: c5ea00351c28e24afc9f0f84379aa41082b1188f
+AbstractPath: abstract.tex
+LicenseFile: LICENSE
+SubmissionName: Functional Equivalence of Twin-Width and Mixed Minor Number (Redemption)
+SubmissionSlug: twin-width-mixed-minor-number-equivalence-redemption
+BibEntries: []
+StatementSubmissions:
+  rootFolder: statements
+  statements:
+    - Name: TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.IntervalDivision.Division
+      Type: Definition
+      Title: Division of a finite interval into consecutive parts
+      SemanticDependencies: []
+    - Name: TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.IntervalDivision.part
+      Type: Definition
+      Title: Ordered part family of an interval division
+      SemanticDependencies: []
+    - Name: TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.Cell.Vertical
+      Type: Definition
+      Title: Vertical divided matrix cell
+      SemanticDependencies:
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.IntervalDivision.Division
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.IntervalDivision.part
+    - Name: TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.Cell.Horizontal
+      Type: Definition
+      Title: Horizontal divided matrix cell
+      SemanticDependencies:
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.IntervalDivision.Division
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.IntervalDivision.part
+    - Name: TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.MixedCell.Mixed
+      Type: Definition
+      Title: Mixed divided matrix cell
+      SemanticDependencies:
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.IntervalDivision.Division
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.IntervalDivision.part
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.Cell.Vertical
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.Cell.Horizontal
+    - Name: TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.MixedMinor.HasMixedMinor
+      Type: Definition
+      Title: Matrix has a mixed minor
+      SemanticDependencies:
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.IntervalDivision.Division
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.IntervalDivision.part
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.Cell.Vertical
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.Cell.Horizontal
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.MixedCell.Mixed
+    - Name: TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.MixedNumber.matrixMixedNumber
+      Type: Definition
+      Title: Matrix mixed number
+      SemanticDependencies:
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.IntervalDivision.Division
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.IntervalDivision.part
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.Cell.Vertical
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.Cell.Horizontal
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.MixedCell.Mixed
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.MixedMinor.HasMixedMinor
+    - Name: TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.VertexOrder.Order
+      Type: Definition
+      Title: Vertex order
+      SemanticDependencies: []
+    - Name: TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.OrderedAdjacency.orderedAdjacency
+      Type: Definition
+      Title: Ordered adjacency matrix
+      SemanticDependencies:
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.VertexOrder.Order
+    - Name: TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.OrderedAdjacencyMixedNumber.orderedAdjacencyMixedNumber
+      Type: Definition
+      Title: Mixed number of an ordered adjacency matrix
+      SemanticDependencies:
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.IntervalDivision.Division
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.IntervalDivision.part
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.Cell.Vertical
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.Cell.Horizontal
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.MixedCell.Mixed
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.MixedMinor.HasMixedMinor
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.MixedNumber.matrixMixedNumber
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.VertexOrder.Order
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.OrderedAdjacency.orderedAdjacency
+    - Name: TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.SimpleGraph.mixedMinorNumber
+      Type: Definition
+      Title: Graph mixed minor number
+      SemanticDependencies:
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.IntervalDivision.Division
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.IntervalDivision.part
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.Cell.Vertical
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.Cell.Horizontal
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.MixedCell.Mixed
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.MixedMinor.HasMixedMinor
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.MixedNumber.matrixMixedNumber
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.VertexOrder.Order
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.OrderedAdjacency.orderedAdjacency
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.OrderedAdjacencyMixedNumber.orderedAdjacencyMixedNumber
+    - Name: TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.GraphParameter.GraphParam
+      Type: Definition
+      Title: Finite simple-graph parameter
+      SemanticDependencies: []
+    - Name: TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.FunctionalEquivalence.FunctionallyEquivalent
+      Type: Definition
+      Title: Functional equivalence of graph parameters
+      SemanticDependencies:
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.GraphParameter.GraphParam
+    - Name: TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Main.functionalEquivalence
+      Type: Axiom
+      Title: Twin-width and mixed minor number are functionally equivalent
+      SemanticDependencies:
+        - TwinWidthTreewidthExponentialRedemption2.Statements.LeastNatural.leastNat
+        - TwinWidthTreewidthExponentialRedemption2.Statements.SingletonBags.singletonBags
+        - TwinWidthTreewidthExponentialRedemption2.Statements.TrigraphState.State
+        - TwinWidthTreewidthExponentialRedemption2.Statements.TrigraphState.bags
+        - TwinWidthTreewidthExponentialRedemption2.Statements.TrigraphState.blackAdj
+        - TwinWidthTreewidthExponentialRedemption2.Statements.TrigraphState.redAdj
+        - TwinWidthTreewidthExponentialRedemption2.Statements.RedDegree.redDegree
+        - TwinWidthTreewidthExponentialRedemption2.Statements.InitialTrigraphState.InitialState
+        - TwinWidthTreewidthExponentialRedemption2.Statements.InitialTrigraphState.state
+        - TwinWidthTreewidthExponentialRedemption2.Statements.FinalTrigraphState.FinalState
+        - TwinWidthTreewidthExponentialRedemption2.Statements.FinalTrigraphState.state
+        - TwinWidthTreewidthExponentialRedemption2.Statements.ContractedRed.contractedRed
+        - TwinWidthTreewidthExponentialRedemption2.Statements.ContractedBlack.contractedBlack
+        - TwinWidthTreewidthExponentialRedemption2.Statements.ContractionStep.Step
+        - TwinWidthTreewidthExponentialRedemption2.Statements.ContractionSequenceWidth.ContractionSequence
+        - TwinWidthTreewidthExponentialRedemption2.Statements.TwinWidth.twinWidth
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.IntervalDivision.Division
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.IntervalDivision.part
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.Cell.Vertical
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.Cell.Horizontal
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.MixedCell.Mixed
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.MixedMinor.HasMixedMinor
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.MixedNumber.matrixMixedNumber
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.VertexOrder.Order
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.OrderedAdjacency.orderedAdjacency
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Matrix.OrderedAdjacencyMixedNumber.orderedAdjacencyMixedNumber
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.SimpleGraph.mixedMinorNumber
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.GraphParameter.GraphParam
+        - TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.FunctionalEquivalence.FunctionallyEquivalent
+ProofSubmissions:
+  rootFolder: proofs
+  proofs:
+    - Name: TwinWidthMixedMinorNumberEquivalenceRedemption.Proofs.Main.functionalEquivalence
+      AxiomReference: TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Main.functionalEquivalence
+      Title: Self-contained source proof of functional equivalence
+      ProofObligations: []

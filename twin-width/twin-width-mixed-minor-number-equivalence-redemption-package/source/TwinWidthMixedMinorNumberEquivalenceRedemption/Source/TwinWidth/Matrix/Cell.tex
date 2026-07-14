@@ -1,0 +1,11 @@
+For a matrix \(M\) and row and column divisions \(R,C\), the predicate
+\(\mathrm{CellVertical}(M,R,C,i,j)\) says that the \((i,j)\)-cell is constant
+down columns: any two rows in the \(i\)-th row part have equal entries in each
+fixed column from the \(j\)-th column part.
+
+\(\mathrm{CellHorizontal}(M,R,C,i,j)\) says that the same cell is constant
+across rows: in each fixed row from the \(i\)-th row part, any two columns in
+the \(j\)-th column part have equal entries.
+
+\(\mathrm{CellMixed}(M,R,C,i,j)\) means that the cell is neither vertically
+constant nor horizontally constant.

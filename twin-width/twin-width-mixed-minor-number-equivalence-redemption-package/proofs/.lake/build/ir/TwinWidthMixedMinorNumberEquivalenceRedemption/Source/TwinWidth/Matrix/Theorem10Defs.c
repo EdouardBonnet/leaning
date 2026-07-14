@@ -1,0 +1,180 @@
+// Lean compiler output
+// Module: TwinWidthMixedMinorNumberEquivalenceRedemption.Source.TwinWidth.Matrix.Theorem10Defs
+// Imports: public import Init public meta import Init public import TwinWidthMixedMinorNumberEquivalenceRedemption.Source.TwinWidth.Matrix.DivisionSequence
+#include <lean/lean.h>
+#if defined(__clang__)
+#pragma clang diagnostic ignored "-Wunused-parameter"
+#pragma clang diagnostic ignored "-Wunused-label"
+#elif defined(__GNUC__) && !defined(__CLANG__)
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wunused-label"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#endif
+#ifdef __cplusplus
+extern "C" {
+#endif
+lean_object* lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_marcusTardosConstant___boxed(lean_object*);
+lean_object* lean_nat_add(lean_object*, lean_object*);
+lean_object* lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_lemma13MixedValueBound(lean_object*, lean_object*);
+lean_object* lean_nat_mul(lean_object*, lean_object*);
+lean_object* lean_nat_pow(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10MatrixMixedNumberBound(lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10MatrixMixedNumberBound___boxed(lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10MixedValueBound(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10MixedValueBound___boxed(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10AlphabetErrorRefinementBound(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10AlphabetErrorRefinementBound___boxed(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10ErrorRefinementBound(lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10ErrorRefinementBound___boxed(lean_object*);
+static const lean_closure_object lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10AlphabetMatrixTwinWidthBound___closed__0_value = {.m_header = {.m_rc = 0, .m_cs_sz = sizeof(lean_closure_object) + sizeof(void*)*0, .m_other = 0, .m_tag = 245}, .m_fun = (void*)lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_marcusTardosConstant___boxed, .m_arity = 1, .m_num_fixed = 0, .m_objs = {} };
+static const lean_object* lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10AlphabetMatrixTwinWidthBound___closed__0 = (const lean_object*)&lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10AlphabetMatrixTwinWidthBound___closed__0_value;
+LEAN_EXPORT lean_object* lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10AlphabetMatrixTwinWidthBound(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10AlphabetMatrixTwinWidthBound___boxed(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10MatrixTwinWidthBound(lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10MatrixTwinWidthBound___boxed(lean_object*);
+LEAN_EXPORT lean_object* lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10MatrixMixedNumberBound(lean_object* v_d_1_){
+_start:
+{
+lean_object* v___x_2_; lean_object* v___x_3_; lean_object* v___x_4_; 
+v___x_2_ = lean_unsigned_to_nat(2u);
+v___x_3_ = lean_nat_mul(v___x_2_, v_d_1_);
+v___x_4_ = lean_nat_add(v___x_3_, v___x_2_);
+lean_dec(v___x_3_);
+return v___x_4_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10MatrixMixedNumberBound___boxed(lean_object* v_d_5_){
+_start:
+{
+lean_object* v_res_6_; 
+v_res_6_ = lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10MatrixMixedNumberBound(v_d_5_);
+lean_dec(v_d_5_);
+return v_res_6_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10MixedValueBound(lean_object* v_c_7_, lean_object* v_k_8_){
+_start:
+{
+lean_object* v___x_9_; lean_object* v___x_10_; lean_object* v___x_11_; 
+v___x_9_ = lean_unsigned_to_nat(1u);
+v___x_10_ = lean_nat_add(v_k_8_, v___x_9_);
+v___x_11_ = lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_lemma13MixedValueBound(v_c_7_, v___x_10_);
+return v___x_11_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10MixedValueBound___boxed(lean_object* v_c_12_, lean_object* v_k_13_){
+_start:
+{
+lean_object* v_res_14_; 
+v_res_14_ = lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10MixedValueBound(v_c_12_, v_k_13_);
+lean_dec(v_k_13_);
+return v_res_14_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10AlphabetErrorRefinementBound(lean_object* v_a_15_, lean_object* v_d_16_){
+_start:
+{
+lean_object* v___x_17_; lean_object* v___x_18_; lean_object* v___x_19_; lean_object* v___x_20_; lean_object* v___x_21_; lean_object* v___x_22_; lean_object* v___x_23_; 
+v___x_17_ = lean_unsigned_to_nat(2u);
+v___x_18_ = lean_nat_mul(v___x_17_, v_d_16_);
+v___x_19_ = lean_unsigned_to_nat(1u);
+v___x_20_ = lean_nat_add(v_d_16_, v___x_19_);
+v___x_21_ = lean_nat_mul(v___x_17_, v___x_20_);
+lean_dec(v___x_20_);
+v___x_22_ = lean_nat_pow(v_a_15_, v___x_21_);
+lean_dec(v___x_21_);
+v___x_23_ = lean_nat_mul(v___x_18_, v___x_22_);
+lean_dec(v___x_22_);
+lean_dec(v___x_18_);
+return v___x_23_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10AlphabetErrorRefinementBound___boxed(lean_object* v_a_24_, lean_object* v_d_25_){
+_start:
+{
+lean_object* v_res_26_; 
+v_res_26_ = lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10AlphabetErrorRefinementBound(v_a_24_, v_d_25_);
+lean_dec(v_d_25_);
+lean_dec(v_a_24_);
+return v_res_26_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10ErrorRefinementBound(lean_object* v_d_27_){
+_start:
+{
+lean_object* v___x_28_; lean_object* v___x_29_; 
+v___x_28_ = lean_unsigned_to_nat(2u);
+v___x_29_ = lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10AlphabetErrorRefinementBound(v___x_28_, v_d_27_);
+return v___x_29_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10ErrorRefinementBound___boxed(lean_object* v_d_30_){
+_start:
+{
+lean_object* v_res_31_; 
+v_res_31_ = lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10ErrorRefinementBound(v_d_30_);
+lean_dec(v_d_30_);
+return v_res_31_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10AlphabetMatrixTwinWidthBound(lean_object* v_a_33_, lean_object* v_k_34_){
+_start:
+{
+lean_object* v___x_35_; lean_object* v___x_36_; lean_object* v___x_37_; 
+v___x_35_ = ((lean_object*)(lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10AlphabetMatrixTwinWidthBound___closed__0));
+v___x_36_ = lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10MixedValueBound(v___x_35_, v_k_34_);
+v___x_37_ = lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10AlphabetErrorRefinementBound(v_a_33_, v___x_36_);
+lean_dec(v___x_36_);
+return v___x_37_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10AlphabetMatrixTwinWidthBound___boxed(lean_object* v_a_38_, lean_object* v_k_39_){
+_start:
+{
+lean_object* v_res_40_; 
+v_res_40_ = lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10AlphabetMatrixTwinWidthBound(v_a_38_, v_k_39_);
+lean_dec(v_k_39_);
+lean_dec(v_a_38_);
+return v_res_40_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10MatrixTwinWidthBound(lean_object* v_k_41_){
+_start:
+{
+lean_object* v___x_42_; lean_object* v___x_43_; 
+v___x_42_ = lean_unsigned_to_nat(2u);
+v___x_43_ = lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10AlphabetMatrixTwinWidthBound(v___x_42_, v_k_41_);
+return v___x_43_;
+}
+}
+LEAN_EXPORT lean_object* lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10MatrixTwinWidthBound___boxed(lean_object* v_k_44_){
+_start:
+{
+lean_object* v_res_45_; 
+v_res_45_ = lp_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_theorem10MatrixTwinWidthBound(v_k_44_);
+lean_dec(v_k_44_);
+return v_res_45_;
+}
+}
+lean_object* initialize_Init(uint8_t builtin);
+lean_object* initialize_Init(uint8_t builtin);
+lean_object* initialize_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_DivisionSequence(uint8_t builtin);
+static bool _G_initialized = false;
+LEAN_EXPORT lean_object* initialize_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_Theorem10Defs(uint8_t builtin) {
+lean_object * res;
+if (_G_initialized) return lean_io_result_mk_ok(lean_box(0));
+_G_initialized = true;
+res = initialize_Init(builtin);
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_Init(builtin);
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_TwinWidthMixedMinorNumberEquivalenceRedemption_x2eProofs_TwinWidthMixedMinorNumberEquivalenceRedemption_Source_TwinWidth_Matrix_DivisionSequence(builtin);
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+return lean_io_result_mk_ok(lean_box(0));
+}
+#ifdef __cplusplus
+}
+#endif
