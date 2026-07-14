@@ -45,4 +45,7 @@ lean_lib TwinWidthMixedMinorNumberEquivalenceRedemption.Source where
 
 @[default_target]
 lean_lib TwinWidthMixedMinorNumberEquivalenceRedemption.Proofs where
-  roots := #[`TwinWidthMixedMinorNumberEquivalenceRedemption.Proofs.Main]
+  roots := #[
+    `TwinWidthMixedMinorNumberEquivalenceRedemption.Proofs.MathlibCache,
+    `TwinWidthMixedMinorNumberEquivalenceRedemption.Proofs.Main
+  ]

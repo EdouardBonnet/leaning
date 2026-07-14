@@ -1,11 +1,4 @@
-import Mathlib.Combinatorics.SimpleGraph.Acyclic
-import Mathlib.Combinatorics.SimpleGraph.Basic
-import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Finset.Card
-import Mathlib.Data.Finset.Image
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Nat.Bitwise
-import Mathlib.Data.Nat.Find
+import TwinWidthMixedMinorNumberEquivalenceRedemption.Proofs.MathlibCache
 import TwinWidthMixedMinorNumberEquivalenceRedemption.Source.TwinWidth.Equivalence.MainContract
 import TwinWidthMixedMinorNumberEquivalenceRedemption.Statements.Main
 
