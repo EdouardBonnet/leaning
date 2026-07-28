@@ -1,5 +1,5 @@
 import «statements-and-proofs».PolynomialGridMinorBound
-import «statements-and-proofs».PolynomialGridMinor
+import «statements-and-proofs».PolynomialGridMinorComplete
 
 /-!
 # Polynomial grid-minor theorem contract wrapper
@@ -14,9 +14,10 @@ discussion.  This contract uses natural-number constants and the explicit
 base-two natural logarithm `Nat.log 2`; increasing the multiplicative constant
 to a natural number preserves the theorem's implication form.
 
-The proof now lives in `«statements-and-proofs».PolynomialGridMinor`; this module keeps
-the earlier contract namespace as a compatibility wrapper, without adding an
-unproved constant for the completed main statement.
+The degree-nine proof still lives in `«statements-and-proofs».PolynomialGridMinor`.
+The direct degree-ten proof lives in
+`«statements-and-proofs».PolynomialGridMinorComplete`.  This module keeps the
+earlier contract namespace as a compatibility wrapper.
 -/
 
 namespace SimpleGraph
@@ -37,9 +38,8 @@ theorem polynomial_grid_minor_theorem :
               ContainsGridMinor G g :=
   _root_.SimpleGraph.PolynomialGridMinor.polynomial_grid_minor_theorem
 
-/-- Weaker degree-ten compatibility form of the Polynomial Excluded Grid
-Theorem.  This is obtained from the completed degree-nine theorem rather than
-from a separate weaker proof. -/
+/-- Direct exponent-ten compatibility form of the Polynomial Excluded Grid
+Theorem. -/
 theorem polynomial_grid_minor_theorem_degree10 :
     ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
       ∀ {V : Type*} [Fintype V] [DecidableEq V]

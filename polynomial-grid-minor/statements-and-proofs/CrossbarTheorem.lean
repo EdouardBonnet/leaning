@@ -236,6 +236,10 @@ def Section4PseudoGridBranchInput10 (c : ℕ) : Prop :=
     {P : PerfectPathPacking H A B} {Q : PerfectPathPacking H A X},
       2 ≤ g →
         CrossbarContract.IsPowerOfTwo g →
+          Disjoint A B →
+            Disjoint A X →
+              Disjoint B X →
+                (∀ x ∈ X, DegreeEquals H x 1) →
           2 ^ 22 * g ^ 10 * Nat.log 2 g ≤ kappa →
             P.card = kappa →
               Q.card = kappa →
@@ -261,6 +265,10 @@ def Section4WeakToStrongAssemblyInput10 (c : ℕ) : Prop :=
     {P : PerfectPathPacking H A B} {Q : PerfectPathPacking H A X},
       2 ≤ g →
         CrossbarContract.IsPowerOfTwo g →
+          Disjoint A B →
+            Disjoint A X →
+              Disjoint B X →
+                (∀ x ∈ X, DegreeEquals H x 1) →
           2 ^ 22 * g ^ 10 * Nat.log 2 g ≤ kappa →
             P.card = kappa →
               Q.card = kappa →
@@ -286,10 +294,11 @@ dichotomy. -/
 theorem section4PseudoGridBranchInput10_of_weakToStrongAssemblyInput10
     {c : ℕ} (hinput : Section4WeakToStrongAssemblyInput10.{u} c) :
     Section4PseudoGridBranchInput10.{u} c := by
-  intro V _ _ H A B X g kappa P Q hg hpow hlarge hPcard hQcard hminimum
-    hpseudo
+  intro V _ _ H A B X g kappa P Q hg hpow hAB hAX hBX hdegree hlarge
+    hPcard hQcard hminimum hpseudo
   rcases hpseudo with ⟨Gamma⟩
-  rcases hinput hg hpow hlarge hPcard hQcard hminimum Gamma with
+  rcases hinput hg hpow hAB hAX hBX hdegree hlarge hPcard hQcard hminimum
+      Gamma with
     ⟨W, hWfin, hWdec, J, N, M, Dhat, ell, w,
       hminor, hell, hw, hweakInput, hstrongify⟩
   letI : Fintype W := hWfin
@@ -415,7 +424,8 @@ theorem crossbar_or_strong_pathOfSets_minor_degree10_of_section4PseudoGridBranch
   rcases hconclusion with hcross | hpseudo
   · exact Or.inl hcross
   · exact Or.inr
-      (hbranch hg hpow hlarge10 hPcard hQcard hminimum hpseudo)
+      (hbranch hg hpow hAB hAX hBX hdeg hlarge10 hPcard hQcard hminimum
+        hpseudo)
 
 /-- Section 4 crossbar dichotomy from Theorem 4.1 and the concrete Section
 4.5/4.6 weak-to-strong assembly input. -/

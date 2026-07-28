@@ -8085,9 +8085,10 @@ theorem polynomial_grid_minor_theorem_degree10_of_cutMatchingGame :
   polynomial_grid_minor_theorem_degree10_of_unbundledCutMatching
     HairyCrossbarGrid.exists_fixedRoundCutMatchingUnbundledProvider
 
-/-- Degree-ten form of the polynomial excluded-grid theorem in the
-proof-facing namespace.  It is obtained from the proved degree-nine theorem. -/
-theorem polynomial_grid_minor_theorem_degree10 :
+/-- Legacy degree-ten corollary obtained from the contract-backed degree-nine
+theorem.  The direct source-route public theorem is assembled in
+`PolynomialGridMinorComplete`. -/
+theorem polynomial_grid_minor_theorem_degree10_of_degree9_contract :
     ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
       ∀ {V : Type u} [Fintype V] [DecidableEq V]
         (G : _root_.SimpleGraph V) {target : ℕ},
@@ -10714,19 +10715,16 @@ theorem polynomial_grid_minor_theorem_degree10_of_cutMatchingGame :
               ContainsGridMinor G target :=
   PolynomialGridMinor.polynomial_grid_minor_theorem_degree10_of_cutMatchingGame
 
-/-- Public degree-ten form of the polynomial excluded-grid theorem.
-
-This wrapper follows the broad contract-backed public theorem.  For the current
-axiom-free source-route shape, use one of the longer
-`*_of_A1omega_ChekuriChuzhoy_*` theorems above and discharge its explicit
-paper-input hypotheses. -/
-theorem polynomial_grid_minor_theorem_degree10 :
+/-- Legacy public degree-ten corollary obtained from the contract-backed
+degree-nine theorem.  The direct source-route public theorem is assembled in
+`PolynomialGridMinorComplete`. -/
+theorem polynomial_grid_minor_theorem_degree10_of_degree9_contract :
     ∃ c1 c2 : ℕ, 0 < c1 ∧ 0 < c2 ∧
       ∀ {V : Type u} [Fintype V] [DecidableEq V]
         (G : _root_.SimpleGraph V) {target : ℕ},
           2 ≤ target →
             polynomialGridMinorTreewidthBound10 c1 c2 target ≤ treewidth G →
               ContainsGridMinor G target :=
-  PolynomialGridMinor.polynomial_grid_minor_theorem_degree10
+  PolynomialGridMinor.polynomial_grid_minor_theorem_degree10_of_degree9_contract
 
 end SimpleGraph

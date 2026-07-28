@@ -1,4 +1,6 @@
 import «statements-and-proofs».AppendixA3ClusterSplit
+import «statements-and-proofs».AppendixA3Complete
+import «statements-and-proofs».HairyPathOfSetsComplete
 import «statements-and-proofs».AppendixA3AugmentedBoundary
 import «statements-and-proofs».AppendixA3BalancedCut
 import «statements-and-proofs».AppendixA3Claim73
@@ -167,6 +169,7 @@ import «statements-and-proofs».PathPackingSupportDegree
 import «statements-and-proofs».Paths
 import «statements-and-proofs».PolynomialGridMinor
 import «statements-and-proofs».PolynomialGridMinorBound
+import «statements-and-proofs».PolynomialGridMinorComplete
 import «statements-and-proofs».PolynomialGridMinorContract
 import «statements-and-proofs».PseudoGrid
 import «statements-and-proofs».PseudoGridSlicing
@@ -185,6 +188,8 @@ import «statements-and-proofs».RoutedCutMatchingSupport
 import «statements-and-proofs».ChekuriChuzhoyRootedTreeDistance
 import «statements-and-proofs».ChekuriChuzhoyRootedTreeComponents
 import «statements-and-proofs».ChekuriChuzhoyRootedTreeGrouping
+import «statements-and-proofs».ChekuriChuzhoyWP6
+import «statements-and-proofs».ChekuriChuzhoyWP6Complete
 import «statements-and-proofs».Section43
 import «statements-and-proofs».Section43Contract
 import «statements-and-proofs».Section44
@@ -194,6 +199,7 @@ import «statements-and-proofs».Section45Contract
 import «statements-and-proofs».Section46
 import «statements-and-proofs».Section46Contract
 import «statements-and-proofs».Section46Flow
+import «statements-and-proofs».Section4Complete
 import «statements-and-proofs».Separator
 import «statements-and-proofs».SeparatorGridMinor
 import «statements-and-proofs».SparseGrid

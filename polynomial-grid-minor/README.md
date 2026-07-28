@@ -29,19 +29,25 @@ standing for a paper result.
 
 ## Current status
 
-The development is substantial but not yet closed.
+The direct exponent-ten formalization is complete.
 
-- `statements-and-proofs/` contains 255 Lean modules and no `sorry` or `admit`.
-- Eighteen explicit project axioms remain in nine files.
-- The current public degree-ten wrapper is contract-backed through the sharper
-  degree-nine theorem and depends on four project axioms.
+- The closed endpoint is
+  `SimpleGraph.PolynomialGridMinor.polynomial_grid_minor_theorem_degree10_proved`
+  in `PolynomialGridMinorComplete.lean`.
+- It instantiates the expanded source-route theorem with all nine proved
+  producers and does not pass through the contract-backed degree-nine theorem.
+- `#print axioms` for the closed endpoint and all three stable degree-ten
+  wrappers reports only `propext`, `Classical.choice`, and `Quot.sound`.
+- Legacy project axioms remain declared as documentary contracts outside the
+  direct theorem's transitive closure. The degree-nine theorem remains
+  contract-backed and is not claimed as part of this completion.
 - Work package 1A is closed: `routableSetFromTreewidth_proved` supplies
   `RoutableSetFromTreewidth 9 1 1 1` without project axioms.
 - Work package 1B is closed:
   `exists_cutWellLinkedCoreFromRoutableSet_proved` supplies the low-degree,
   cut-well-linked core without project axioms. Its degree and reciprocal
   well-linkedness losses are both `O(eta * log k)`.
-- Work package 1C has a contract-backed exponent-24 closure:
+- Work package 1C has an axiom-free exponent-24 closure:
   `strongTreeOfSetsCoreFromNodeWellLinkedCore24_proved` produces the complete
   strong tree-of-sets system from the explicit
   `buildConstant24 * W * m^24 * Delta^10 * log_2(x)^5 < x` threshold. Bandwidth
@@ -73,6 +79,17 @@ The development is substantial but not yet closed.
   `m^24` strong-tree threshold and the resulting `ell^50` path threshold.
 - The documentary gap for Chuzhoy--Tan Appendix A.3 is resolved by the newly
   added `improved-bounds-chuzhoy.pdf`.
+- Chuzhoy--Tan Theorem 2.3 is closed by
+  `PolynomialGridMinor.exists_hairyPathOfSetsInput_proved`, which composes the
+  proved A.1, A.2, and A.3/A.4 producers and has no project-specific axiom in
+  its transitive closure.
+- The strong path-of-sets-to-grid package is closed by
+  `ChekuriChuzhoy.strongPathOfSets_containsGridMinor_proved`.
+  `ChekuriChuzhoy.AppendixB1.theoremB1_proved` formalizes Appendix B,
+  Theorem B.1, including the finite bump/cross and hill descents, the
+  boundary-contact reconstruction, the terminal sparse-grid construction,
+  and both page-60 type branches.  The resulting local-routing and Corollary
+  3.2 producers have no project-specific axiom in their transitive closure.
 
 See [REMAINING.md](REMAINING.md) for the dependency-ordered proof plan and
 acceptance criteria. See [AGENTS.md](AGENTS.md) before changing Lean files and
@@ -159,10 +176,16 @@ Mathlib revision `ff96409d623285fbfe777cf47c50574f05f63a3d`. The treewidth
 definitions and proof infrastructure are local in `TreewidthContract.lean` and
 `Treewidth.lean`; no neighboring project is imported.
 
-The verified aggregate build on 2026-07-26 compiles the aggregate module and
-trust audit in 3,679 Lake jobs. The completed WP1 endpoint and its DFS
-many-leaves producer pass their permanent axiom checks with only `propext`,
-`Classical.choice`, and `Quot.sound`. Existing linter warnings are non-blocking.
+The Section 4 endpoint
+`CrossbarTheorem.crossbar_or_strong_pathOfSets_minor_degree10_proved` is the
+direct exponent-ten crossbar dichotomy: it uses the proved Theorem 4.1 and the
+fully constructed pseudo-grid branch, not the degree-nine contract. Its axiom
+audit reports only `propext`, `Classical.choice`, and `Quot.sound`. Existing
+linter warnings are non-blocking.  The completed WP6 endpoint
+`ChekuriChuzhoy.strongPathOfSets_containsGridMinor_proved` has the same axiom
+audit. The final source-route endpoint and the proof-facing, root-namespace,
+and compatibility public wrappers also have exactly this standard-axiom
+closure.
 
 Build the complete development with:
 

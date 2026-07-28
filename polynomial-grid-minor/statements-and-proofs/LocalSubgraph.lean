@@ -59,6 +59,14 @@ def toInducedOnFinset {V : Type*} {G : _root_.SimpleGraph V} {C : Finset V}
   | .cons _ p, hp => by
       simp [toInducedOnFinset, support_toInducedOnFinset]
 
+@[simp] theorem edges_toInducedOnFinset {V : Type*}
+    {G : _root_.SimpleGraph V} {C : Finset V} {u v : V} :
+    ∀ (p : G.Walk u v) hp,
+      (toInducedOnFinset (G := G) (C := C) p hp).edges = p.edges
+  | .nil, _ => rfl
+  | .cons _ p, hp => by
+      simp [toInducedOnFinset, edges_toInducedOnFinset]
+
 end Walk
 
 namespace GraphPath
@@ -84,6 +92,12 @@ def inInducedOnFinset (P : GraphPath G) {C : Finset V}
     (P.inInducedOnFinset hPC).vertexSet = P.vertexSet := by
   classical
   simp [inInducedOnFinset, vertexSet]
+
+@[simp] theorem inInducedOnFinset_edgeSet (P : GraphPath G)
+    {C : Finset V} (hPC : P.vertexSet ⊆ C) :
+    (P.inInducedOnFinset hPC).edgeSet = P.edgeSet := by
+  classical
+  simp [inInducedOnFinset, edgeSet]
 
 end GraphPath
 

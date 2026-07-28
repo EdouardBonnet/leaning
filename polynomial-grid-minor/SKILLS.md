@@ -501,6 +501,59 @@ constructor field or numbered source lemma before retrying.
   unrelated global size parameter used in the logarithmic denominator. Carry
   this cap through the Phase 1 and Phase 2 consumers and discharge their width
   requirements from the skeleton-flow budget.
+- In Appendix A.3, localizing a well-linked set to one connected component is
+  safest when the component theorem also records that its outgoing edge
+  boundary is empty. That closure fact lets the augmented boundary be
+  transported unchanged, rather than merely obtaining a smaller connected
+  carrier.
+- To turn the Lemma 7.10 edge packing into a clean perfect connector, keep the
+  synchronized-routing index as a subtype of the original universe-zero path
+  index. Indexing directly by endpoint vertices can raise the universe and no
+  longer match the routing API. Restrict each path between its first and last
+  cluster hits; the successor and penultimate vertices then lie in the
+  ordinary cluster boundaries while the internal vertices avoid both
+  clusters.
+- In the degree-three Appendix A.3 constant calculation, account separately
+  for the two endpoint-boosting losses and for the nail-reservoir losses before
+  thinning. Defining `connectorScale`, `rhoScale`, and `cSplit` as explicit
+  multiples makes all remaining natural-number bounds exact `omega`/`ring`
+  obligations and avoids hidden floor assumptions.
+- When a paper theorem is already proved as a composition theorem with
+  semantic inputs, close the package in a focused endpoint module that supplies
+  the proved producers. Keep the old contract-backed public wrapper available
+  for compatibility, but audit and advertise the new `_proved` endpoint; a
+  compiling application of an input theorem is not enough until that final
+  declaration's transitive axioms have been checked.
+- For Section 4.2, define the reduced host as exactly the supremum of the row
+  support and retained auxiliary-path support. This simultaneously gives the
+  source-faithful minor and the maximum-degree-four certificate needed by both
+  boosting applications.
+- For Section 4.5 connectors, retain common row indices before building the
+  gap packing. Consecutive selected slices then give literal subpaths of one
+  ordered row; their internal disjointness from slice supports and mutual
+  node-disjointness reduce to path-order lemmas rather than a new routing
+  construction.
+- In Chekuri--Chuzhoy Appendix B.1, a post-hill column state cannot safely
+  record only pairwise disjointness and one hit per active row.  Replacing a
+  hill by a row interval and then erasing cycles gives only an upper bound on
+  the new vertex set; it does not preserve chosen hit witnesses
+  monotonically.  Carry the unchanged boundary endpoints and the full
+  linkage-contact trace (or an equivalent auxiliary-path admissibility
+  invariant) through every replacement, and derive all row hits again by the
+  no-skip argument.
+- For the same hill phase, record support of each modified column in the union
+  of its original column and the fixed active-row edges.  A clean
+  consecutive-contact atom cannot use an active-row edge; it therefore lies
+  on the original simple column.  Reconstruct its two original contact
+  indices, prove they are consecutive by excluding an intermediate clean
+  linkage contact, and transport bump/cross witnesses back to the pre-hill
+  family.  This avoids assuming that cycle erasure preserves a chosen contact
+  list.
+- Use two separate finite measures in Appendix B.1: active-row edges outside
+  the fixed columns for bump/cross switching, and column edges outside the
+  fixed rows for hill replacement.  The former decreases because a deleted
+  row interval contains a non-column edge; the latter decreases because a
+  valley leaves the active-row union and the replacement adds only row edges.
 
 ## Verification commands
 
@@ -517,3 +570,10 @@ Before reporting a closed package, also scan the relevant closure for
   a tiny finite computation.  For trust-sensitive endpoints use kernel
   reduction (`decide`, `norm_num`, or an explicit finite proof) and audit the
   final theorem rather than assuming a successful compile is sufficient.
+- When a foundational composition module is itself imported by the proved
+  input producers, place final closure in a focused `*Complete` module that
+  imports both the foundation and those producers. Rename any legacy
+  contract-backed canonical declaration in the foundation, then restore the
+  stable public name in the completion module. Rebuild the foundation before
+  testing the completion module so a stale `.olean` does not create a false
+  duplicate-declaration error.
