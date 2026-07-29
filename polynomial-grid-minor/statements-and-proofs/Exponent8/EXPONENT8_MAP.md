@@ -8,8 +8,7 @@ the completed exponent-ten endpoint.  Nothing listed here changes
 `polynomialGridMinorTreewidthBound10` or a public polynomial-grid-minor
 theorem.
 
-Line numbers refer to the worktree based on commit `5263735`, together with the
-new files under `statements-and-proofs/Exponent8/`.
+Line numbers refer to the repository declarations audited on the date above.
 
 ## Source-numbering warning
 

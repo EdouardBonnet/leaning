@@ -7,6 +7,10 @@ endpoint.
 
 The current modules are:
 
+- `PRO56_READ_FIRST.md`: the mandatory status and task handoff for a Pro 5.6
+  proof review;
+- `EXPONENT8_MAP.md`: the exact source-to-Lean declaration and dependency
+  map;
 - `Lemma48Additive.lean`: the exact additive loss hidden in the existing
   Lemma 4.8 pruning proof;
 - `LastHitSelection.lean`: bounded-fiber counting and distinct
@@ -26,7 +30,8 @@ The current modules are:
 - `AxiomAudit.lean`: the focused trust audit.
 
 The exact existing Section 4 declarations and the still-missing source
-dependencies are recorded in `../../EXPONENT8_MAP.md`.
+dependencies are recorded in `EXPONENT8_MAP.md`.  A new proof-review
+conversation should begin with `PRO56_READ_FIRST.md`.
 
 Nothing in this directory should be imported by the public endpoint until the
 recursive slicing placeholder has been discharged and the resulting numerical
