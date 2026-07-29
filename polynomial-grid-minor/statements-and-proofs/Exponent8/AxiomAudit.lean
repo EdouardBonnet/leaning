@@ -1,0 +1,49 @@
+import «statements-and-proofs».Exponent8.Lemma48Additive
+import «statements-and-proofs».Exponent8.LastHitSelection
+import «statements-and-proofs».Exponent8.LastHitCrossbar
+import «statements-and-proofs».Exponent8.Observation44RootProvenance
+import «statements-and-proofs».Exponent8.Claim53Strong
+import «statements-and-proofs».Exponent8.RecursiveSlicing
+import «statements-and-proofs».Exponent8.RootedSection42
+
+/-!
+# Trust audit for the experimental exponent-eight package
+
+This file is intentionally separate from the project's public endpoint audit.
+It is extended after each experimental proof package is added.
+-/
+
+#print axioms SimpleGraph.FiniteBipartitePruning.PruneTrace.exists_intersecting_subsets_additive_core
+#print axioms SimpleGraph.FiniteBipartitePruning.PruneTrace.exists_intersecting_subsets_additive
+#print axioms SimpleGraph.PathPacking.exists_intersecting_path_subfamilies_additive_core
+#print axioms SimpleGraph.PathPacking.exists_intersecting_path_subfamilies_additive
+#print axioms SimpleGraph.PathPacking.exists_intersecting_path_subfamilies_additive_coarse
+
+#print axioms SimpleGraph.Exponent8.card_le_mul_card_lastRow_image
+#print axioms SimpleGraph.Exponent8.le_card_lastRow_image
+#print axioms SimpleGraph.Exponent8.exists_lastRow_subset_card_eq
+#print axioms SimpleGraph.Exponent8.exists_lastHitSelection
+
+#print axioms SimpleGraph.Exponent8.SliceLocalizationInvariant.uncontractedQ_nodeDisjoint
+#print axioms SimpleGraph.Exponent8.SliceLocalizationInvariant.lastBadVertex_mem_lastBadRow_segment
+#print axioms SimpleGraph.Exponent8.SliceLocalizationInvariant.exists_lastHitSelection_of_bounds
+#print axioms SimpleGraph.Exponent8.SliceLocalizationInvariant.lastHitCrossbar_direct
+#print axioms SimpleGraph.Exponent8.SliceLocalizationInvariant.lastHitCrossbar
+
+#print axioms SimpleGraph.Exponent8.RootedObservation44State.contractCommonEdge_hit_iff
+#print axioms SimpleGraph.Exponent8.RootedObservation44State.contractOffRowEdge_hit_iff
+#print axioms SimpleGraph.Exponent8.RootedObservation44State.exists_reduced_of_pseudoGrid
+#print axioms SimpleGraph.Exponent8.RootedObservation44State.reduced_hit_iff_root_hit
+#print axioms SimpleGraph.Exponent8.RootedObservation44State.toSliceLocalizationInvariant_fullRows
+#print axioms SimpleGraph.Exponent8.exists_initialRecursiveSliceLayer_of_pseudoGrid
+#print axioms SimpleGraph.Exponent8.Theorem41Setup.exists_initialRecursiveSliceLayer_of_pseudoGrid
+
+#print axioms SimpleGraph.Exponent8.SliceLocalizationInvariant.badHitQ_card_lt_of_no_crossbar
+#print axioms SimpleGraph.Exponent8.SliceLocalizationInvariant.claim53Strong
+#print axioms SimpleGraph.Exponent8.SliceLocalizationInvariant.badHitQ_card_lt_four_mul_g_pow_four
+#print axioms SimpleGraph.Exponent8.SliceLocalizationInvariant.claim53Strong_four_mul_g_pow_four
+
+#print axioms SimpleGraph.Exponent8.ThreeRoundParameters.fanout_pos
+#print axioms SimpleGraph.Exponent8.exists_additiveSliceCleanup
+#print axioms SimpleGraph.Exponent8.RecursiveSliceLayer.claim53Strong_cleanup
+#print axioms SimpleGraph.Exponent8.threeRoundRecursiveSlicing

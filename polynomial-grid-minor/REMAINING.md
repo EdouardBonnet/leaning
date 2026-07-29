@@ -1,10 +1,9 @@
 # Remaining Work for the Degree-Ten Grid-Minor Theorem
 
-Last audited: 2026-07-16
+Last audited: 2026-07-28
 
-This file is the active implementation plan for a self-contained Lean proof of
-the exponent-ten variant of Chuzhoy--Tan Theorem 1.1. Update it whenever a work
-package is closed, split, or found to have a different dependency boundary.
+This file records the completed implementation plan for a self-contained Lean
+proof of the exponent-ten variant of Chuzhoy--Tan Theorem 1.1.
 
 ## Target
 
@@ -43,30 +42,13 @@ The final theorem is complete only if it uses the direct degree-ten route and
 
 ## Audit baseline
 
-- [x] The directory contains 206 statement modules plus
-  `PolynomialGridMinor.lean` and `AxiomAudit.lean`.
+- [x] The standalone import graph is complete and acyclic.
 - [x] No `sorry`, `admit`, `unsafe`, or `partial` declaration was found.
-- [x] Sixteen explicit axioms were identified in seven contract files.
-- [x] The newly completed crossing, reachable-extraction, and stitching
-  endpoints have axiom-free local import closures.
-- [x] The renamed `«statements-and-proofs».*` import graph is complete and
-  acyclic.
-- [x] A fresh standalone build completed all 3,563 jobs, including all 206
-  statement modules, `PolynomialGridMinor.lean`, and `AxiomAudit.lean`.
-
-The current public degree-ten wrapper is **contract-backed** through exactly
-these four project axioms:
-
-1. `HairyPathOfSetsContract.exists_subgraph_hairy_pathOfSets_of_treewidth`.
-2. `CrossbarContract.crossbar_or_strong_pathOfSets_minor`.
-3. `HairyCrossbarGridContract.gridMinor_of_hairy_pathOfSets_and_crossbars_large`.
-4. `ChekuriChuzhoyContract.corollary32_gridMinor_or_routedRows`.
-
-This route must not be used for final closure. The direct endpoint
-`polynomial_grid_minor_theorem_degree10_of_inputs10_and_cutMatchingGame` has
-already been checked with `#print axioms`; it uses only `propext`,
-`Classical.choice`, and `Quot.sound`. Therefore the final arithmetic and the
-all-crossbar branch are not open mathematical obligations.
+- [x] Legacy contract axioms remain declared only outside the direct
+  degree-ten theorem's transitive closure.
+- [x] The closed endpoint and all stable public degree-ten wrappers use only
+  `propext`, `Classical.choice`, and `Quot.sound`.
+- [x] The direct endpoint does not use the contract-backed degree-nine theorem.
 
 ## Exact direct frontier
 
@@ -516,7 +498,7 @@ lake build AxiomAudit
 
 ## Work package 3: Chuzhoy Theorem 6.3 / Appendix A.3
 
-Status: **Open, source now available**
+Status: **Complete**
 
 Source: `improved-bounds-chuzhoy.pdf`, Theorem 6.3 and Section 7, "Parallel
 Cluster Splitting".
@@ -636,8 +618,11 @@ proof, and only the `d = 3` specialization is needed.
   `1/8` cut bound. `minimumQuarterBalancedCut_iteration` proves inherited
   well-linkedness, `7/8` contraction, retention of at least half the old mass,
   and the next threshold bound together.
-- [ ] Formalize the outer finite balanced-cut iteration of Lemma 7.5 using the
-  completed one-step theorem.
+- [x] Formalize the outer finite balanced-cut iteration of Lemma 7.5 using the
+  completed one-step theorem. `AppendixA3Lemma75.OuterState.exists_successor`
+  proves the contracting step, and `AppendixA3Lemma75.exists_lemma75_set`
+  closes the finite descent with the fixed denominator
+  `finalAlphaDen = 27 * 3^128`.
 - [x] Prove Observation 7.6 from Lemma 2.11. The source-facing wrapper
   `minimumQuarterBalancedEdgeCut_augmentedBoundary_wellLinked_three` weakens
   the exact denominator to the next `3 * alphaDen` term.
@@ -646,7 +631,7 @@ proof, and only the `d = 3` specialization is needed.
   `quarterBalanced_of_three_quarter_original_crossing`,
   `retainLeft_at_three_quarter_original_crossing`, and
   `exists_guarded_original_three_quarter_crossing`.
-- [ ] Finish the corrected terminal-mass argument and Observation 7.7. The
+- [x] Finish the corrected terminal-mass argument and Observation 7.7. The
   printed proof's last crossing of half the *current* augmented-boundary mass
   is invalid because new cut endpoints need not be original terminals. Track
   `|U intersect Gamma'(S)|` instead and rule out its first crossing below
@@ -656,43 +641,65 @@ proof, and only the `d = 3` specialization is needed.
   `1/9`-well-linked, so the terminal state need not be a proper subset and
   minimum-cardinality alone gives no contradiction. Finite descent, actual
   edge-set accumulation, and all one-step inequalities are complete.
-- [ ] Add the corrected outer bootstrap for the zero-step case. If `S0` is
+  `AppendixA3Lemma75.minimumQuarterBalancedCut_eight_mul_cut_le` is the
+  corrected Observation 7.7.
+- [x] Add the corrected outer bootstrap for the zero-step case. If `S0` is
   already small, stop. Otherwise take its first oriented minimum balanced cut
   without asserting `1/8` contraction; Lemma 2.11 makes the retained side
   well-linked, its retained original terminals give the lower mass bound, and
   quarter-balance makes it a proper subset of `S0`. Corollary 7.4 supplies a
   fresh `O(kappa*d)` upper bound. Observation 7.7 is then used only on later
   proper subsets, where minimum initiality rules out a zero-step inner loop.
-- [ ] Extract a connected cluster `Y` whose augmented boundary has bounded
+  This bootstrap is the large-boundary branch of `exists_lemma75_set`.
+- [x] Extract a connected cluster `Y` whose augmented boundary has bounded
   cardinality and a fixed positive well-linkedness constant for `d = 3`.
+  This is `AppendixA3ConnectedCore.exists_lemma75_cluster`.
 
 ### 3C. Construct cluster X
 
-- [ ] Formalize the second finite pruning process, Lemma 7.8.
-- [ ] Use a corrected degree-three initial budget, for example
+- [x] Formalize the second finite pruning process, Lemma 7.8.
+  `AppendixA3Lemma78.State.exists_strict_successor`,
+  `exists_lemma78_set`, and `exists_lemma78_cluster` implement and terminate
+  the process.
+- [x] Use a corrected degree-three initial budget, for example
   `rho = kappa/256`: the paper bounds the augmented boundary vertices by
-  `rho`, which only gives `|out(Y)| <= 3*rho`, not `rho`.
-- [ ] Prove its edge-budget invariant and Claim 7.9, retaining at least half of
-  each original terminal set in `X`.
-- [ ] Prove `X` and `Y` are disjoint connected clusters and record the exact
-  augmented-boundary well-linkedness data used later.
+  `rho`, which only gives `|out(Y)| <= 3*rho`, not `rho`. The ratio-cleared
+  budget is carried by `AppendixA3Lemma78.State`.
+- [x] Prove its edge-budget invariant and Claim 7.9, retaining at least half of
+  each original terminal set in `X`. These are the state invariants consumed
+  by `exists_lemma78_set`.
+- [x] Prove `X` and `Y` are disjoint connected clusters and record the exact
+  augmented-boundary well-linkedness data used later. This is
+  `AppendixA3Lemma78.exists_lemma78_cluster`.
 
 ### 3D. Connect and boost
 
-- [ ] Prove Observation 7.11 and Lemma 7.10, producing many node-disjoint
-  `X`--`Y` paths internally disjoint from both clusters.
-- [ ] Reuse the proved local form of Chuzhoy Theorem 2.9 / Chekuri--Chuzhoy
-  Theorem 2.14 to boost endpoint and terminal subsets to node-well-linked sets.
-- [ ] Reuse the proved small-subset linking theorem corresponding to Chuzhoy
-  Theorem 2.10 / Chekuri--Chuzhoy Theorem 2.9.
+- [x] Prove Observation 7.11 and Lemma 7.10, producing many node-disjoint
+  `X`--`Y` paths internally disjoint from both clusters. Observation 7.11 is
+  `AppendixA3Observation711.rho_le_seventy_two_mul_boundaryVertices_card`;
+  the boundary-oriented Lemma 7.10 endpoint is
+  `AppendixA3Lemma710.exists_lemma710_connector_boundary`.
+- [x] Reuse the proved local form of Chuzhoy Theorem 2.9 /
+  Chekuri--Chuzhoy Theorem 2.14 to boost endpoint and terminal subsets to
+  node-well-linked sets. `AppendixA3EndpointMatching` converts the edge
+  packing to the synchronized-routing interface, and
+  `AppendixA3Complete.exists_clusterSplitData` applies the proved boosting
+  theorem twice.
+- [x] Reuse the proved small-subset linking theorem corresponding to Chuzhoy
+  Theorem 2.10 / Chekuri--Chuzhoy Theorem 2.9. The final assembly applies
+  `Section46.theorem421_linkedSubsets_scaledEdgeWellLinked_minCard`.
 - [x] Prove Observation 7.12, giving `1/5` well-linkedness of the three retained
   sets in `X`. This is
   `AppendixA3ClusterSplit.observation_7_12_triple_union_scaledEdgeWellLinkedIn`.
-- [ ] Choose one universal natural constant `cSplit` for `d = 3`, thin all
+- [x] Choose one universal natural constant `cSplit` for `d = 3`, thin all
   lower-bounded sets to exact size `w`, and prove that node-well-linkedness and
-  pairwise node-linkedness survive the thinning.
-- [ ] Package the result as `AppendixA3ClusterSplitData`, including connector
+  pairwise node-linkedness survive the thinning. The explicit constant and
+  all thinning/linking steps are in `AppendixA3Complete.lean`.
+- [x] Package the result as `AppendixA3ClusterSplitData`, including connector
   orientation, exact endpoint sets, and internal-disjointness fields.
+  `AppendixA3Complete.appendixA3ClusterSplitInput` is the axiom-free producer,
+  and `AppendixA3Complete.appendixA4SplitInput` verifies its downstream
+  Appendix A.4 use.
 
 - [x] Applying the local split independently to alternate clusters and
   assembling `AppendixA4SplitData` is already proved by
@@ -702,27 +709,47 @@ Acceptance criterion: produce the existential `AppendixA3ClusterSplitInput`
 required by the direct final theorem and verify the resulting Appendix A.4
 theorem without a contract axiom.
 
+Acceptance verified by
+`lake build «statements-and-proofs».AppendixA3Complete PolynomialGridMinor`
+and `lake env lean AxiomAudit.lean`. Both WP3 endpoints use only `propext`,
+`Classical.choice`, and `Quot.sound`.
+
 ## Work package 4: close Chuzhoy--Tan Theorem 2.3
 
-Status: **Waiting on work packages 1--3; composition mostly complete**
+Status: **Complete**
 
 Output: an axiom-free `HairyPathOfSetsInput` with explicit positive constants.
 
-- [ ] Instantiate the A.1 Omega sparsifier from work package 2.
-- [ ] Instantiate the A.2 source theorem from work package 1.
-- [ ] Instantiate Appendix A.3 from work package 3.
+- [x] Instantiate the A.1 Omega sparsifier from work package 2 using
+  `DegreeThreeStrongPathOfSetsContract.degreeThreeTreewidthSparsifierOmega_proved`.
+- [x] Instantiate the A.2 source theorem from work package 1 using
+  `ChekuriChuzhoy.theoremA2SourceInputs_proved`.
+- [x] Instantiate Appendix A.3 from work package 3 using
+  `AppendixA3Complete.appendixA4SplitInput`.
 - [x] Appendix A.4 per-cluster assembly and the hairy/backbone disjointness
   checks are proved in `HairyPathOfSetsTheorem.lean`.
 - [x] The accepted `w * ell^50 * polylog` arithmetic and source-route composition are
   proved.
-- [ ] Run `#print axioms` on the resulting Theorem 2.3 declaration.
+- [x] Run `#print axioms` on the resulting Theorem 2.3 declaration.
+  `PolynomialGridMinor.exists_hairyPathOfSetsInput_proved` depends only on
+  `propext`, `Classical.choice`, and `Quot.sound`.
 
 Acceptance criterion: the direct theorem that obtains a degree-three hairy
 path-of-sets subgraph from treewidth has no project axiom and no semantic input.
 
+The acceptance endpoint is
+`PolynomialGridMinor.exists_hairyPathOfSetsInput_proved`, defined in
+`HairyPathOfSetsComplete.lean`. Verification:
+
+```bash
+lake build «statements-and-proofs».HairyPathOfSetsComplete
+lake env lean AxiomAudit.lean
+lake build
+```
+
 ## Work package 5: Chuzhoy--Tan Section 4 assembly
 
-Status: **Partial, medium/high risk**
+Status: **Complete**
 
 Source: `grid-minor-theorem.pdf`, Section 4.
 
@@ -741,51 +768,67 @@ The following mathematical components are already proved:
 - [x] Assembly of a weak path-of-sets system from `Section45Input`.
 - [x] Assembly of a strong path-of-sets system from `StrongificationData`.
 
-The missing work is the paper-specific construction joining those components:
+The paper-specific construction joining those components is now proved:
 
 - [x] Correct the proof-facing pseudo-grid boundary to use the paper's
   `D = 64*q^4`, and prove
   `depth64_le_kappa_div_two_mul_g_sq_of_crossbar_threshold_degree10`. The old
   depth-one caller made the assembly input strictly stronger than the source.
-- [ ] Define one parameter/data record carrying `q`, `kappa`, `D`, `N`, `M`,
+- [x] Define one parameter/data record carrying `q`, `kappa`, `D`, `N`, `M`,
   slice width, retained row sets, and all proved inequalities.
-- [ ] Starting from the pseudo-grid returned by Theorem 4.1, perform the
+- [x] Starting from the pseudo-grid returned by Theorem 4.1, perform the
   contractions and path-minimality reductions needed by the unique-linkage and
   slicing APIs.
-- [ ] Apply the slicing and Section 4.3 cleanup theorems and retain the exact
+- [x] Apply the slicing and Section 4.3 cleanup theorems and retain the exact
   row segments used by the paper.
-- [ ] Apply Theorem 4.11 in every slice, select the happy cluster, and prove the
+- [x] Apply Theorem 4.11 in every slice, select the happy cluster, and prove the
   retained row-cardinality bounds.
-- [ ] Build `Section45Input`: selected clusters, left and right endpoint sets,
+- [x] Build `Section45Input`: selected clusters, left and right endpoint sets,
   connector packings, cluster disjointness, path disjointness, and weak
   well-linkedness.
-- [ ] Prove the three numerical hypotheses of Theorem 4.15 from
+- [x] Prove the three numerical hypotheses of Theorem 4.15 from
   `D = 64*q^4`, `N <= D*q^2`, and `M = 8*q^4*log q`.
-- [ ] For every selected weak path-of-sets system, apply the boost twice,
+- [x] For every selected weak path-of-sets system, apply the boost twice,
   coordinate the retained left/right indices with the connector families, and
   construct `StrongificationData`.
-- [ ] Apply the small-subset linking theorem with the paper's one-eighth
+- [x] Apply the small-subset linking theorem with one-eighth
   thinning and prove a retained width bounded below by a universal constant
-  times `q^2`.
-- [ ] Package the minor relation, length bound, width bound, `Section45Input`,
+  times `q^2`. The formal natural-number bookkeeping uses the universal bound
+  `ell <= 20000*w`.
+- [x] Package the minor relation, length bound, width bound, `Section45Input`,
   and `StrongificationData` as `Section4WeakToStrongAssemblyInput10`.
 
 Implement this in two reviewable producers rather than attacking the final
 input at once:
 
-- [ ] `section45Input_of_pseudoGrid_depth64`: construct the depth-`64*q^4`
+- [x] `section45Input_of_pseudoGrid_depth64`: construct the depth-`64*q^4`
   slicing/cleanup output, a minor `J`, a `MaxDegreeAtMost J 4` certificate, and
   the complete `Section45Input` with its length bound.
-- [ ] `strongificationData_of_weakPathOfSetsSystem_maxDegreeFour`: from that
+- [x] `strongificationData_of_weakPathOfSetsSystem_maxDegreeFour`: from that
   bounded-degree weak system, construct synchronized retained nail sets and
-  `StrongificationData`, with `9*ell <= 12800*w`.
+  `StrongificationData`, with `ell <= 20000*w`.
 
 Acceptance criterion: `CrossbarTheorem` proves the exponent-ten crossbar or
 strong-path-of-sets dichotomy from no external branch input.
 
+The acceptance endpoint is
+`CrossbarTheorem.crossbar_or_strong_pathOfSets_minor_degree10_proved`, produced
+from `Section4Assembly.section4WeakToStrongAssemblyInput10_proved`. The latter
+uses `section45Input_of_pseudoGrid_depth64` and
+`strongificationData_of_weakPathOfSetsSystem_maxDegreeFour`. The permanent
+axiom audit reports only `propext`, `Classical.choice`, and `Quot.sound`.
+
+Verification:
+
+```bash
+lake build «statements-and-proofs».Section4Complete
+lake env lean AxiomAudit.lean
+lake build
+```
+
 ## Work package 6: strong path-of-sets to grid
 
-Status: **Partial, high risk**
+Status: **Complete**
 
 Source: `chekuri-chuzhoy.pdf`, Theorem 3.1 and Corollaries 3.2--3.3; journal
 numbering differs as documented in `README.md`.
@@ -799,17 +842,39 @@ Output: axiom-free proofs of `LocalRoutingClusterInput` and `StitchingInput`.
 - [x] Theorem 2.15's tree-with-many-leaves alternative is proved.
 - [x] Clean auxiliary-tree paths are realized as original graph bridges.
 - [x] The auxiliary-tree extraction of a pairwise-bridged subpacking is proved.
-- [ ] Finish Appendix B.1's page-60 rerouting proof in
+- [x] Finish Appendix B.1's page-60 rerouting proof in
   `ChekuriChuzhoyTheoremB1.lean`.
-- [ ] Close both the terminal sparse-grid branch and the symmetric type-two
+- [x] Close both the terminal sparse-grid branch and the symmetric type-two
   branch rather than stopping at another page-60 proof-data structure.
-- [ ] Produce `AppendixB1.TheoremB1Statement` for every required linkage.
-- [ ] Use the completed B.1 theorem and existing descent to prove
+- [x] Produce `AppendixB1.TheoremB1Statement` for every required linkage.
+- [x] Use the completed B.1 theorem and existing descent to prove
   `LocalRoutingClusterInput` with the exact `(16*h + 10)*q` width condition.
-- [ ] Resolve the current width mismatch before that packaging: the proved
-  global assembly needs `(16*h + 12)*q`, while the input and paper-facing
-  target use `(16*h + 10)*q`. This needs a one-unit sharpening or a corrected
-  source convention, not arithmetic normalization.
+- [x] Resolve the width mismatch.  The sharp `p + 4` form of Theorem 2.15 is
+  proved in `ChekuriChuzhoyTheorem215Sharp.lean`, and
+  `ChekuriChuzhoyTheorem31Sharp.lean` now derives the exact
+  `(16*h + 10)*q` local threshold.
+
+The Appendix B.1 proof is now completed by the focused
+`ChekuriChuzhoyTheoremB1*` modules.  They formalize the page-60 type split,
+bump/cross descent with the strict row measure, full boundary-to-boundary
+columns, hill replacement and cycle erasure with the strict non-row-edge
+measure, reconstruction of row contacts from the auxiliary corridor,
+preservation of bump- and cross-freeness, the blocker/valley ascent, common
+column order, and the terminal sparse-grid model.  Both the type-one and
+type-two majority branches use the same proved corridor theorem.
+
+`ChekuriChuzhoyWP6Complete.lean` supplies the uniform producer
+`AppendixB1.theoremB1_proved`, then closes the already proved localization and
+composition chain with:
+
+- `localRoutingClusterInput_proved`;
+- `corollary32Input_proved`; and
+- `strongPathOfSets_containsGridMinor_proved`.
+
+The last theorem is the unconditional WP6 endpoint with hypotheses
+`2 * g * (g - 1) <= ell` and `16 * g ^ 2 + 10 * g <= w`.
+All four declarations report only `propext`, `Classical.choice`, and
+`Quot.sound`.
 
 ### 6B. Global stitching
 
@@ -860,7 +925,16 @@ Output: axiom-free proofs of `LocalRoutingClusterInput` and `StitchingInput`.
   model, and minor transfer in `PathOfSetsGrid.lean` are proved.
 
 Acceptance criterion: prove the strong-path-of-sets-to-grid input used by the
-direct degree-ten theorem with no Corollary 3.2 contract axiom.
+direct degree-ten theorem with no Corollary 3.2 contract axiom.  This is
+achieved by `strongPathOfSets_containsGridMinor_proved`.
+
+Verification:
+
+```bash
+lake build «statements-and-proofs».ChekuriChuzhoyWP6Complete
+lake env lean AxiomAudit.lean
+lake build
+```
 
 ## Work package 7: all-crossbar branch audit
 
@@ -883,26 +957,40 @@ to report only standard Lean axioms.
 
 ## Work package 8: final integration
 
-Status: **Waiting on work packages 0, 4, 5, and 6**
+Status: **Complete**
 
-- [ ] Produce theorem witnesses for all nine inputs of the direct source-route
+- [x] Produce theorem witnesses for all nine inputs of the direct source-route
   theorem.
-- [ ] Instantiate the theorem in `PolynomialGridMinor.lean` at the direct
-  degree-ten boundary.
-- [ ] Add a short, closed theorem with the public target statement and a name
+- [x] Instantiate the theorem in `PolynomialGridMinorComplete.lean` at the
+  direct degree-ten boundary.
+- [x] Add a short, closed theorem with the public target statement and a name
   that does not suggest it is conditional.
-- [ ] Repoint `PolynomialGridMinor.polynomial_grid_minor_theorem_degree10` and
+- [x] Repoint `PolynomialGridMinor.polynomial_grid_minor_theorem_degree10` and
   the compatibility wrapper in `PolynomialGridMinorContract.lean` to the
   direct closed theorem.
-- [ ] Do not change the degree-nine theorem or claim that it has become
+- [x] Do not change the degree-nine theorem or claim that it has become
   self-contained.
-- [ ] Run the permanent trust audit. The expected project-axiom list is empty.
-- [ ] Run a clean standalone full build.
-- [ ] Update `README.md` from "not yet closed" to the final proof status and
+- [x] Run the permanent trust audit. The project-axiom list is empty.
+- [x] Run a clean standalone full build.
+- [x] Update `README.md` from "not yet closed" to the final proof status and
   record the exact final theorem name.
 
 Acceptance criterion: the public exponent-ten theorem compiles in a clean
 build and `#print axioms` lists only standard Lean axioms.
+
+The proof-producing endpoint is
+`SimpleGraph.PolynomialGridMinor.polynomial_grid_minor_theorem_degree10_proved`.
+It applies the expanded nine-input source frontier directly. The proof-facing
+alias `SimpleGraph.PolynomialGridMinor.polynomial_grid_minor_theorem_degree10`,
+the root alias `SimpleGraph.polynomial_grid_minor_theorem_degree10`, and the
+compatibility wrapper
+`SimpleGraph.PolynomialGridMinorContract.polynomial_grid_minor_theorem_degree10`
+all delegate to that endpoint. Verification on 2026-07-28 used:
+
+```bash
+lake build
+lake env lean AxiomAudit.lean
+```
 
 ## Recommended execution order
 

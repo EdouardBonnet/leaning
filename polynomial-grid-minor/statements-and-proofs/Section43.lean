@@ -607,12 +607,28 @@ noncomputable def intersectingRightIndices
   classical
   exact Qset.filter fun q => PathsIntersect (R.path r) (Q.path q)
 
+theorem mem_intersectingRightIndices
+    (R : PathPacking G S T) (Q : PathPacking G S' T')
+    (Qset : Finset Q.Index) (r : R.Index) (q : Q.Index) :
+    q ∈ R.intersectingRightIndices Q Qset r ↔
+      q ∈ Qset ∧ PathsIntersect (R.path r) (Q.path q) := by
+  classical
+  simp [intersectingRightIndices]
+
 /-- The indices of `R`-paths in `Rset` that intersect the `Q`-path `q`. -/
 noncomputable def intersectingLeftIndices
     (R : PathPacking G S T) (Q : PathPacking G S' T')
     (Rset : Finset R.Index) (q : Q.Index) : Finset R.Index := by
   classical
   exact Rset.filter fun r => PathsIntersect (R.path r) (Q.path q)
+
+theorem mem_intersectingLeftIndices
+    (R : PathPacking G S T) (Q : PathPacking G S' T')
+    (Rset : Finset R.Index) (q : Q.Index) (r : R.Index) :
+    r ∈ R.intersectingLeftIndices Q Rset q ↔
+      r ∈ Rset ∧ PathsIntersect (R.path r) (Q.path q) := by
+  classical
+  simp [intersectingLeftIndices]
 
 /-- A pair of selected path subfamilies is `(w,D)`-intersecting if every
 selected left path meets at least `w` selected right paths and every selected
@@ -683,6 +699,54 @@ variable {G : _root_.SimpleGraph V}
 variable {A B S T : Finset V} {M : ℕ}
 variable {R : PerfectPathPacking G A B}
 
+/-- The half-open row segment between the two cut vertices bounding slice
+`i`.  The right cut is removed.  This is the paper's path family `Σ_i` with
+the boundary convention that makes different slices vertex-disjoint and
+leaves the boundary edge available to the later connector. -/
+noncomputable def sliceRowPath
+    (sigma : PathSlicing R M) (i : Fin M) (r : R.Index) :
+    GraphPath G :=
+  ((R.path r).segmentOfBefore
+    (sigma.cut_monotone r (Fin.castSucc_le_succ i))).dropLast
+
+@[simp] theorem sliceRowPath_source
+    (sigma : PathSlicing R M) (i : Fin M) (r : R.Index) :
+    (sigma.sliceRowPath i r).source = sigma.cut r i.castSucc := by
+  simp [sliceRowPath]
+
+theorem sliceRowPath_vertexSet_subset
+    (sigma : PathSlicing R M) (i : Fin M) (r : R.Index) :
+    (sigma.sliceRowPath i r).vertexSet ⊆ (R.path r).vertexSet :=
+  fun _ hv =>
+    (R.path r).segmentOfBefore_vertexSet_subset
+      (sigma.cut_monotone r (Fin.castSucc_le_succ i))
+      (((R.path r).segmentOfBefore
+        (sigma.cut_monotone r (Fin.castSucc_le_succ i)))
+        |>.dropLast_vertexSet_subset hv)
+
+/-- The actual path packing of all closed row segments in slice `i`. -/
+noncomputable def sliceRowPacking
+    [Fintype V]
+    (sigma : PathSlicing R M) (i : Fin M) :
+    PathPacking G Finset.univ Finset.univ where
+  Index := R.Index
+  path := sigma.sliceRowPath i
+  connects := by
+    intro r
+    exact Or.inl ⟨Finset.mem_univ _, Finset.mem_univ _⟩
+  node_disjoint := by
+    intro r s hrs
+    rw [GraphPath.NodeDisjoint, Finset.disjoint_left]
+    intro v hvr hvs
+    exact Finset.disjoint_left.mp (R.toPathPacking.node_disjoint hrs)
+      (sigma.sliceRowPath_vertexSet_subset i r hvr)
+      (sigma.sliceRowPath_vertexSet_subset i s hvs)
+
+@[simp] theorem sliceRowPacking_card
+    [Fintype V]
+    (sigma : PathSlicing R M) (i : Fin M) :
+    (sigma.sliceRowPacking i).card = R.card := rfl
+
 /-- A path of `Qpack` intersects the row segment `σ_i(R_r)` when it has a
 vertex in the strict slice interior on row `r`.  This is the formal
 replacement for treating the paper's sliced row segment as a separate path. -/
@@ -706,6 +770,89 @@ theorem sliceSegmentIntersectsPath_iff_pathsIntersect_of_mem_pathsInSlice
     rcases Finset.not_disjoint_iff.1 hmeet with ⟨v, hvR, hvQ⟩
     exact ⟨v, hvQ, (sigma.mem_pathsInSlice Qpack i q).1 hq hvQ hvR⟩
 
+/-- A path meeting the linkage belongs to at most one strict slice. -/
+theorem pathsInSlice_disjoint
+    (sigma : PathSlicing R M) (Qpack : PathPacking G S T)
+    (hintersects : PathPackingIntersectsLinkage R Qpack)
+    {i j : Fin M} (hij : i ≠ j) :
+    Disjoint (sigma.pathsInSlice Qpack i)
+      (sigma.pathsInSlice Qpack j) := by
+  classical
+  rw [Finset.disjoint_left]
+  intro q hqi hqj
+  rcases hintersects q with ⟨r, hmeet⟩
+  rcases Finset.not_disjoint_iff.1 hmeet with ⟨v, hvQ, hvR⟩
+  have hvi :=
+    (sigma.mem_pathsInSlice Qpack i q).1 hqi hvQ hvR
+  have hvj :=
+    (sigma.mem_pathsInSlice Qpack j q).1 hqj hvQ hvR
+  rcases lt_or_gt_of_ne hij with hijlt | hjilt
+  · have hcuts :
+        (R.path r).Before (sigma.cut r i.succ)
+          (sigma.cut r j.castSucc) :=
+      sigma.cut_monotone r (by
+        apply Fin.mk_le_mk.2
+        exact Nat.succ_le_iff.2 hijlt)
+    have hvBefore :
+        (R.path r).Before v (sigma.cut r j.castSucc) :=
+      (R.path r).before_trans hvi.2.2.1 hcuts
+    exact hvj.2.2.2.1
+      ((R.path r).before_antisymm hvBefore hvj.2.1)
+  · have hcuts :
+        (R.path r).Before (sigma.cut r j.succ)
+          (sigma.cut r i.castSucc) :=
+      sigma.cut_monotone r (by
+        apply Fin.mk_le_mk.2
+        exact Nat.succ_le_iff.2 hjilt)
+    have hvBefore :
+        (R.path r).Before v (sigma.cut r i.castSucc) :=
+      (R.path r).before_trans hvj.2.2.1 hcuts
+    exact hvi.2.2.2.1
+      ((R.path r).before_antisymm hvBefore hvi.2.1)
+
+/-- On a path assigned to the slice, the strict-interior relation used by the
+cleanup step is exactly intersection with the actual closed row segment.  A
+path assigned to the slice cannot meet either boundary cut, because every
+row-linkage intersection is required to be in the strict interior. -/
+theorem sliceSegmentIntersectsPath_iff_sliceRowPath_intersects
+    [Fintype V]
+    (sigma : PathSlicing R M) (Qpack : PathPacking G S T)
+    {i : Fin M} {r : R.Index} {q : Qpack.Index}
+    (hq : q ∈ sigma.pathsInSlice Qpack i) :
+    SliceSegmentIntersectsPath sigma Qpack i r q ↔
+      PathPacking.PathsIntersect
+        (sigma.sliceRowPacking i |>.path r) (Qpack.path q) := by
+  constructor
+  · rintro ⟨v, hvQ, hvSlice⟩
+    rw [PathPacking.PathsIntersect, Finset.not_disjoint_iff]
+    refine ⟨v, ?_, hvQ⟩
+    let hcut :=
+      sigma.cut_monotone r (Fin.castSucc_le_succ i)
+    have hcuts_ne :
+        sigma.cut r i.castSucc ≠ sigma.cut r i.succ := by
+      intro hcuts
+      have hvback :
+          (R.path r).Before v (sigma.cut r i.castSucc) := by
+        simpa [hcuts] using hvSlice.2.2.1
+      exact hvSlice.2.2.2.1
+        ((R.path r).before_antisymm hvback hvSlice.2.1)
+    have hvClosed :
+        v ∈ ((R.path r).segmentOfBefore hcut).vertexSet :=
+      (R.path r).mem_segmentOfBefore_of_before_of_before
+        hcut hvSlice.2.1 hvSlice.2.2.1
+    rcases
+        (((R.path r).segmentOfBefore hcut)
+          |>.mem_vertexSet_iff_mem_dropLast_or_eq_target
+            (by simpa [hcut] using hcuts_ne) v).1 hvClosed with
+      hvDrop | hvRight
+    · simpa [sliceRowPacking, sliceRowPath, hcut] using hvDrop
+    · exact (hvSlice.2.2.2.2 (by simpa [hcut] using hvRight)).elim
+  · intro hmeet
+    rcases Finset.not_disjoint_iff.1 hmeet with ⟨v, hvSegment, hvQ⟩
+    have hvR : v ∈ (R.path r).vertexSet :=
+      sigma.sliceRowPath_vertexSet_subset i r hvSegment
+    exact ⟨v, hvQ, (sigma.mem_pathsInSlice Qpack i q).1 hq hvQ hvR⟩
+
 /-- The selected auxiliary paths meeting row segment `r` in slice `i`. -/
 noncomputable def segmentIntersectingRightIndices
     (sigma : PathSlicing R M) (Qpack : PathPacking G S T)
@@ -714,6 +861,15 @@ noncomputable def segmentIntersectingRightIndices
   classical
   exact Qset.filter fun q => SliceSegmentIntersectsPath sigma Qpack i r q
 
+theorem mem_segmentIntersectingRightIndices
+    (sigma : PathSlicing R M) (Qpack : PathPacking G S T)
+    (i : Fin M) (Qset : Finset Qpack.Index) (r : R.Index)
+    (q : Qpack.Index) :
+    q ∈ sigma.segmentIntersectingRightIndices Qpack i Qset r ↔
+      q ∈ Qset ∧ SliceSegmentIntersectsPath sigma Qpack i r q := by
+  classical
+  simp [segmentIntersectingRightIndices]
+
 /-- The selected row segments met by auxiliary path `q` in slice `i`. -/
 noncomputable def segmentIntersectingLeftIndices
     (sigma : PathSlicing R M) (Qpack : PathPacking G S T)
@@ -721,6 +877,15 @@ noncomputable def segmentIntersectingLeftIndices
     Finset R.Index := by
   classical
   exact Rset.filter fun r => SliceSegmentIntersectsPath sigma Qpack i r q
+
+theorem mem_segmentIntersectingLeftIndices
+    (sigma : PathSlicing R M) (Qpack : PathPacking G S T)
+    (i : Fin M) (Rset : Finset R.Index) (q : Qpack.Index)
+    (r : R.Index) :
+    r ∈ sigma.segmentIntersectingLeftIndices Qpack i Rset q ↔
+      r ∈ Rset ∧ SliceSegmentIntersectsPath sigma Qpack i r q := by
+  classical
+  simp [segmentIntersectingLeftIndices]
 
 /-- A pair of row segments and auxiliary paths in one slice is
 `(w,D)`-intersecting when every retained row segment meets at least `w`
@@ -825,6 +990,61 @@ noncomputable def exists_slice_intersecting_subfamilies
       intersecting := hinter
       half_paths := hhalf
       discarded_rows_sparse := hsparse' }
+
+/-- The Section 4.3 cleanup output, converted from its strict-interior
+relation to the actual row-segment packing consumed by Theorem 4.11. -/
+theorem SliceIntersectingSubfamilies.actual_intersecting
+    [Fintype V]
+    (sigma : PathSlicing R M) (Qpack : PathPacking G S T)
+    (i : Fin M) {w D : ℕ}
+    (Output : SliceIntersectingSubfamilies sigma Qpack i w D) :
+    (sigma.sliceRowPacking i).IntersectingPathSetPair
+      Qpack Output.rows Output.paths w D := by
+  classical
+  constructor
+  · intro r hr
+    have h :=
+      Output.intersecting.1 r hr
+    apply h.trans_eq
+    congr 1
+    ext q
+    rw [sigma.mem_segmentIntersectingRightIndices]
+    rw [PathPacking.mem_intersectingRightIndices]
+    constructor
+    · rintro ⟨hq, hrel⟩
+      exact
+        ⟨hq,
+          (sigma.sliceSegmentIntersectsPath_iff_sliceRowPath_intersects
+            Qpack (Output.paths_subset hq)).1 hrel⟩
+    · rintro ⟨hq, hrel⟩
+      exact
+        ⟨hq,
+          (sigma.sliceSegmentIntersectsPath_iff_sliceRowPath_intersects
+            Qpack (Output.paths_subset hq)).2 hrel⟩
+  · intro q hq
+    have h :=
+      Output.intersecting.2 q hq
+    apply h.trans_eq
+    congr 1
+    ext r
+    rw [sigma.mem_segmentIntersectingLeftIndices]
+    constructor
+    · rintro ⟨hr, hrel⟩
+      apply
+        (PathPacking.mem_intersectingLeftIndices
+          (sigma.sliceRowPacking i) Qpack Output.rows q r).2
+      exact ⟨hr,
+          (sigma.sliceSegmentIntersectsPath_iff_sliceRowPath_intersects
+            Qpack (Output.paths_subset hq)).1 hrel⟩
+    · intro hmem
+      rcases
+          (PathPacking.mem_intersectingLeftIndices
+            (sigma.sliceRowPacking i) Qpack Output.rows q r).1 hmem with
+        ⟨hr, hrel⟩
+      exact
+        ⟨hr,
+          (sigma.sliceSegmentIntersectsPath_iff_sliceRowPath_intersects
+            Qpack (Output.paths_subset hq)).2 hrel⟩
 
 end PathSlicing
 

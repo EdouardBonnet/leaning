@@ -20,14 +20,16 @@ variable {V : Type u} [Fintype V] [DecidableEq V]
 variable {G : _root_.SimpleGraph V}
 
 /-- A nonempty terminal set that is scaled edge-well-linked in the whole graph
-is scaled edge-well-linked in a connected cluster containing all terminals. -/
-theorem exists_cluster_scaledEdgeWellLinkedIn_of_univ
+is scaled edge-well-linked in a connected-component cluster containing all
+terminals.  The last field records that this cluster has no outgoing edge. -/
+theorem exists_closed_cluster_scaledEdgeWellLinkedIn_of_univ
     {T : Finset V} {alphaNum alphaDen : ℕ}
     (hT : T.Nonempty)
     (hwell : ScaledEdgeWellLinkedIn G Finset.univ T alphaNum alphaDen) :
     ∃ C : Finset V,
       IsCluster G C ∧ T ⊆ C ∧
-        ScaledEdgeWellLinkedIn G C T alphaNum alphaDen := by
+        ScaledEdgeWellLinkedIn G C T alphaNum alphaDen ∧
+          Section44.edgeBoundary G C (Finset.univ \ C) = ∅ := by
   classical
   obtain ⟨t₀, ht₀T⟩ := hT
   let component : G.ConnectedComponent := G.connectedComponentMk t₀
@@ -111,7 +113,8 @@ theorem exists_cluster_scaledEdgeWellLinkedIn_of_univ
       exact (Section44.mem_edgeBoundary (G := G) X (Finset.univ \ X) s(x, y)).2
         ⟨heG, x, hxX, y, by simp [hyNotX], rfl⟩
 
-  refine ⟨C, hcluster, hTC, hwell.1, hwell.2.1, hTC, ?_⟩
+  refine ⟨C, hcluster, hTC, ?_, hboundary_component⟩
+  refine ⟨hwell.1, hwell.2.1, hTC, ?_⟩
   intro X Y hXC hYC hcover hdisj
   have hglobal := hwell.2.2.2 X (Finset.univ \ X)
     (by simp) (by simp) (by simp) (by
@@ -136,6 +139,19 @@ theorem exists_cluster_scaledEdgeWellLinkedIn_of_univ
         ⟨by simp [htNotX], (Finset.mem_inter.mp ht).2⟩
   rw [hterminal_complement, boundary_partition_eq hXC hYC hcover hdisj] at hglobal
   exact hglobal
+
+/-- Projection of the closed-component form retaining the original public
+interface. -/
+theorem exists_cluster_scaledEdgeWellLinkedIn_of_univ
+    {T : Finset V} {alphaNum alphaDen : ℕ}
+    (hT : T.Nonempty)
+    (hwell : ScaledEdgeWellLinkedIn G Finset.univ T alphaNum alphaDen) :
+    ∃ C : Finset V,
+      IsCluster G C ∧ T ⊆ C ∧
+        ScaledEdgeWellLinkedIn G C T alphaNum alphaDen := by
+  obtain ⟨C, hC, hTC, hwellC, _hclosed⟩ :=
+    exists_closed_cluster_scaledEdgeWellLinkedIn_of_univ hT hwell
+  exact ⟨C, hC, hTC, hwellC⟩
 
 end Section46
 
