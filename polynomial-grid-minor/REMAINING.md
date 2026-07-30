@@ -1081,3 +1081,26 @@ careful path-disjointness and ordering proofs.
 WP1C is complete at the user-approved exponent 24. The direct endpoint's
 axiom closure contains no project-specific axiom: both Singh--Lau rounding and
 the Section 5 good-router producer are proved in Lean.
+
+## Experimental exponent-seven objective (2026-07-30)
+
+The user explicitly superseded the earlier Section 5 non-goal for a separate
+experimental package under `statements-and-proofs/Exponent7/`.
+
+- [x] Rectangular Theorem 4.15 and large-slice assembly.
+- [x] Additive logarithmic-depth recursive slicing.
+- [x] Clean bridge batches with a graph-chosen matching.
+- [x] Alternating prescribed-matching grid geometry.
+- [x] Short-wide Path-of-Sets-to-grid reduction.
+- [x] Uniform pseudo-grid, local crossbar-or-grid dichotomy, and contraction
+  transport.
+- [x] Global hairy-system/cut-matching-game propagation.
+- [x] Exact conditional endpoint
+  `SimpleGraph.Exponent7.polynomial_grid_minor_theorem7` with threshold
+  `K * g^7 * (log_2 g)^b`.
+- [ ] Prove `CleanMatchingDichotomyStatement reserve` for one explicit
+  positive `reserve`.
+
+The unchecked item is the only new mathematical input in the conditional
+endpoint. It is an ordinary proposition argument, not an axiom. See
+`statements-and-proofs/Exponent7/ROADMAP.md`.
