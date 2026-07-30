@@ -2,9 +2,26 @@ import «statements-and-proofs».Exponent8.Lemma48Additive
 import «statements-and-proofs».Exponent8.LastHitSelection
 import «statements-and-proofs».Exponent8.LastHitCrossbar
 import «statements-and-proofs».Exponent8.Observation44RootProvenance
+import «statements-and-proofs».Exponent8.Observation54Support
+import «statements-and-proofs».Exponent8.Observation54Unique
+import «statements-and-proofs».Exponent8.Observation54Cleanup
+import «statements-and-proofs».Exponent8.Observation54Type2
+import «statements-and-proofs».Exponent8.Observation54Recursive
+import «statements-and-proofs».Exponent8.Observation54Composition
+import «statements-and-proofs».Exponent8.Observation54Refinement
 import «statements-and-proofs».Exponent8.Claim53Strong
 import «statements-and-proofs».Exponent8.RecursiveSlicing
 import «statements-and-proofs».Exponent8.RootedSection42
+import «statements-and-proofs».Exponent8.ThreeRoundRecursion
+import «statements-and-proofs».Exponent8.ThreeRoundParameters
+import «statements-and-proofs».Exponent8.AllHappyClusters
+import «statements-and-proofs».Exponent8.DyadicClusterClass
+import «statements-and-proofs».Exponent8.ParentedClusterTable
+import «statements-and-proofs».Exponent8.Case1Section45Assembly
+import «statements-and-proofs».Exponent8.Section5Assembly
+import «statements-and-proofs».Exponent8.LocalDichotomy
+import «statements-and-proofs».Exponent8.GlobalDichotomy
+import «statements-and-proofs».Exponent8.NumericalEndpoint
 
 /-!
 # Trust audit for the experimental exponent-eight package
@@ -38,6 +55,19 @@ It is extended after each experimental proof package is added.
 #print axioms SimpleGraph.Exponent8.exists_initialRecursiveSliceLayer_of_pseudoGrid
 #print axioms SimpleGraph.Exponent8.Theorem41Setup.exists_initialRecursiveSliceLayer_of_pseudoGrid
 
+#print axioms SimpleGraph.Exponent8.PathSlicing.sliceSupport_spansVertices
+#print axioms SimpleGraph.Exponent8.PathSlicing.alternate_slice_linkage_extends_to_global
+#print axioms SimpleGraph.Exponent8.PathSlicing.sliceSupport_isUniqueLinkage
+#print axioms SimpleGraph.Exponent8.uniqueLinkage_preserved_by_auxiliary_deletion
+#print axioms SimpleGraph.Exponent8.restrict_separated_rows_isUniqueLinkage
+#print axioms SimpleGraph.Exponent8.PathSlicing.observation54_type2_cleaned_slice
+#print axioms SimpleGraph.Exponent8.RecursiveSliceLayer.observation54GoodQ_avoids_discarded
+#print axioms SimpleGraph.Exponent8.RecursiveSliceLayer.observation54_type2_cleaned_slice
+#print axioms SimpleGraph.Exponent8.PathSlicing.composeSelectedSliceRefinements
+#print axioms SimpleGraph.Exponent8.PathSlicing.takePrefixCoarsening
+#print axioms SimpleGraph.Exponent8.RecursiveSliceLayer.observation54CellPaths_strict_localized
+#print axioms SimpleGraph.Exponent8.RecursiveSliceLayer.exists_observation54ExtendedParentRefinement
+
 #print axioms SimpleGraph.Exponent8.SliceLocalizationInvariant.badHitQ_card_lt_of_no_crossbar
 #print axioms SimpleGraph.Exponent8.SliceLocalizationInvariant.claim53Strong
 #print axioms SimpleGraph.Exponent8.SliceLocalizationInvariant.badHitQ_card_lt_four_mul_g_pow_four
@@ -45,5 +75,41 @@ It is extended after each experimental proof package is added.
 
 #print axioms SimpleGraph.Exponent8.ThreeRoundParameters.fanout_pos
 #print axioms SimpleGraph.Exponent8.exists_additiveSliceCleanup
+#print axioms SimpleGraph.Exponent8.RecursiveSlicingContext.toLayer
+#print axioms SimpleGraph.Exponent8.RootedObservation44State.recursiveSlicingContext
 #print axioms SimpleGraph.Exponent8.RecursiveSliceLayer.claim53Strong_cleanup
+#print axioms SimpleGraph.Exponent8.recursiveSlicingRound
 #print axioms SimpleGraph.Exponent8.threeRoundRecursiveSlicing
+#print axioms SimpleGraph.Exponent8.ThreeRoundParameters.e8W0_le
+#print axioms SimpleGraph.Exponent8.ThreeRoundParameters.explicitExponentEightParameters
+
+#print axioms SimpleGraph.Exponent8.PathSlicing.allHappyClusters_of_additiveCleanup
+#print axioms SimpleGraph.Exponent8.exists_dyadicClusterClass
+#print axioms SimpleGraph.Exponent8.parentOrderedEnumeration
+#print axioms SimpleGraph.Exponent8.RecursiveSliceLayer.exists_parentedHappyClusterTable_of_largeSliceMass
+#print axioms SimpleGraph.Exponent8.ParentedHappyClusterTable.parent_lt_of_largeOverlap
+#print axioms SimpleGraph.Exponent8.ParentedHappyClusterTable.section45Input
+#print axioms SimpleGraph.Exponent8.RecursiveSliceLayer.weakPathOfSetsSystem_of_largeSliceLayer
+#print axioms SimpleGraph.Exponent8.RecursiveSliceLayer.weakPathOfSetsSystem_of_finalLayer
+#print axioms SimpleGraph.Exponent8.ThreeRoundRecursiveSlicingResult.weakPathOfSetsSystem
+#print axioms SimpleGraph.Exponent8.exists_reduced_weakPathOfSetsSystem_threeRound
+
+#print axioms SimpleGraph.Exponent8.PseudoGrid.threeRound_slicing_budget
+#print axioms SimpleGraph.Exponent8.PseudoGrid.hasStrongPathOfSetsMinor_of_noCrossbar
+#print axioms SimpleGraph.Exponent8.crossbarDichotomyInput85_proved
+#print axioms SimpleGraph.Exponent8.exists_crossbarDichotomyInput85_proved
+#print axioms SimpleGraph.Exponent8.crossbar_or_strong_pathOfSets_minor_in_hairLocalGraph85
+#print axioms SimpleGraph.Exponent8.crossbar_or_strong_pathOfSets_minor_in_hairyCluster85
+#print axioms SimpleGraph.Exponent8.local_crossbars_at_odd_clusters_or_strong_pathOfSets_minor85
+#print axioms SimpleGraph.Exponent8.gridMinor_or_strong_pathOfSets_minor_of_hairy_pathOfSets85
+#print axioms SimpleGraph.Exponent8.gridMinor_or_gridMinor_of_hairy_pathOfSets85
+#print axioms SimpleGraph.Exponent8.containsGridMinor_of_treewidth_parameters85
+
+#print axioms SimpleGraph.Exponent8.widthScale85_le_unrounded
+#print axioms SimpleGraph.Exponent8.sqrt_logProductScale_add_one_le
+#print axioms SimpleGraph.Exponent8.hairy_large_threshold85_of_coeff
+#print axioms SimpleGraph.Exponent8.PolynomialThresholdTemplate85.toParameterChoice
+#print axioms SimpleGraph.Exponent8.PolynomialThresholdTemplate85.canonical
+#print axioms SimpleGraph.Exponent8.containsGridMinor_of_parameterChoice85
+#print axioms SimpleGraph.Exponent8.polynomial_grid_minor_theorem85
+#print axioms SimpleGraph.Exponent8.polynomial_grid_minor_theorem_exponentEightAndHalf

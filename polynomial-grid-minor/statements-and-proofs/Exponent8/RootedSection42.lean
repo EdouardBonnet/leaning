@@ -29,6 +29,58 @@ variable {A B X : Finset V} {g D M w wHat Dhat : ℕ}
 variable {P : PerfectPathPacking G A B}
 variable {Q : PerfectPathPacking G A X}
 
+/-- Persistent recursive-slicing data exported by one rooted reduced
+Observation 4.4 state.  Exact incidence provenance is reused for every future
+slicing; no later layer is asked to reconstruct it from containment alone. -/
+noncomputable def RootedObservation44State.recursiveSlicingContext
+    {Gamma : PseudoGrid G A B X g D P Q}
+    (Root : RootedObservation44State Gamma)
+    (hReduced : Root.state.IsReduced)
+    (hN : 0 < Gamma.rowPacking.card)
+    (hDhat : 0 < Dhat)
+    (hDscale : 2 * Dhat ≤ D)
+    (hXdisjoint :
+      ∀ p : P.Index, Disjoint X (P.path p).vertexSet) :
+    RecursiveSlicingContext
+      G (Root.state.reducedGraph hReduced) A B X P Q
+      (Root.state.reducedRow hReduced)
+      (Root.state.reducedRetained hReduced) Dhat where
+  Dhat_pos := hDhat
+  unique_linkage := by
+    exact Root.state.reducedRow_isUniqueLinkage hReduced hN
+  slice_density := by
+    intro m sigma i q hq
+    apply hDscale.trans
+    apply (Root.state.reducedRetained_metRows_card hReduced q).trans_eq
+    congr 1
+    ext r
+    rw [sigma.mem_segmentIntersectingLeftIndices]
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+    constructor
+    · intro hmeet
+      apply
+        (sigma.sliceSegmentIntersectsPath_iff_pathsIntersect_of_mem_pathsInSlice
+          (Root.state.reducedRetained hReduced) hq).2
+      intro hdisjoint
+      exact hmeet hdisjoint.symm
+    · intro hsegment
+      have hmeet :
+          PathPacking.PathsIntersect
+            ((Root.state.reducedRow hReduced).path r)
+            ((Root.state.reducedRetained hReduced).path q) :=
+        (sigma.sliceSegmentIntersectsPath_iff_pathsIntersect_of_mem_pathsInSlice
+          (Root.state.reducedRetained hReduced) hq).1 hsegment
+      intro hdisjoint
+      exact hmeet hdisjoint.symm
+  mkLocalization := by
+    intro m sigma i I hI
+    exact
+      Root.toSliceLocalizationInvariant_fullRows
+        hReduced sigma i I hI hXdisjoint
+  mkLocalization_localizedQ := by
+    intro m sigma i I hI
+    rfl
+
 /-- Rooted Observation 4.4, Theorem 4.6, and the additive one-slice cleanup,
 assembled into the initial recursive layer.
 

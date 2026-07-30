@@ -24,11 +24,10 @@ paths in Theorem 4.6.  Lemma 4.8 first retains half of the slice paths, and
 the strengthened Claim 5.3 then loses at most `4 * g^4`; this explains the
 three `refineBudget` fields below.
 
-The only project axiom in this file is `threeRoundRecursiveSlicing`.  It
-records the genuinely future proof: Observation 5.4 for each cleaned slice,
-composition of the local cut systems, and propagation of the localization
-certificate through three rounds.  The additive Lemma 4.8 cleanup used in
-its input and output is proved below.
+The proof-producing finite recursion is implemented downstream in
+`Exponent8.ThreeRoundRecursion`, after the Observation 5.4 and cut-composition
+modules are available.  This file contains only its data and persistent
+provenance interfaces.
 -/
 
 namespace SimpleGraph
@@ -268,6 +267,102 @@ structure RecursiveSliceLayer
     ∀ i : Fin m,
       (localization i).localizedQ = (cleanup i).paths
 
+/-- Persistent source information needed to build recursive layers over new
+cut systems on the same reduced graph.
+
+The initial Observation 4.4 reduction proves both fields: exact rooted
+row--auxiliary incidence gives `slice_density` for every future slicing and
+constructs the last-hit localization interface for every selected subfamily.
+Keeping this context separate prevents a layer tied to one slicing from being
+misused as provenance for a later slicing. -/
+structure RecursiveSlicingContext
+    {V : Type u} {W : Type v}
+    [Fintype V] [DecidableEq V] [Fintype W] [DecidableEq W]
+    (G : _root_.SimpleGraph V) (H : _root_.SimpleGraph W)
+    (A B X : Finset V)
+    (P : PerfectPathPacking G A B)
+    (Q : PerfectPathPacking G A X)
+    {Abar Bbar Sbar Tbar : Finset W}
+    (Rbar : PerfectPathPacking H Abar Bbar)
+    (Qbar : PathPacking H Sbar Tbar)
+    (Dhat : ℕ) where
+  Dhat_pos : 0 < Dhat
+  unique_linkage : Rbar.IsUniqueLinkage
+  slice_density :
+    ∀ {m : ℕ} (sigma : PathSlicing Rbar m)
+      (i : Fin m) (q : Qbar.Index),
+      q ∈ sigma.pathsInSlice Qbar i →
+        2 * Dhat ≤
+          (sigma.segmentIntersectingLeftIndices Qbar i
+            (Finset.univ : Finset Rbar.Index) q).card
+  mkLocalization :
+    ∀ {m : ℕ} (sigma : PathSlicing Rbar m)
+      (i : Fin m) (I : Finset Qbar.Index),
+      I ⊆ sigma.pathsInSlice Qbar i →
+        SliceLocalizationInvariant
+          G H A B X P Q Rbar Qbar sigma i
+  mkLocalization_localizedQ :
+    ∀ {m : ℕ} (sigma : PathSlicing Rbar m)
+      (i : Fin m) (I : Finset Qbar.Index)
+      (hI : I ⊆ sigma.pathsInSlice Qbar i),
+      (mkLocalization sigma i I hI).localizedQ = I
+
+namespace RecursiveSlicingContext
+
+/-- Build an entire recursive layer from a new slicing.  The only numerical
+input is the uniform additive-pruning mass inequality; density and rooted
+localization come from the persistent context. -/
+noncomputable def toLayer
+    {V : Type u} {W : Type v}
+    [Fintype V] [DecidableEq V] [Fintype W] [DecidableEq W]
+    {G : _root_.SimpleGraph V} {H : _root_.SimpleGraph W}
+    {A B X : Finset V}
+    {P : PerfectPathPacking G A B}
+    {Q : PerfectPathPacking G A X}
+    {Abar Bbar Sbar Tbar : Finset W}
+    {Rbar : PerfectPathPacking H Abar Bbar}
+    {Qbar : PathPacking H Sbar Tbar}
+    {Dhat m width wHat : ℕ}
+    (C : RecursiveSlicingContext
+      G H A B X P Q Rbar Qbar Dhat)
+    (sigma : PathSlicing Rbar m)
+    (hwidth : sigma.WidthAtLeast Qbar width)
+    (hmass :
+      2 * Rbar.card * wHat ≤ Dhat * width) :
+    RecursiveSliceLayer
+      G H A B X P Q Rbar Qbar m width wHat Dhat := by
+  classical
+  let cleanup :
+      ∀ i : Fin m, AdditiveSliceCleanup sigma i wHat Dhat :=
+    fun i =>
+      exists_additiveSliceCleanup Rbar Qbar sigma i C.Dhat_pos
+        (C.slice_density sigma i)
+        (by
+          calc
+            2 * Rbar.card * wHat ≤ Dhat * width := hmass
+            _ ≤ Dhat * (sigma.pathsInSlice Qbar i).card :=
+              Nat.mul_le_mul_left Dhat (hwidth i))
+  let localization :
+      ∀ i : Fin m,
+        SliceLocalizationInvariant
+          G H A B X P Q Rbar Qbar sigma i :=
+    fun i =>
+      C.mkLocalization sigma i (cleanup i).paths
+        (cleanup i).paths_subset
+  exact
+    { sigma := sigma
+      width_at_least := hwidth
+      unique_linkage := C.unique_linkage
+      cleanup := cleanup
+      localization := localization
+      localized_eq := by
+        intro i
+        exact
+          C.mkLocalization_localizedQ
+            sigma i (cleanup i).paths (cleanup i).paths_subset }
+
+end RecursiveSlicingContext
+
 namespace RecursiveSliceLayer
 
 /-- The strengthened Claim 5.3 applied directly to one recursive layer.
@@ -276,7 +371,7 @@ The bad rows are exactly the rows discarded by additive Lemma 4.8, and the
 candidate auxiliary family is exactly the retained `paths` field.  The
 localization equality turns `discarded_rows_sparse` into the bounded-hit
 hypothesis of `claim53Strong_four_mul_g_pow_four`.  Thus this bridge is an
-ordinary theorem, not part of the recursive-slicing axiom. -/
+ordinary theorem consumed by the proved recursive round. -/
 theorem claim53Strong_cleanup
     {V : Type u} {W : Type v}
     [Fintype V] [DecidableEq V] [Fintype W] [DecidableEq W]
@@ -392,39 +487,6 @@ inductive ThreeRoundRecursiveSlicingResult
       (L3 : RecursiveSliceLayer
         G H A B X P Q Rbar Qbar
         p.m3 p.w3 (4 * g ^ 2) Dhat)
-
-/-- The single permitted placeholder for the later three-round recursive
-slicing proof.
-
-Its hypotheses contain actual slice cuts, additive Lemma 4.8 outputs, and
-original/contracted localization data.  Its numerical parameters are
-constrained by the exact three Theorem 4.6 budgets; consequently the axiom
-does not assert a slicing with arbitrary target counts or widths.
-
-What remains to prove is precisely the recursive semantic step described in
-the module header: hereditary unique linkage (Observation 5.4), local-to-
-global cut composition, localization preservation, and the finite three-level
-majority recursion. -/
-axiom threeRoundRecursiveSlicing
-    {V : Type u} {W : Type v}
-    [Fintype V] [DecidableEq V] [Fintype W] [DecidableEq W]
-    {G : _root_.SimpleGraph V} {H : _root_.SimpleGraph W}
-    {A B X : Finset V}
-    {P : PerfectPathPacking G A B}
-    {Q : PerfectPathPacking G A X}
-    {Abar Bbar Sbar Tbar : Finset W}
-    {Rbar : PerfectPathPacking H Abar Bbar}
-    {Qbar : PathPacking H Sbar Tbar}
-    {g Dhat : ℕ}
-    (p : ThreeRoundParameters g Rbar.card Dhat)
-    (L0 : RecursiveSliceLayer
-      G H A B X P Q Rbar Qbar
-      p.m0 p.w0 (4 * g ^ 2) Dhat)
-    (hnoCrossbar :
-      ¬ Nonempty (Crossbar G A B X (g ^ 2))) :
-    Nonempty
-      (ThreeRoundRecursiveSlicingResult
-        G H A B X P Q Rbar Qbar g Dhat p L0)
 
 end Exponent8
 end SimpleGraph

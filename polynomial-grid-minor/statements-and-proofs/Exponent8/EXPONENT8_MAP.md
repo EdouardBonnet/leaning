@@ -1,6 +1,6 @@
 # Exponent-eight source and Lean map
 
-Last audited: 2026-07-29
+Last audited: 2026-07-30
 
 This document maps the Chuzhoy--Tan Section 4 and Section 5 objects needed by
 the experimental recursive-slicing route.  It is deliberately separate from
@@ -17,10 +17,10 @@ Chuzhoy--Tan, *Towards Tight(er) Bounds for the Excluded Grid Theorem*,
 `grid-minor-theorem.pdf`.  The repository follows the source and calls it
 Lemma 4.5.
 
-Chuzhoy--Tan Claim 5.3 and Observation 5.4 are not currently formalized.
-Declarations in files named `ChekuriChuzhoySection5...` concern a different
-paper and must not be used as implementations of these two Chuzhoy--Tan
-statements.
+Chuzhoy--Tan Claim 5.3 and Observation 5.4 are formalized in the isolated
+`Exponent8` modules listed below.  Declarations in files named
+`ChekuriChuzhoySection5...` concern a different paper and are not their
+implementations.
 
 ## Dependency overview
 
@@ -60,6 +60,31 @@ Crossbar + Section43 ---------------->+                          |
                                       +----------+---------------+
                                                  v
                                   Exponent8/RecursiveSlicing
+                                                 |
+                         +-----------------------+----------------------+
+                         v                                              v
+             Exponent8/Observation54Support             RootedSection42
+                         |                                      |
+                         v                                      v
+              Exponent8/Observation54Unique       RecursiveSlicingContext
+                         |
+                         v
+             Exponent8/Observation54Cleanup
+                         |
+                         v
+              Exponent8/Observation54Type2
+                         |
+                         v
+            Exponent8/Observation54Refinement
+                         |
+                         v
+           Exponent8/Observation54Composition
+                         |
+                         v
+             Exponent8/ThreeRoundRecursion
+                         |
+                         v
+             Exponent8/ThreeRoundParameters
 ```
 
 The new additive Lemma 4.8 module imports only `Section43`.  It does not import
@@ -1428,10 +1453,70 @@ crossbar.  It proves:
   4 * g^4
 ```
 
-Thus the additive cleanup and strengthened Claim 5.3 are actually connected
-before the placeholder.
+Thus the additive cleanup and strengthened Claim 5.3 are connected to the
+proved recursive round.
 
-### 11.3 The single named placeholder
+### 11.3 Observation 5.4 and refinement composition
+
+The exact-support-subtype implementation is split into:
+
+```text
+Observation54Support.lean
+Observation54Unique.lean
+Observation54Cleanup.lean
+Observation54Type2.lean
+Observation54Recursive.lean
+```
+
+The source-facing outputs are:
+
+```lean
+SimpleGraph.Exponent8.sliceSupport_spansVertices
+SimpleGraph.Exponent8.sliceSupport_isUniqueLinkage
+SimpleGraph.Exponent8.uniqueLinkage_preserved_by_auxiliary_deletion
+SimpleGraph.Exponent8.restrict_separated_rows_isUniqueLinkage
+SimpleGraph.Exponent8.observation54_type2_cleaned_slice
+```
+
+The last declaration occurs in `Observation54Recursive.lean:164`.  It retains
+exactly the cleaned rows and good auxiliary paths while proving that the
+retained row packing is again a perfect unique linkage.
+
+The ambient-row refinement and composition declarations are:
+
+```lean
+SimpleGraph.Exponent8.exists_observation54ExtendedParentRefinement
+  -- Observation54Refinement.lean:503
+
+SimpleGraph.Exponent8.composeSelectedSliceRefinements
+  -- Observation54Composition.lean:687
+
+SimpleGraph.Exponent8.takePrefixCoarsening
+  -- Observation54Composition.lean:908
+```
+
+They extend local cuts trivially across discarded rows, flatten selected
+nonconsecutive parent slices, absorb the initial/intermediate/final gaps, and
+coarsen to the exact requested number of global slices.
+
+### 11.4 Persistent provenance and the proved three-round recursion
+
+Future slicings require source provenance not contained in an initial
+`RecursiveSliceLayer`.  The persistent interface is:
+
+```lean
+SimpleGraph.Exponent8.RecursiveSlicingContext
+  -- RecursiveSlicing.lean:278
+
+SimpleGraph.Exponent8.RecursiveSlicingContext.toLayer
+  -- RecursiveSlicing.lean:315
+
+SimpleGraph.Exponent8.RootedObservation44State.recursiveSlicingContext
+  -- RootedSection42.lean:35
+```
+
+The rooted Observation 4.4 state produces this context without an additional
+semantic assumption.
 
 The four possible recursive outcomes are represented by:
 
@@ -1440,21 +1525,27 @@ SimpleGraph.Exponent8.LargeSliceLayer
 SimpleGraph.Exponent8.ThreeRoundRecursiveSlicingResult
 ```
 
-at `RecursiveSlicing.lean:341` and `:364`.  The first three constructors are
+at `RecursiveSlicing.lean:436` and `:459`.  The first three constructors are
 majority-large exits at recursion depths zero, one, and two; the fourth
 contains the final depth-three layer.
 
-The only new project axiom is:
+The round and three-round producers are:
 
 ```lean
+SimpleGraph.Exponent8.recursiveSlicingRound
+  -- ThreeRoundRecursion.lean:159
+
 SimpleGraph.Exponent8.threeRoundRecursiveSlicing
+  -- ThreeRoundRecursion.lean:257
 ```
 
-at `RecursiveSlicing.lean:408`, with signature:
+The latter has the source-faithful corrected signature:
 
 ```lean
-axiom threeRoundRecursiveSlicing
+theorem threeRoundRecursiveSlicing
     ...
+    (Ctxt : RecursiveSlicingContext
+      G H A B X P Q Rbar Qbar Dhat)
     (p : ThreeRoundParameters g Rbar.card Dhat)
     (L0 : RecursiveSliceLayer
       G H A B X P Q Rbar Qbar
@@ -1466,17 +1557,48 @@ axiom threeRoundRecursiveSlicing
         G H A B X P Q Rbar Qbar g Dhat p L0)
 ```
 
-The placeholder covers exactly:
+Its proof performs:
 
 1. Chuzhoy--Tan Observation 5.4's hereditary perfect-unique-linkage step;
 2. composition of the local slice cuts into a global slicing;
-3. propagating the now-produced `SliceLocalizationInvariant` through the
+3. propagation of `SliceLocalizationInvariant` through the
    three local refinements; and
 4. the finite three-level majority/small-slice recursion.
 
-It does not cover additive Lemma 4.8, LastHitCrossbar, the `O(g^4)` Claim 5.3
-bound, their layer-level bridge, or Observation 4.4 root-incidence
-provenance.
+There is no placeholder in this chain.
+
+### 11.5 Explicit exponent-eight-and-a-half parameters
+
+Declaration:
+
+```lean
+SimpleGraph.Exponent8.ThreeRoundParameters.explicitExponentEightParameters
+```
+
+Location: `ThreeRoundParameters.lean:197`.
+
+Under
+
+```lean
+2 <= g
+N <= 64 * g^6
+Dhat = 32 * g^4
+```
+
+it constructs every field of `ThreeRoundParameters` with
+
+```text
+fanout = sqrt(g) + 1
+C = 536870912 = 2^29
+logExp = 1
+```
+
+and proves the exact division-free local threshold
+
+```text
+8 * (m0 * w0 + (m0 + 1) * N)
+  <= 2^29 * g^8 * sqrt(g) * (log2(g) + 1).
+```
 
 ## 12. Trust baseline
 
@@ -1488,8 +1610,9 @@ statements-and-proofs/Exponent8/AxiomAudit.lean
 
 It audits the additive Lemma 4.8 declarations, finite last-hit selection,
 LastHitCrossbar, rooted Observation 4.4 incidence and localization,
-strengthened Claim 5.3, the additive per-slice producer, and the
-recursive-layer Claim 5.3 bridge.
+strengthened Claim 5.3, Observation 5.4, refinement composition, persistent
+recursion context, all three recursive rounds, and the explicit numerical
+parameters.
 
 A focused audit of the following existing declarations was also run:
 
@@ -1510,15 +1633,422 @@ Each reports exactly:
 [propext, Classical.choice, Quot.sound]
 ```
 
-No proved declaration above depends on a project-specific axiom.  The sole
-non-proved declaration is the explicitly named
-`SimpleGraph.Exponent8.threeRoundRecursiveSlicing`, whose audit reports
-itself in addition to the standard Lean axioms.  Every theorem preceding that
-placeholder reports only `propext`, `Classical.choice`, and `Quot.sound`
-(some arithmetic lemmas use a subset of these).
+No proved declaration above depends on a project-specific axiom.
+`SimpleGraph.Exponent8.threeRoundRecursiveSlicing` and
+`SimpleGraph.Exponent8.ThreeRoundParameters.explicitExponentEightParameters`
+both report only `propext`, `Classical.choice`, and `Quot.sound` (some
+arithmetic lemmas use a subset of these).
 
 Run the isolated audit with:
 
 ```bash
 lake env lean statements-and-proofs/Exponent8/AxiomAudit.lean
 ```
+
+## 13. Completed Section 5 assembly
+
+### 13.1 All happy clusters
+
+File: `AllHappyClusters.lean`.
+
+```lean
+structure AllHappyClustersData
+```
+
+Location: line 78.  This stores every connected Theorem 4.11 core in one
+slice, original `Rbar.Index` row sets, pairwise disjointness, weak
+well-linkedness, and
+
+```lean
+O.rows.card <= 4 * ∑ c, (rows c).card.
+```
+
+```lean
+PathSlicing.allHappyClusters_of_additiveCleanup
+```
+
+Location: line 134.  Dependencies:
+`AdditiveSliceCleanup.toOrdinary`, `PathPacking.theorem411`,
+`exists_connected_happy_core`, and the exact cleaned-support API.
+
+### 13.2 Corrected dyadic class
+
+File: `DyadicClusterClass.lean`.
+
+```lean
+structure DyadicClusterClass
+```
+
+Location: line 114.
+
+```lean
+exists_dyadicClusterClass
+```
+
+Location: line 133.  Signature parameters are a finite size function,
+`2 <= g`, power-of-two `g`, lower cluster size `16*g^4`, upper row count
+`N <= 64*g^6`, and total mass `8*N*g^2*(log_2 g+1)`.  The output records
+class mass at least `4*N*g^2` and
+
+```lean
+2 * N * g^2 <= Dclass * members.card.
+```
+
+The final class uses `size <= 2*Dclass`; nonfinal classes retain the strict
+upper inequality.  This closes the endpoint gap at `size = 64*g^6`.
+
+### 13.3 Parent-ordered table
+
+File: `ParentedClusterTable.lean`.
+
+```lean
+parentOrderedEnumeration
+```
+
+Location: line 34.  It orders a finite dependent family lexicographically by
+parent slice and an injective tie rank.
+
+```lean
+structure ParentedHappyClusterTable
+```
+
+Location: line 128.  Besides graph and row data it records monotonicity of
+the parent map, same-parent row disjointness, the dyadic depth bound, class
+mass, and the Theorem 4.15 count inequality.
+
+```lean
+RecursiveSliceLayer.exists_parentedHappyClusterTable_of_largeSliceMass
+```
+
+Location: line 332.  Dependencies: all-happy-cluster data, the corrected
+dyadic theorem, `cleanedSupportVertexSet_disjoint`, and
+`LargeSliceLayer` mass.
+
+```lean
+ParentedHappyClusterTable.parent_lt_of_largeOverlap
+```
+
+This proves that positive Theorem 4.15 overlap forces strict order of actual
+parent slices; equality contradicts same-parent row disjointness.
+
+### 13.4 Theorem 4.15 and row-gap assembly
+
+File: `Case1Section45Assembly.lean`.
+
+```lean
+ParentedHappyClusterTable.section45Input
+```
+
+Location: line 42.  It returns:
+
+```lean
+Nonempty
+  (Section45.Section45Input
+    H Rbar.card C Dclass (g^2))
+```
+
+Dependencies: `Section45.exists_paperRows`, `rowGapPacking`,
+`rowGapPath_internallyDisjoint_cleanedSupport`,
+`rowGapPath_disjoint_of_ordered`, and the strict-parent lemma above.
+
+### 13.5 Four exits and source producer
+
+File: `Section5Assembly.lean`.
+
+```lean
+RecursiveSliceLayer.weakPathOfSetsSystem_of_largeSliceLayer
+```
+
+Location: line 103.  This consumes one majority-large output and the exact
+assembly-mass inequality.
+
+```lean
+RecursiveSliceLayer.weakPathOfSetsSystem_of_finalLayer
+```
+
+Location: line 176.  This consumes the all-small final layer and the exact
+final slice-count bound.
+
+```lean
+ThreeRoundRecursiveSlicingResult.weakPathOfSetsSystem
+```
+
+Location: line 225.  It handles all four constructors and returns a weak
+path-of-sets system of length and width `g^2`.
+
+```lean
+exists_reduced_weakPathOfSetsSystem_threeRound
+```
+
+Location: line 275.  This is the current experimental source endpoint.  It
+combines the actual pseudo-grid, rooted Observation 4.4 reduction, initial
+Theorem 4.6 slicing, explicit parameters, the three recursive rounds, and
+the four-way assembly.
+
+The focused axiom audit reports exactly:
+
+```text
+[propext, Classical.choice, Quot.sound]
+```
+
+for every declaration in this section.
+
+## 14. Local exponent-eight-and-a-half dichotomy
+
+File: `LocalDichotomy.lean`.
+
+```lean
+def CrossbarDichotomyInput85 (c C logExp : ℕ) : Prop
+```
+
+Location: line 26.  This is the source-faithful local interface: at threshold
+`exponentEightLocalThreshold C logExp g`, equal-sized disjoint `A`, `B`, and
+leaf set `X`, together with the two path packings, produce either a
+width-`g^2` crossbar or a strong Path-of-Sets minor with both scales at least
+`g^2 / c` in multiplication-only form.
+
+```lean
+PseudoGrid.discardCost_le_threeRoundInitialCost
+```
+
+Location: line 61.  This pays the pseudo-grid discard
+`(64*g^4)*(2*g^2)` from the initial three-round slicing cost.
+
+```lean
+PseudoGrid.threeRound_slicing_budget
+```
+
+Location: line 88.  Signature conclusion:
+
+```lean
+e8M0 g * e8W0 g +
+    (e8M0 g + 1) * Gamma.rowPacking.card ≤ Gamma.goodQSet.card
+```
+
+Dependencies: `discardCost_le_threeRoundInitialCost`,
+`ThreeRoundParameters.explicitExponentEightParameters`, and the exact
+factor-four lower bound on `PseudoGrid.goodQSet`.
+
+```lean
+PseudoGrid.hasStrongPathOfSetsMinor_of_noCrossbar
+```
+
+Location: line 136.  Under the minimum-pair, source-disjointness, and
+no-crossbar hypotheses, it returns
+
+```lean
+∃ ell w,
+  g^2 ≤ 20000 * ell ∧
+  g^2 ≤ 20000 * w ∧
+  CrossbarContract.HasStrongPathOfSetsMinor G ell w.
+```
+
+Dependencies: the proved rooted three-round source endpoint
+`exists_reduced_weakPathOfSetsSystem_threeRound`, maximum-degree-four
+strongification, and minor transport from the Observation 4.4 reduced graph.
+
+```lean
+crossbarDichotomyInput85_proved
+```
+
+Location: line 207.  Exact signature:
+
+```lean
+CrossbarDichotomyInput85 20000 e8Constant 1
+```
+
+It applies Theorem 4.1 with `D = 64*g^4`, handles the immediate crossbar
+outcome, and invokes the preceding no-crossbar theorem on the pseudo-grid
+outcome.
+
+```lean
+exists_crossbarDichotomyInput85_proved
+```
+
+Location: line 279.  This packages the coefficient `20000` for downstream
+consumers.
+
+## 15. Global dichotomy and graph consumers
+
+File: `GlobalDichotomy.lean`.
+
+```lean
+crossbar_or_strong_pathOfSets_minor_in_hairLocalGraph85_of_input
+```
+
+Location: line 26.  It instantiates `CrossbarDichotomyInput85` in one
+hair-local graph using the left-right and left-hair linkages supplied by a
+`HairyPathOfSetsSystem`.
+
+```lean
+crossbar_or_strong_pathOfSets_minor_in_hairLocalGraph85
+```
+
+Location: line 75.  This is the proved specialization using
+`exists_crossbarDichotomyInput85_proved`.
+
+```lean
+crossbar_or_strong_pathOfSets_minor_in_hairyCluster85
+```
+
+Location: line 96.  It transports the strong-minor outcome from the
+hair-local subgraph to the ambient graph.
+
+```lean
+local_crossbars_at_odd_clusters_or_strong_pathOfSets_minor85
+```
+
+Location: line 124.  It converts the per-cluster dichotomy into: every odd
+one-based cluster has a crossbar, or one cluster already yields the ambient
+strong minor.
+
+```lean
+gridMinor_or_strong_pathOfSets_minor_of_hairy_pathOfSets85
+```
+
+Location: line 163.  Dependencies:
+`HairyCrossbarGrid.exists_gridMinor_of_hairy_pathOfSets_and_crossbars_of_cutMatchingGame`
+for the crossbar branch and the preceding odd-cluster theorem for the strong
+branch.
+
+```lean
+gridMinor_or_gridMinor_of_hairy_pathOfSets85
+```
+
+Location: line 205.  It converts the strong-minor branch to a grid minor using
+`PolynomialGridMinor.strongMinorGridInput_of_corollary32Input` and the proved
+Chekuri--Chuzhoy input `corollary32Input_proved`.
+
+```lean
+containsGridMinor_of_treewidth_parameters85
+```
+
+Location: line 247.  It consumes the proved hairy Path-of-Sets producer and
+the two preceding grid branches.  Its remaining hypotheses are only explicit
+natural-number inequalities for `ell`, `w`, `k`, `g`, `r`, and `target`.
+
+## 16. Closed numerical endpoint
+
+File: `NumericalEndpoint.lean`.
+
+```lean
+def polynomialGridMinorTreewidthBound85 (K b target : ℕ) : ℕ :=
+  K * target^8 * (Nat.sqrt target + 1) * (Nat.log 2 target)^b
+```
+
+Location: line 23.
+
+```lean
+def polynomialGridMinorTreewidthBoundEightAndHalf
+    (K b target : ℕ) : ℕ :=
+  K * target^8 * Nat.sqrt target * (Nat.log 2 target)^b
+```
+
+Location: line 29.
+
+```lean
+widthScale85_le_unrounded
+```
+
+Location: line 105.  This bounds the rounded power-of-two local scale by the
+unrounded `e8Constant * n^8 * sqrt(n) * (log_2 n + 1)` threshold.
+
+```lean
+hairy_size85_le_normalized
+```
+
+Location: line 126.  This normalizes the exact hairy-system size without
+replacing `sqrt(n)` by `n`.
+
+```lean
+sqrt_logProductScale_add_one_le
+```
+
+Location: line 202.  For
+`n = C * target * (log_2 target)^p`, it proves the division-free square-root
+estimate
+
+```lean
+sqrt n + 1 ≤
+  (C + 1) * (sqrt target + 1) * (log_2 target)^p.
+```
+
+```lean
+hairy_large_threshold85_of_coeff
+```
+
+Location: line 356.  This separates the target-independent coefficient and
+log-exponent obligations from the target-dependent hairy inequality.
+
+```lean
+structure ParameterChoice85
+```
+
+Location: line 465.  It contains the exact `ell`, `w`, `k`, `g`, and `r`
+fields consumed by `containsGridMinor_of_treewidth_parameters85`.
+
+```lean
+structure PolynomialThresholdTemplate85
+```
+
+Location: line 490.  It records target-independent coefficients satisfying
+the strong, direct, and hairy inequalities.
+
+```lean
+PolynomialThresholdTemplate85.toParameterChoice
+```
+
+Location: line 513.  It sets:
+
+```text
+n   = C * target * (log_2 target)^p
+ell = lengthScale cGrid n
+w   = widthScale85 n
+k   = polynomialGridMinorTreewidthBound85 K b target
+g   = powTwoFloor n
+r   = strongScale cStrong target.
+```
+
+Dependencies: the rounded-scale estimates in this file and the existing
+power-of-two, logarithmic, direct-branch, and strong-branch arithmetic API.
+
+```lean
+PolynomialThresholdTemplate85.canonical
+```
+
+Location: line 606.  It constructs a template for arbitrary positive semantic
+constants using `crossbarCoefficient` and `thresholdCoefficient`.
+
+```lean
+containsGridMinor_of_parameterChoice85
+```
+
+Location: line 647.  It is the adapter from `ParameterChoice85` to the fully
+proved graph theorem.
+
+```lean
+polynomial_grid_minor_theorem85
+```
+
+Location: line 669.  It proves the closed uniform threshold with
+`sqrt(target)+1`.
+
+```lean
+polynomial_grid_minor_theorem_exponentEightAndHalf
+```
+
+Location: line 692.  Exact signature:
+
+```lean
+∃ K b : ℕ, 0 < K ∧ 0 < b ∧
+  ∀ {V : Type u} [Fintype V] [DecidableEq V]
+    (G : SimpleGraph V) {target : ℕ},
+      2 ≤ target →
+        polynomialGridMinorTreewidthBoundEightAndHalf K b target ≤
+            treewidth G →
+          ContainsGridMinor G target
+```
+
+The proof doubles the coefficient from `polynomial_grid_minor_theorem85` and
+uses `1 ≤ sqrt(target)` for `target ≥ 2`.  Its complete transitive closure is
+audited in `AxiomAudit.lean`.
