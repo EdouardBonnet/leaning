@@ -1104,3 +1104,37 @@ experimental package under `statements-and-proofs/Exponent7/`.
 The unchecked item is the only new mathematical input in the conditional
 endpoint. It is an ordinary proposition argument, not an axiom. See
 `statements-and-proofs/Exponent7/ROADMAP.md`.
+
+## Application-specific cut-responder objective (2026-07-31)
+
+The generic prescribed-matching route above is frozen as a regression-tested
+fallback. Its singleton-row specialization was proved to imply arbitrary
+simultaneous terminal matching routing, so the new parallel package does not
+try to prove that over-strong interface.
+
+- [x] Generalize bisection routing to explicit equal-size disjoint sides and
+  retain endpoint labels and ordered row-contact traces.
+- [x] Trim each route at a consecutive side-changing transition.
+- [x] Prove the crossing matching versus labelled hub-certificate dichotomy.
+- [x] Give an abstract star obstruction showing that occurrence data alone
+  cannot resolve the hub, and isolate the exact occurrence-capacity condition
+  that would resolve it.
+- [x] Prove logarithmic constant-fraction matching peeling with fresh strong
+  clusters.
+- [x] Instantiate the existing adversarial cut-matching strategy.
+- [x] Prove that the clean bridge realization contains the abstract matching
+  union as a minor and reuse the half-expander-to-grid theorem.
+- [x] Propagate the parallel consumer through amortized Section 5 and all
+  global reductions.
+- [x] Compile the exact conditional endpoint
+  `SimpleGraph.Exponent7.CutResponder.polynomial_grid_minor_theorem_cleanResponder`.
+- [x] Run the full build and transitive axiom audit.
+- [ ] Prove
+  `StrongClusterCleanActiveCutResponderStatement reserve responseConstant`
+  for explicit positive constants.
+
+The compiled conditional threshold is
+`K * g^6 * (log_2 g)^b`. The exponent is six because the new consumer needs
+only `O(log(g)^2)` strong-system length. The remaining responder is an ordinary
+proposition argument, not a project axiom. See
+`statements-and-proofs/Exponent7/CutResponder/ROADMAP.md`.

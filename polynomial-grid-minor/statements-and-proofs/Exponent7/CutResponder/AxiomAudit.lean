@@ -1,0 +1,45 @@
+import «statements-and-proofs».Exponent7.CutResponder.CutResponderNumericalEndpoint
+
+/-!
+# Trust audit for the cut-responder route
+
+The generic prescribed-matching endpoint remains available as a regression
+test.  This parallel route instead assumes the application-specific
+`StrongClusterCleanActiveCutResponderStatement` as an ordinary theorem
+argument.  No declaration in this package introduces that statement as an
+unproved global constant.
+
+The commands below audit the mathematical-strength reduction, Tasks A--D, the
+host-minor conversion, the exact arithmetic, and the final conditional
+excluded-grid endpoint.
+-/
+
+#print axioms SimpleGraph.Exponent7.CutResponder.cleanMatchingDichotomy_implies_arbitrary_terminal_matching
+
+#print axioms SimpleGraph.Exponent7.CutResponder.PrescribedBisectionRouting.sideChangingPath_consecutive_active_contacts
+#print axioms SimpleGraph.Exponent7.CutResponder.PrescribedBisectionRouting.sideChangingTransition_nodeDisjoint
+#print axioms SimpleGraph.Exponent7.CutResponder.PrescribedBisectionRouting.crossingMatching_or_hubCertificate
+#print axioms SimpleGraph.Exponent7.CutResponder.strongCluster_crossingResponse_or_hubCertificate
+#print axioms SimpleGraph.Exponent7.CutResponder.star_has_no_response_fraction
+#print axioms SimpleGraph.Exponent7.CutResponder.strongClusterCutResponder_of_occurrenceCapacity
+
+#print axioms SimpleGraph.Exponent7.CutResponder.exists_profiledPeeledMatching_with_log_bound
+#print axioms SimpleGraph.Exponent7.CutResponder.exists_freshStrongClusterMatching
+#print axioms SimpleGraph.Exponent7.CutResponder.exists_freshClusterCutMatchingTranscript
+#print axioms SimpleGraph.CutMatchingGame.RoundFamily.HostRealization.isMinor_auxiliaryGraph
+#print axioms SimpleGraph.Exponent7.CutResponder.containsGridMinor_of_freshClusterCutMatching
+#print axioms SimpleGraph.Exponent7.CutResponder.gridMinor_of_strongPathOfSetsSystem_of_fixedStrategy
+
+#print axioms SimpleGraph.Exponent7.CutResponder.AmortizedSlicingDichotomy.gridMinor_of_cleanActiveCutResponder
+#print axioms SimpleGraph.Exponent7.CutResponder.gridMinor_of_uniformAmortizedPipeline_cleanActive
+#print axioms SimpleGraph.Exponent7.CutResponder.gridMinor_of_pseudoGrid_noCrossbar_cleanActive
+#print axioms SimpleGraph.Exponent7.CutResponder.localCrossbar_or_grid_cleanActive
+#print axioms SimpleGraph.Exponent7.CutResponder.gridMinor_of_hairyPathOfSets_cleanActive
+#print axioms SimpleGraph.Exponent7.CutResponder.containsGridMinor_of_treewidth_parameters_cleanActive
+
+#print axioms SimpleGraph.Exponent7.CutResponder.cutResponderStrongLength_le
+#print axioms SimpleGraph.Exponent7.CutResponder.cutResponderLocalThreshold_le
+#print axioms SimpleGraph.Exponent7.CutResponder.rounded_cutResponderLocalThreshold_le
+#print axioms SimpleGraph.Exponent7.CutResponder.CleanResponderPolynomialTemplate.toParameterChoice
+#print axioms SimpleGraph.Exponent7.CutResponder.CleanResponderPolynomialTemplate.canonical
+#print axioms SimpleGraph.Exponent7.CutResponder.polynomial_grid_minor_theorem_cleanResponder

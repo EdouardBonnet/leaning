@@ -554,6 +554,20 @@ constructor field or numbered source lemma before retrying.
   fixed rows for hill replacement.  The former decreases because a deleted
   row interval contains a non-column edge; the latter decreases because a
   valley leaves the active-row union and the replacement adds only row edges.
+- Before accepting a generic prescribed-matching frontier, instantiate its
+  rows by reflexive singleton paths. This exposes whether the statement
+  secretly asserts arbitrary terminal linkedness rather than the
+  application-specific routing property actually consumed downstream.
+- A maximal endpoint-disjoint subfamily of side-changing route occurrences
+  has a genuine hub obstruction: distinct labelled routes may all use one
+  selected row. Keep source labels, final target labels, attachment order, and
+  route suffixes in the hub certificate, but do not pair two tails through the
+  hub because that may create a same-side edge.
+- When peeling a matching in several fresh clusters, every batch must be
+  internally disjoint from the complete selected-row universe, not just its
+  residual endpoint rows. This global cleanliness lets all batches coexist
+  and supports the minor model that assigns each bridge's drop-last segment
+  to its source-row branch set.
 
 ## Verification commands
 

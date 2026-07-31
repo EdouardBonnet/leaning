@@ -187,3 +187,4 @@ closed direct endpoint and all stable public degree-ten wrappers.
 #print axioms SimpleGraph.polynomial_grid_minor_theorem_degree10
 #print axioms SimpleGraph.PolynomialGridMinorContract.polynomial_grid_minor_theorem_degree10
 #print axioms SimpleGraph.HairyCrossbarGrid.SelectedOddLocalCrossbarGridTransportedRoundFamily.FinCutMatchingGameTranscript.toRoundFamily_crossbar_at_round_cluster
+#print axioms SimpleGraph.Exponent7.CutResponder.polynomial_grid_minor_theorem_cleanResponder

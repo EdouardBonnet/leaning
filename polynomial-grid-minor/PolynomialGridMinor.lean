@@ -224,3 +224,4 @@ import «statements-and-proofs».TreewidthSparsifierSection2
 import «statements-and-proofs».TreewidthSparsifierTheorem11
 import «statements-and-proofs».UniqueLinkageOrdering
 import «statements-and-proofs».WellLinkedComponent
+import «statements-and-proofs».Exponent7.CutResponder.CutResponderNumericalEndpoint
