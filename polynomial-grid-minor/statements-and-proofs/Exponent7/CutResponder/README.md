@@ -52,7 +52,7 @@ It bounds the number of side-changing occurrences supported by one active
 row and yields response constant `2*d`.  This is an interface obstruction, not
 a counterexample to the strong-cluster theorem.
 
-Task D is complete conditional on the stronger residual proposition
+Task D was first completed conditional on the stronger residual proposition
 
 ```text
 StrongClusterCleanActiveCutResponderStatement reserve responseConstant.
@@ -62,6 +62,19 @@ This statement answers arbitrary equal-size disjoint residual sides, and every
 returned bridge is internally disjoint from the complete set of selected
 global row traces.  That global cleanliness is exactly what makes peeling
 compatible with contraction.
+
+That interface is retained as a regression test, but it asks for a response
+from the particular routing selected by `Classical.choose` inside
+`strongClusterExplicitRouting`.  The corrected interface is
+
+```text
+StrongClusterCleanActiveCutResponderStatementV2
+  reserve responseConstant.
+```
+
+Its response stores an existentially chosen `PrescribedBisectionRouting`
+together with the clean batch.  The old statement implies V2; no converse is
+assumed.  Parallel V2 theorems now cover the entire downstream chain below.
 
 The proved downstream chain:
 
@@ -77,13 +90,13 @@ The proved downstream chain:
 
 ## Kernel-checked endpoint
 
-The exact conditional endpoint is:
+The corrected exact conditional endpoint is:
 
 ```lean
-theorem polynomial_grid_minor_theorem_cleanResponder
+theorem polynomial_grid_minor_theorem_cleanResponderV2
     {reserve responseConstant : Nat}
     (hclean :
-      StrongClusterCleanActiveCutResponderStatement
+      StrongClusterCleanActiveCutResponderStatementV2
         reserve responseConstant)
     (hc : 0 < responseConstant)
     (hreserve : 0 < reserve) :
@@ -99,6 +112,25 @@ ordinary responder proposition above.  This is stronger than the requested
 exponent-seven milestone because the fresh-cluster cut-matching consumer needs
 only quadratically logarithmic strong-system length.  The theorem is not yet
 unconditional: `hclean` is a theorem argument, though it is not an axiom.
+
+`RoutingDescentV2.lean` reduces that argument to one fixed-routing
+improvement theorem.  Candidate routings are ordered by
+
+```text
+(routes.card * Fintype.card V + 1) * contactCount + totalLength.
+```
+
+Lean proves that fewer selected-row contacts strictly decrease this measure,
+that equal contact count plus shorter total length also decreases it, and that
+
+```text
+StrongClusterRoutingImprovementStatement reserve responseConstant
+```
+
+implies the V2 responder by strong induction.  Therefore
+`polynomial_grid_minor_theorem_of_routingImprovement` has the same degree-six
+threshold.  The improvement statement is the current sole mathematical
+frontier.
 
 The compiled finite bounds include:
 
@@ -118,7 +150,7 @@ cutResponderLocalThreshold pseudoScale cRound responseConstant coordinateOrder
 
 ```bash
 lake build \
-  '«statements-and-proofs».Exponent7.CutResponder.CutResponderNumericalEndpoint'
+  '«statements-and-proofs».Exponent7.CutResponder.CutResponderNumericalEndpointV2'
 
 lake env lean \
   statements-and-proofs/Exponent7/CutResponder/AxiomAudit.lean

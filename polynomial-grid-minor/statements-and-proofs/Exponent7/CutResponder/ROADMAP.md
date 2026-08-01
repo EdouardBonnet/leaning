@@ -27,44 +27,48 @@
       dichotomy, the hairy system, and treewidth.
 - [x] Compile all scale inequalities and the conditional power-six endpoint.
 - [x] Run the transitive axiom audit.
+- [x] Correct the responder so its successful routing is existential data,
+      rather than the particular witness selected by `Classical.choose`.
+- [x] Prove that the old responder implies the corrected V2 responder.
+- [x] Thread V2 through peeling, cut matching, the host minor, Section 5,
+      every global reduction, and the exact degree-six endpoint.
+- [x] Define the selected-row contact count, total routing length, and the
+      bounded lexicographic natural-number routing measure.
+- [x] Prove by strong induction that a fixed-routing rerouting-or-grid theorem
+      implies the V2 responder.
 
 ## Sole mathematical frontier
 
 Prove, for explicit positive constants `reserve` and `responseConstant`,
 
 ```lean
-StrongClusterCleanActiveCutResponderStatement
+StrongClusterRoutingImprovementStatement
   reserve responseConstant.
 ```
 
-This is deliberately narrower than the old generic
-`CleanMatchingDichotomyStatement`.  Its inputs are exactly those arising in a
-cluster of a `StrongPathOfSetsSystem`: the two node-well-linked nail sides,
-their linkage, connectedness, maximum degree four, the selected global rows,
-and two equal-size disjoint residual coordinate sets.
+For each fixed candidate routing whose clean response fails, this theorem must
+return either the target grid or a routing between the same terminal sets with
+strictly smaller `routingMeasure`.  The measure minimizes selected-row
+incidence first and total edge length second.  Strong induction already turns
+this theorem into the corrected existential responder.
 
-Its successful response must contain a constant-fraction crossing batch whose
-paths are internally disjoint from **all** selected global row traces.  The
-global condition is necessary because batches are peeled sequentially and
-then contracted together.
-
-The current proof reaches a labelled hub certificate.  Any completion must
-justify one of:
+Apply the proved crossing-batch/hub dichotomy to the candidate routing.  In
+the hub branch, use the strong-cluster geometry to justify one of:
 
 1. eliminate the hub row with a quantified constant-factor loss and recurse;
 2. route the affected transitions through unused reserve rows while preserving
    global row cleanliness;
 3. extract the target grid from high hub multiplicity; or
-4. prove a bounded occurrence-capacity theorem from the strong-cluster and
-   bounded-degree hypotheses.
+4. reroute with fewer selected-row contacts, or with equal contact count and
+   smaller total length.
 
 The abstract star obstruction in `HubObstruction.lean` shows that labels,
 attachment order, and disjoint route suffixes alone are insufficient.
 
 ## Endpoint after the frontier
 
-Once the producer above is proved, instantiate
-`polynomial_grid_minor_theorem_cleanResponder` with it.  The resulting
+Once the improvement theorem above is proved, instantiate
+`polynomial_grid_minor_theorem_of_routingImprovement` with it.  The resulting
 unconditional threshold is
 
 ```text

@@ -1,4 +1,4 @@
-import «statements-and-proofs».Exponent7.CutResponder.CutResponderNumericalEndpoint
+import «statements-and-proofs».Exponent7.CutResponder.CutResponderNumericalEndpointV2
 
 /-!
 # Trust audit for the cut-responder route
@@ -12,6 +12,9 @@ unproved global constant.
 The commands below audit the mathematical-strength reduction, Tasks A--D, the
 host-minor conversion, the exact arithmetic, and the final conditional
 excluded-grid endpoint.
+
+The final block audits the corrected routing-existential interface and the
+finite-descent reduction to `StrongClusterRoutingImprovementStatement`.
 -/
 
 #print axioms SimpleGraph.Exponent7.CutResponder.cleanMatchingDichotomy_implies_arbitrary_terminal_matching
@@ -43,3 +46,18 @@ excluded-grid endpoint.
 #print axioms SimpleGraph.Exponent7.CutResponder.CleanResponderPolynomialTemplate.toParameterChoice
 #print axioms SimpleGraph.Exponent7.CutResponder.CleanResponderPolynomialTemplate.canonical
 #print axioms SimpleGraph.Exponent7.CutResponder.polynomial_grid_minor_theorem_cleanResponder
+
+#print axioms SimpleGraph.Exponent7.CutResponder.strongClusterCleanActiveCutResponderV2_of_v1
+#print axioms SimpleGraph.Exponent7.CutResponder.routingMeasure_lt_of_contactCount_lt
+#print axioms SimpleGraph.Exponent7.CutResponder.routingMeasure_lt_of_contactCount_eq_of_totalLength_lt
+#print axioms SimpleGraph.Exponent7.CutResponder.strongClusterCleanActiveCutResponderV2_of_routingImprovement
+#print axioms SimpleGraph.Exponent7.CutResponder.exists_freshStrongClusterMatchingV2
+#print axioms SimpleGraph.Exponent7.CutResponder.exists_freshClusterCutMatchingTranscriptV2
+#print axioms SimpleGraph.Exponent7.CutResponder.containsGridMinor_of_freshClusterCutMatchingV2
+#print axioms SimpleGraph.Exponent7.CutResponder.gridMinor_of_strongPathOfSetsSystem_of_fixedStrategyV2
+#print axioms SimpleGraph.Exponent7.CutResponder.gridMinor_of_pseudoGrid_noCrossbar_cleanActiveV2
+#print axioms SimpleGraph.Exponent7.CutResponder.localCrossbar_or_grid_cleanActiveV2
+#print axioms SimpleGraph.Exponent7.CutResponder.gridMinor_of_hairyPathOfSets_cleanActiveV2
+#print axioms SimpleGraph.Exponent7.CutResponder.containsGridMinor_of_treewidth_parameters_cleanActiveV2
+#print axioms SimpleGraph.Exponent7.CutResponder.polynomial_grid_minor_theorem_cleanResponderV2
+#print axioms SimpleGraph.Exponent7.CutResponder.polynomial_grid_minor_theorem_of_routingImprovement

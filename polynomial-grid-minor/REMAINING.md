@@ -1129,12 +1129,16 @@ try to prove that over-strong interface.
 - [x] Compile the exact conditional endpoint
   `SimpleGraph.Exponent7.CutResponder.polynomial_grid_minor_theorem_cleanResponder`.
 - [x] Run the full build and transitive axiom audit.
-- [ ] Prove
-  `StrongClusterCleanActiveCutResponderStatement reserve responseConstant`
-  for explicit positive constants.
+- [x] Replace the chosen-routing responder by the existential-routing
+  `StrongClusterCleanActiveCutResponderStatementV2`, thread it through every
+  downstream consumer, and preserve the exact degree-six constants.
+- [x] Define `routingMeasure` and prove by strong induction that
+  `StrongClusterRoutingImprovementStatement` implies the V2 responder.
+- [ ] Prove `StrongClusterRoutingImprovementStatement reserve
+  responseConstant` for explicit positive constants.
 
 The compiled conditional threshold is
 `K * g^6 * (log_2 g)^b`. The exponent is six because the new consumer needs
-only `O(log(g)^2)` strong-system length. The remaining responder is an ordinary
-proposition argument, not a project axiom. See
+only `O(log(g)^2)` strong-system length. The remaining rerouting-or-grid lemma
+is an ordinary proposition argument, not a project axiom. See
 `statements-and-proofs/Exponent7/CutResponder/ROADMAP.md`.

@@ -568,6 +568,12 @@ constructor field or numbered source lemma before retrying.
   residual endpoint rows. This global cleanliness lets all batches coexist
   and supports the minor model that assigns each bridge's drop-last segment
   to its source-row branch set.
+- Do not expose a graph-theoretic existence theorem through a fixed
+  `Classical.choose` witness when the proof may need to optimize that witness.
+  Store the routing in the response structure. For finite routings, encode
+  lexicographic minimization of contact count and length by multiplying the
+  primary count by one more than a uniform length bound, then use strong
+  induction on the resulting natural-number measure.
 
 ## Verification commands
 
